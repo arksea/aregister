@@ -1,0 +1,10 @@
+/.gradle
+/.idea
+*.log
+/aregister/build
+/aregister/logs
+/aregister-client/build
+/aregister-redis/build
+/demo-client/build
+/demo-service/logs
+/demo-service/build

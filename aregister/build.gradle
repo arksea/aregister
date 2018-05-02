@@ -1,0 +1,62 @@
+apply plugin: 'base'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'pmd'
+
+description = """Actor Register"""
+
+dependencies {
+    compile project(':aregister-redis')
+}
+
+test.testLogging.showStandardStreams = true
+
+//IDE中运行与调试的配置
+def runMainClass = 'net.arksea.dsf.register.ServerMain'
+
+//配置在IDE中运行及调试时的参数
+task run1(type: JavaExec, dependsOn: 'classes') {
+    classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
+    main = runMainClass
+    jvmArgs = ['-Dakka.remote.netty.tcp.port=6501']
+    standardInput = System.in
+}
+
+task run2(type: JavaExec, dependsOn: 'classes') {
+    classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
+    main = runMainClass
+    jvmArgs = ['-Dakka.remote.netty.tcp.port=6502']
+    standardInput = System.in
+}
+
+task debug1(type: JavaExec, dependsOn: 'classes') {
+    classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
+    main = runMainClass
+    jvmArgs = ['-Dakka.remote.netty.tcp.port=6501']
+    standardInput = System.in
+    debug = true
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': runMainClass
+        attributes "Class-Path": configurations.runtime.collect { 'lib/'+it.getName() }.join(' ')+" config/"
+    }
+}
+
+pmd {
+    toolVersion = '5.1.3'
+    ruleSets = [
+        'java-basic',
+        'java-braces',
+        'java-clone',
+        'java-design',
+        'java-empty',
+        'java-finalizers',
+        'java-imports',
+        'java-migrating',
+        'java-sunsecure',
+        'java-unnecessary',
+        'java-unusedcode'
+    ]
+}

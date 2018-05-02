@@ -1,0 +1,6 @@
+rootProject.name = 'A Register'
+include 'aregister'
+include 'aregister-client'
+include 'aregister-redis'
+include 'demo-service'
+include 'demo-client'

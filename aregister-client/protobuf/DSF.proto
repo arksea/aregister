@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package net.arksea.dsf;
+
+option java_package = "net.arksea.dsf";
+option java_outer_classname = "DSF";
+
+//注册服务实例
+message RegService {
+    string name = 1;
+    string addr = 2;
+    string path = 3;
+}
+//注销服务实例
+message UnregService {
+    string name = 1;
+    string addr   = 2;
+}
+
+//获取服务的实例列表
+message GetSvcInstances {
+    string name = 1;
+}
+
+message SyncSvcInstances {
+    string name = 1;
+    string serialId = 2;
+    string subscriber = 3;
+}
+
+message Instance {
+    string addr    = 1;
+    string path    = 2;
+    bool   online  = 3;
+}
+
+message SvcInstances {
+    string name = 1;
+    string serialId = 2;
+    repeated Instance instances = 3;
+}
+
+//订阅服务的注册与注销事件
+message SubService {
+    string service = 1;
+    string subscriber = 2;
+}
+
+message UnsubService {
+    string service = 1;
+}
