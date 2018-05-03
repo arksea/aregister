@@ -45,7 +45,7 @@ public class ServiceActor extends AbstractActor {
     public ServiceActor(String serviceName, IRegisterStore store) {
         this.serviceName = serviceName;
         this.store = store;
-        this.serialId = UUID.randomUUID().toString();
+        this.serialId = "";
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     private void handleRegService(DSF.RegService msg) {
         instances.put(msg.getAddr(),new InstanceInfo(msg.getName(),msg.getAddr(),msg.getPath(),true));
-        this.serialId = UUID.randomUUID().toString();
+        this.serialId = makeSerialId();
         subscriberMap.keySet().forEach(actor -> {
             actor.tell(msg, self());
         });
@@ -106,7 +106,7 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     private void handleUnregService(DSF.UnregService msg) {
         instances.remove(msg.getAddr());
-        this.serialId = UUID.randomUUID().toString();
+        this.serialId = makeSerialId();
         subscriberMap.keySet().forEach(actor -> {
             actor.tell(msg, self());
         });
@@ -120,6 +120,7 @@ public class ServiceActor extends AbstractActor {
     }
     private void handleSyncSvcInstances(DSF.SyncSvcInstances msg) {
         logger.trace("Service.handleSyncSvcInstances({},{}),instances.size={},", msg.getName(),msg.getSerialId(),instances.size());
+        subscribeService(msg.getSubscriber(), sender());
         if (!this.serialId.equals(msg.getSerialId())) {
             getSvcInstances();
         }
@@ -206,14 +207,14 @@ public class ServiceActor extends AbstractActor {
             InstanceInfo old = instances.remove(it.getAddr());
             if (old == null) {
                 newInstances.put(it.getAddr(), new InstanceInfo(it.getName(),it.getAddr(),it.getPath(), false));
-                this.serialId = UUID.randomUUID().toString();
+                this.serialId = makeSerialId();
                 logger.info("Service ADD : {}@{}, online={}", serviceName, it.getAddr(), false);
             } else {
                 newInstances.put(it.getAddr(), old);
             }
         });
         if (instances.size() > 0) {
-            this.serialId = UUID.randomUUID().toString();
+            this.serialId = makeSerialId();
             for (String addr : instances.keySet()) {
                 logger.info("Service DEL : {}@{}", serviceName, addr);
             }
@@ -283,5 +284,10 @@ public class ServiceActor extends AbstractActor {
 
         public final String name;
         public boolean active;
+    }
+
+    private String makeSerialId() {
+        //todo: 计算实例集合的HashCode或者MD5
+        return UUID.randomUUID().toString();
     }
 }

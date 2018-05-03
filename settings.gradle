@@ -1,4 +1,4 @@
-rootProject.name = 'A Register'
+rootProject.name = 'Actor Register'
 include 'aregister'
 include 'aregister-client'
 include 'aregister-redis'
