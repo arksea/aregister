@@ -37,8 +37,8 @@ public class ActorClient extends AbstractActor {
     private final Map<String, RequestState> requests = new HashMap<>();
     private Cancellable saveStatDataTimer; //保存历史统计数据定时器
     private Cancellable checkOfflineTimer;
-    private static final int SAVE_DELAY_SECONDS = 60; //保存统计历史数据的周期(s)
-    private static final int CHECK_OFFLINE_SECONDS = 60; //测试OFFLINE服务是否存活
+    private static final int SAVE_DELAY_SECONDS = 10; //保存统计历史数据的周期(s)
+    private static final int CHECK_OFFLINE_SECONDS = 10; //测试OFFLINE服务是否存活
     private static final int REQUEST_TIMEOUT = 10000; //请求超时时间(ms)
     private final Object heartbeatMessage;
     private RegisterClient registerClient;
@@ -54,19 +54,23 @@ public class ActorClient extends AbstractActor {
     @Override
     public void preStart() {
         log.debug("ActorClient preStart: {}", serviceName);
-        try {
-            DSF.GetSvcInstances get = DSF.GetSvcInstances.newBuilder()
-                .setName(serviceName)
-                .build();
-            Future<DSF.SvcInstances> future = registerClient.getServiceList(serviceName, 5000);
-            DSF.SvcInstances result = Await.result(future, Duration.create(5000, "ms"));
-            handleSvcInstances(result);
-            log.info("Load service list form register succeed",serviceName);
-        } catch (Exception e) {
-            log.warn("Load service list form register failed: {}",serviceName,e);
+        if (registerClient == null) {
             loadFromLocalCache();
+        } else {
+            try {
+                DSF.GetSvcInstances get = DSF.GetSvcInstances.newBuilder()
+                    .setName(serviceName)
+                    .build();
+                Future<DSF.SvcInstances> future = registerClient.getServiceList(serviceName, 5000);
+                DSF.SvcInstances result = Await.result(future, Duration.create(5000, "ms"));
+                handleSvcInstances(result);
+                log.info("Load service list form register succeed", serviceName);
+            } catch (Exception e) {
+                log.warn("Load service list form register failed: {}", serviceName, e);
+                loadFromLocalCache();
+            }
+            registerClient.subscribe(serviceName, self());
         }
-        registerClient.subscribe(serviceName, self());
         saveStatDataTimer = context().system().scheduler().schedule(
             Duration.create(SAVE_DELAY_SECONDS, TimeUnit.SECONDS),
             Duration.create(SAVE_DELAY_SECONDS,TimeUnit.SECONDS),
@@ -105,7 +109,9 @@ public class ActorClient extends AbstractActor {
     @Override
     public void postStop() {
         log.debug("ActorClient postStop: {}", serviceName);
-        registerClient.unsubscribe(serviceName, self());
+        if (registerClient != null) {
+            registerClient.unsubscribe(serviceName, self());
+        }
         if (saveStatDataTimer != null) {
             saveStatDataTimer.cancel();
             saveStatDataTimer = null;
@@ -116,8 +122,14 @@ public class ActorClient extends AbstractActor {
         }
     }
 
+    //优先从注册服务器获取服务列表
     public static Props props(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy) {
         return Props.create(ActorClient.class, () -> new ActorClient(serviceName,registerClient,routeStrategy));
+    }
+
+    //只从本地配置文件获取服务列表
+    public static Props props(String serviceName, IRouteStrategy routeStrategy) {
+        return Props.create(ActorClient.class, () -> new ActorClient(serviceName,null,routeStrategy));
     }
 
     @Override

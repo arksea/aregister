@@ -34,7 +34,7 @@ public class RegisterClientActor extends AbstractActor {
     private long backoff = MIN_RETRY_DELAY;
     private final String clientName;
     private Cancellable updateTimer;
-    private static final int UPDATE_DELAY_SECONDS = 300;
+    private static final int UPDATE_DELAY_SECONDS = 60;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public RegisterClientActor(String clientName, String serverAddr) {
