@@ -49,7 +49,7 @@ public class DemoActor extends AbstractActor {
         context().system().scheduler().scheduleOnce(Duration.create(30, TimeUnit.SECONDS),
         self(),"offline",context().dispatcher(),self());
 
-        context().system().scheduler().scheduleOnce(Duration.create(230, TimeUnit.SECONDS),
+        context().system().scheduler().scheduleOnce(Duration.create(130, TimeUnit.SECONDS),
             self(),"online",context().dispatcher(),self());
     }
 

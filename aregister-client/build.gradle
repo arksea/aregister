@@ -10,6 +10,7 @@ description = """ASC(Actor Service Cluster)客户端支持库"""
 
 dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.0'
 }
 
 configure(install.repositories.mavenInstaller) {

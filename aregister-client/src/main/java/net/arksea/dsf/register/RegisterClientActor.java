@@ -4,15 +4,17 @@ import akka.actor.*;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.pattern.Patterns;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.arksea.dsf.DSF;
+import net.arksea.dsf.store.Instance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static akka.japi.Util.classTag;
@@ -25,14 +27,15 @@ public class RegisterClientActor extends AbstractActor {
     public static final String ACTOR_NAME = "registerClient";
     private final Logger log = LogManager.getLogger(RegisterClientActor.class);
     private ActorSelection register;
-    private Map<String, Set<ActorRef>> subscriberMap = new HashMap<>();
+    private Map<String, ServiceInfo> serviceInfoMap = new HashMap<>();
     private long timeout = 10000;
     private final static int MIN_RETRY_DELAY = 10000;
     private final static int MAX_RETRY_DELAY = 300000;
     private long backoff = MIN_RETRY_DELAY;
     private final String clientName;
-    private Cancellable updateSubTimer;
-    private static final int SUBSCRIBE_DELAY_SECONDS = 300;
+    private Cancellable updateTimer;
+    private static final int UPDATE_DELAY_SECONDS = 60;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public RegisterClientActor(String clientName, String serverAddr) {
         this.clientName = clientName;
@@ -52,17 +55,17 @@ public class RegisterClientActor extends AbstractActor {
     @Override
     public void preStart() {
         log.info("ServiceRegisterActor preStart");
-        updateSubTimer = context().system().scheduler().schedule(
-            Duration.create(SUBSCRIBE_DELAY_SECONDS, TimeUnit.SECONDS),
-            Duration.create(SUBSCRIBE_DELAY_SECONDS,TimeUnit.SECONDS),
+        updateTimer = context().system().scheduler().schedule(
+            Duration.create(UPDATE_DELAY_SECONDS, TimeUnit.SECONDS),
+            Duration.create(UPDATE_DELAY_SECONDS,TimeUnit.SECONDS),
             self(),new UpdateSubscribe(),context().dispatcher(),self());
     }
 
     @Override
     public void postStop() {
-        if (updateSubTimer != null) {
-            updateSubTimer.cancel();
-            updateSubTimer = null;
+        if (updateTimer != null) {
+            updateTimer.cancel();
+            updateTimer = null;
         }
         log.info("ServiceRegisterActor postStop");
     }
@@ -71,7 +74,7 @@ public class RegisterClientActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
             .match(DSF.GetSvcInstances.class, this::handleGetSvcInstances)
-            .match(DSF.SyncSvcInstances.class,this::handleSyncSvcInstances)
+            .match(DSF.SvcInstances.class,    this::handleSvcInstances)
             .match(DSF.SubService.class,      this::handleSubService)
             .match(DSF.UnsubService.class,    this::handleUnsubService)
             .match(RegLocalService.class,     this::handleRegLocalService)
@@ -84,12 +87,13 @@ public class RegisterClientActor extends AbstractActor {
     //-------------------------------------------------------------------------------------------------
     private class UpdateSubscribe {}
     private void handleUpdateSubscribe(UpdateSubscribe msg) {
-        subscriberMap.keySet().forEach(it -> {
-            DSF.SubService sub = DSF.SubService.newBuilder()
-                .setService(it)
+        serviceInfoMap.forEach((name, info) -> {
+            DSF.SyncSvcInstances sync = DSF.SyncSvcInstances.newBuilder()
+                .setName(name)
+                .setSerialId(info.serialId)
                 .setSubscriber(clientName)
                 .build();
-            register.tell(sub, self());
+            register.tell(sync, self());
         });
     }
     //-------------------------------------------------------------------------------------------------
@@ -97,24 +101,54 @@ public class RegisterClientActor extends AbstractActor {
         log.info("getSvcInstances: {}",msg.getName());
         register.forward(msg, context());
     }
-    //-------------------------------------------------------------------------------------------------
-    private void handleSyncSvcInstances(DSF.SyncSvcInstances msg) {
-        log.debug("syncSvcInstances: {}", msg.getName());
-        register.forward(msg, context());
+    //------------------------------------------------------------------------------------
+    private void handleSvcInstances(DSF.SvcInstances msg) {
+        ServiceInfo info = serviceInfoMap.computeIfAbsent(msg.getName(), k -> new ServiceInfo());
+        if (!info.serialId.equals(msg.getSerialId())) {
+            info.serialId = msg.getSerialId();
+            List<DSF.Instance> instances = msg.getInstancesList();
+            info.instances.clear();
+            instances.forEach(i -> info.instances.put(i.getAddr(),
+                    new net.arksea.dsf.store.Instance(msg.getName(), i.getAddr(), i.getPath()))
+            );
+            info.clientSet.forEach(c -> c.tell(msg, self()));
+            save(msg.getName(), info.instances.values());
+        }
+    }
+    private void save(String serviceName, Collection<Instance> instances) {
+        String fileName = "./config/" + serviceName + ".svc";
+        try {
+            File file = new File(fileName);
+            File dir = file.getParentFile();
+            if (!dir.exists()) {
+                Files.createDirectories(dir.toPath());
+            }
+            StringBuilder sb = new StringBuilder();
+            for(Instance instance : instances) {
+                String line = objectMapper.writeValueAsString(instance);
+                sb.append(line).append("\n");
+            }
+            Files.write(file.toPath(), sb.toString().getBytes("UTF-8"),
+                StandardOpenOption.WRITE,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.CREATE);
+        } catch (Exception ex) {
+            log.error("Write service instancs to local cache file failed: {}", fileName,ex);
+        }
     }
     //-------------------------------------------------------------------------------------------------
     private void handleSubService(DSF.SubService msg) {
         log.info("Subscribe Service : {}", msg.getService());
-        Set<ActorRef> subscribers = subscriberMap.computeIfAbsent(msg.getService(), k -> new HashSet<>());
-        subscribers.add(sender());
+        ServiceInfo info = serviceInfoMap.computeIfAbsent(msg.getService(), k -> new ServiceInfo());
+        info.clientSet.add(sender());
         register.tell(msg, self());
     }
     //-------------------------------------------------------------------------------------------------
     private void handleUnsubService(DSF.UnsubService msg) {
         log.info("Unsubscribe Service : {}", msg.getService());
-        Set<ActorRef> subscribers = subscriberMap.computeIfAbsent(msg.getService(), k -> new HashSet<>());
-        subscribers.remove(sender());
-        if (subscribers.isEmpty()) {
+        ServiceInfo info = serviceInfoMap.computeIfAbsent(msg.getService(), k -> new ServiceInfo());
+        info.clientSet.remove(sender());
+        if (info.clientSet.isEmpty()) {
             register.tell(msg, self());
         }
     }
@@ -156,13 +190,13 @@ public class RegisterClientActor extends AbstractActor {
                 }
             }, context().dispatcher());
     }
-    //将集群中广播的注册事件分发给所有订阅者
+    //将集群中广播的注册事件分发给所有本地订阅者
     private void handleRegService(DSF.RegService msg) {
         log.trace("RegisterClientActor.handleRegService({})", msg.getAddr());
-        Set<ActorRef> subscribers = subscriberMap.get(msg.getName());
-        if (subscribers != null) {
-            subscribers.forEach(s -> s.tell(msg, self()));
-        }
+        ServiceInfo info = serviceInfoMap.computeIfAbsent(msg.getName(), k -> new ServiceInfo());
+        info.instances.computeIfAbsent(msg.getAddr(), addr ->
+            new net.arksea.dsf.store.Instance(msg.getName(), addr,msg.getPath()));
+        info.clientSet.forEach(c -> c.tell(msg, self()));
     }
     //-------------------------------------------------------------------------------------------------
     private void handleUnregLocalService(UnregLocalService msg) {
@@ -203,10 +237,9 @@ public class RegisterClientActor extends AbstractActor {
     //将集群中广播的注销事件分发给所有订阅者
     private void handleUnregService(DSF.UnregService msg) {
         log.trace("RegisterClientActor.handleUnregService({})", msg.getAddr());
-        Set<ActorRef> subscribers = subscriberMap.get(msg.getName());
-        if (subscribers != null) {
-            subscribers.forEach(s -> s.tell(msg, self()));
-        }
+        ServiceInfo info = serviceInfoMap.computeIfAbsent(msg.getName(), k -> new ServiceInfo());
+        info.instances.remove(msg.getAddr());
+        info.clientSet.forEach(c -> c.tell(msg, self()));
     }
     //-------------------------------------------------------------------------------------------------
     private long getBackoffDelay() {
@@ -216,5 +249,11 @@ public class RegisterClientActor extends AbstractActor {
 
     private void resetBackoffDelay() {
         this.backoff = MIN_RETRY_DELAY;
+    }
+
+    class ServiceInfo {
+        String serialId = ""; //注册服务下发的实例集合的序列号，注册服务用此序列号判断订阅者是否需要更新实例列表
+        final Set<ActorRef> clientSet = new HashSet<>();
+        final Map<String, net.arksea.dsf.store.Instance> instances = new HashMap<>();
     }
 }

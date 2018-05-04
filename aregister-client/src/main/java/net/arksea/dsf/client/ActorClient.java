@@ -3,6 +3,7 @@ package net.arksea.dsf.client;
 import akka.actor.*;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.ServiceRequest;
 import net.arksea.dsf.ServiceResponse;
@@ -10,12 +11,15 @@ import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.config.FileConfigPersistence;
 import net.arksea.dsf.config.IConfigPersistence;
 import net.arksea.dsf.register.RegisterClient;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -30,47 +34,43 @@ public class ActorClient extends AbstractActor {
     private final IRouteStrategy routeStrategy;
     private final Map<String,InstanceQuality> qualityMap = new HashMap<>();
     private final List<Instance> instances = new LinkedList<>();
-    private String instanceSetSerialId; //注册服务下发的实例集合的序列号，注册服务用此序列号判断订阅者是否需要更新实例列表
     private final Map<String, RequestState> requests = new HashMap<>();
-    private Cancellable updateTimer;       //更新服务实例定时器
     private Cancellable saveStatDataTimer; //保存历史统计数据定时器
     private Cancellable checkOfflineTimer;
-    private static final int UPDATE_DELAY_SECONDS = 300; //从注册服务器更新实例列表的周期(s)
-    private static final int SAVE_DELAY_SECONDS = 60; //保存统计历史数据的周期(s)
-    private static final int CHECK_OFFLINE_SECONDS = 60; //测试OFFLINE服务是否存活
+    private static final int SAVE_DELAY_SECONDS = 10; //保存统计历史数据的周期(s)
+    private static final int CHECK_OFFLINE_SECONDS = 10; //测试OFFLINE服务是否存活
     private static final int REQUEST_TIMEOUT = 10000; //请求超时时间(ms)
     private final Object heartbeatMessage;
-    private IConfigPersistence configPersistence;
     private RegisterClient registerClient;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private ActorClient(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy) {
         this.serviceName = serviceName;
         this.registerClient = registerClient;
         this.routeStrategy = routeStrategy;
         this.heartbeatMessage = "heartbeat";
-        String filePath = "./config/" + serviceName + ".cfg";
-        configPersistence = new FileConfigPersistence(filePath);
     }
 
     @Override
     public void preStart() {
-        log.info("ActorClient preStart: {}", serviceName);
-        try {
-            log.info("Load service list form register: {}",serviceName);
-            DSF.GetSvcInstances get = DSF.GetSvcInstances.newBuilder()
-                .setName(serviceName)
-                .build();
-            Future<DSF.SvcInstances> future = registerClient.getServiceList(serviceName, 5000);
-            DSF.SvcInstances result = Await.result(future, Duration.create(5000, "ms"));
-            handleSvcInstances(result);
+        log.debug("ActorClient preStart: {}", serviceName);
+        if (registerClient == null) {
+            loadFromLocalCache();
+        } else {
+            try {
+                DSF.GetSvcInstances get = DSF.GetSvcInstances.newBuilder()
+                    .setName(serviceName)
+                    .build();
+                Future<DSF.SvcInstances> future = registerClient.getServiceList(serviceName, 5000);
+                DSF.SvcInstances result = Await.result(future, Duration.create(5000, "ms"));
+                handleSvcInstances(result);
+                log.info("Load service list form register succeed", serviceName);
+            } catch (Exception e) {
+                log.warn("Load service list form register failed: {}", serviceName, e);
+                loadFromLocalCache();
+            }
             registerClient.subscribe(serviceName, self());
-        } catch (Exception e) {
-            log.warn("Load service list form register failed: {}",serviceName,e);
         }
-        updateTimer = context().system().scheduler().schedule(
-            Duration.create(UPDATE_DELAY_SECONDS, TimeUnit.SECONDS),
-            Duration.create(UPDATE_DELAY_SECONDS,TimeUnit.SECONDS),
-            self(),new UpdateInstance(),context().dispatcher(),self());
         saveStatDataTimer = context().system().scheduler().schedule(
             Duration.create(SAVE_DELAY_SECONDS, TimeUnit.SECONDS),
             Duration.create(SAVE_DELAY_SECONDS,TimeUnit.SECONDS),
@@ -81,13 +81,36 @@ public class ActorClient extends AbstractActor {
             self(),new CheckOfflineService(),context().dispatcher(),self());
     }
 
+    private void loadFromLocalCache() {
+        try {
+            String fileName = "./config/" + serviceName + ".svc";
+            File file = new File(fileName);
+            DSF.SvcInstances.Builder builder = DSF.SvcInstances.newBuilder()
+                .setName(serviceName)
+                .setSerialId("");
+            List<String> lines = Files.readAllLines(file.toPath());
+            for (String line: lines){
+                if (StringUtils.isNotBlank(line)) {
+                    net.arksea.dsf.store.Instance i = objectMapper.readValue(line, net.arksea.dsf.store.Instance.class);
+                    builder.addInstances(
+                        DSF.Instance.newBuilder()
+                            .setAddr(i.getAddr())
+                            .setPath(i.getPath())
+                            .setOnline(true)
+                            .build());
+                }
+            }
+            handleSvcInstances(builder.build());
+            log.info("Load service list form local cache file succeed",serviceName);
+        } catch (Exception ex) {
+            log.warn("Load service list form local cache file failed: {}",serviceName,ex);
+        }
+    }
     @Override
     public void postStop() {
-        log.info("ActorClient postStop: {}", serviceName);
-        registerClient.unsubscribe(serviceName, self());
-        if (updateTimer != null) {
-            updateTimer.cancel();
-            updateTimer = null;
+        log.debug("ActorClient postStop: {}", serviceName);
+        if (registerClient != null) {
+            registerClient.unsubscribe(serviceName, self());
         }
         if (saveStatDataTimer != null) {
             saveStatDataTimer.cancel();
@@ -99,8 +122,14 @@ public class ActorClient extends AbstractActor {
         }
     }
 
+    //优先从注册服务器获取服务列表
     public static Props props(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy) {
         return Props.create(ActorClient.class, () -> new ActorClient(serviceName,registerClient,routeStrategy));
+    }
+
+    //只从本地配置文件获取服务列表
+    public static Props props(String serviceName, IRouteStrategy routeStrategy) {
+        return Props.create(ActorClient.class, () -> new ActorClient(serviceName,null,routeStrategy));
     }
 
     @Override
@@ -110,7 +139,6 @@ public class ActorClient extends AbstractActor {
             .match(ServiceResponse.class,   this::handleServiceResponse)
             .match(DSF.RegService.class,    this::handleRegService)
             .match(DSF.UnregService.class,  this::handleUnregService)
-            .match(UpdateInstance.class,    this::handleUpdateInstance)
             .match(SaveStatData.class,      this::handleSaveStatData)
             .match(DSF.SvcInstances.class,  this::handleSvcInstances)
             .match(CheckOfflineService.class, this::handleCheckOfflineService)
@@ -182,15 +210,7 @@ public class ActorClient extends AbstractActor {
         }
     }
     //------------------------------------------------------------------------------------
-    private static class UpdateInstance {}
-    private void handleUpdateInstance(UpdateInstance msg) {
-        updateInstance();
-    }
-    private void updateInstance() {
-        registerClient.syncServiceList(serviceName, instanceSetSerialId, self());
-    }
     private void handleSvcInstances(DSF.SvcInstances msg) {
-        this.instanceSetSerialId = msg.getSerialId();
         Map<String,Instance> oldMap = new HashMap<>();
         this.instances.forEach(it -> oldMap.put(it.addr, it));
         this.instances.clear();
