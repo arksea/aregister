@@ -1,14 +1,13 @@
 package net.arksea.dsf.demo.service;
 
 import akka.actor.AbstractActor;
-import akka.actor.Actor;
 import akka.actor.Props;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
 import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.demo.DemoResponse1;
-import net.arksea.dsf.register.ServiceRequest;
-import net.arksea.dsf.register.ServiceResponse;
+import net.arksea.dsf.service.ServiceRequest;
+import net.arksea.dsf.service.ServiceResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;

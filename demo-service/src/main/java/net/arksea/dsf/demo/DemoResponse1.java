@@ -1,7 +1,5 @@
 package net.arksea.dsf.demo;
 
-import net.arksea.dsf.register.ServiceResponse;
-
 import java.io.Serializable;
 
 /**

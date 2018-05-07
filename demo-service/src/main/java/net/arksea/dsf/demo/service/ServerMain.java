@@ -4,9 +4,10 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import net.arksea.dsf.DSF;
+import net.arksea.dsf.codes.ICodes;
+import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
-import net.arksea.dsf.register.ServiceAdaptor;
+import net.arksea.dsf.service.ServiceAdaptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +33,8 @@ public final class ServerMain {
             ActorRef demoService = system.actorOf(DemoActor.props(port),"DemoService");
             Thread.sleep(3000);
             String serviceName = "net.arksea.dsf.DemoService-1.0";
-            system.actorOf(ServiceAdaptor.props(serviceName, host, port, demoService, register), "DemoServiceAdaptor");
+            ICodes codes = new JavaSerializeCodes();
+            system.actorOf(ServiceAdaptor.props(serviceName, host, port, demoService, codes, register), "DemoServiceAdaptor");
             if (port == 8772) {
                 Thread.sleep(400000);
                 system.terminate().value();

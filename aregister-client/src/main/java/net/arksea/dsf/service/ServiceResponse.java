@@ -1,4 +1,4 @@
-package net.arksea.dsf.register;
+package net.arksea.dsf.service;
 
 /**
  *

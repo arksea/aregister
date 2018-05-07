@@ -2,6 +2,8 @@ package net.arksea.dsf.demo.client;
 
 import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
+import net.arksea.dsf.codes.ICodes;
+import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.client.Client;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.demo.DemoRequest1;
@@ -26,7 +28,8 @@ public final class ClientMain {
             ActorSystem system = ActorSystem.create("system");
             String serviceName = "net.arksea.dsf.DemoService-1.0";
             RegisterClient register = new RegisterClient("TestClient","127.0.0.1:6501");
-            Client client = new Client(serviceName, RouteStrategy.ROUNDROBIN, register, system);
+            ICodes codes = new JavaSerializeCodes();
+            Client client = new Client(serviceName, RouteStrategy.ROUNDROBIN, codes, system, register);
             for (int i=0; i<80000; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
                 client.request(msg, 10000).onComplete(
