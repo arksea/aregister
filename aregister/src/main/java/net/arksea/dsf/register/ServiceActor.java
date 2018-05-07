@@ -223,7 +223,7 @@ public class ServiceActor extends AbstractActor {
         this.instances = newInstances;
     }
     //-------------------------------------------------------------------------------
-    private String heartbeatMessage = "heartbeat";
+    private DSF.Ping ping = DSF.Ping.getDefaultInstance();
     private class CheckServiceAlive {}
     private void handleCheckServiceAlive(CheckServiceAlive msg) {
         this.instances.forEach((addr,it) -> {
@@ -234,10 +234,10 @@ public class ServiceActor extends AbstractActor {
         logger.trace("Check servcie alive: {}@{} ",instance.name, instance.addr);
         ActorSelection service = context().actorSelection(instance.path);
         ActorRef self = self();
-        Patterns.ask(service, heartbeatMessage, 5000).onComplete(new OnComplete<Object>() {
+        Patterns.ask(service, ping, 5000).onComplete(new OnComplete<Object>() {
             @Override
             public void onComplete(Throwable failure, Object success) throws Throwable {
-                boolean online = (failure == null);
+                boolean online = (failure == null && success instanceof DSF.Pong);
                 self.tell(new ServiceAlive(instance.addr, online), ActorRef.noSender());
             }
         }, context().dispatcher());

@@ -8,6 +8,7 @@ import akka.japi.Creator;
 import com.google.protobuf.*;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.codes.ICodes;
+import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,18 +46,26 @@ public class ServiceAdaptor extends AbstractActor {
         });
     }
 
+    public static Props props(String serviceName, String host, int port, ActorRef service, RegisterClient register) {
+        return Props.create(new Creator<ServiceAdaptor>() {
+            @Override
+            public ServiceAdaptor create() throws Exception {
+                return new ServiceAdaptor(serviceName, host, port, service, new JavaSerializeCodes(), register);
+            }
+        });
+    }
+
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-            .match(DSF.ServiceRequest.class,    this::handleServiceRequest)
+            .match(DSF.ServiceRequest.class,this::handleServiceRequest)
             .match(ServiceResponse.class,   this::handleServiceResponse)
+            .match(DSF.Ping.class,          this::handlePing)
             .build();
     }
 
     @Override
     public void preStart() throws Exception {
-//        InetAddress addr = InetAddress.getLocalHost();
-//        final String host = addr.getHostAddress();
         register.register(serviceName, serviceAddr, servicePath);
     }
 
@@ -77,12 +86,15 @@ public class ServiceAdaptor extends AbstractActor {
     private void handleServiceResponse(ServiceResponse msg) {
         logger.trace("handleServiceResponse({})", msg.request.reqid);
         if (msg.result instanceof Message) {
-            DSF.ServiceResponse r = codes.encodeResponse((Message)msg.result, msg.request.reqid);
+            DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
             msg.request.sender.tell(r, self());
         } else {
             DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
             msg.request.sender.tell(r, self());
         }
     }
-
+    //------------------------------------------------------------------------------------
+    private void handlePing(DSF.Ping msg) {
+        sender().tell(DSF.Pong.getDefaultInstance(), self());
+    }
 }

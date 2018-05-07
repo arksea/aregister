@@ -70,3 +70,9 @@ message ServiceResponse {
     EnumSerialize serialize = 3;
     string typeName = 4;
 }
+
+message Ping {
+}
+
+message Pong {
+}

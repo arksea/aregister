@@ -1,6 +1,7 @@
 package net.arksea.dsf.client;
 
 import akka.actor.*;
+import akka.dispatch.OnComplete;
 import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +37,7 @@ public class RequestRouter extends AbstractActor {
     private static final int SAVE_DELAY_SECONDS = 10; //保存统计历史数据的周期(s)
     private static final int CHECK_OFFLINE_SECONDS = 10; //测试OFFLINE服务是否存活
     private static final int REQUEST_TIMEOUT = 10000; //请求超时时间(ms)
-    private final Object heartbeatMessage;
+    private final DSF.Ping ping;
     private RegisterClient registerClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -44,7 +45,7 @@ public class RequestRouter extends AbstractActor {
         this.serviceName = serviceName;
         this.registerClient = registerClient;
         this.routeStrategy = routeStrategy;
-        this.heartbeatMessage = "heartbeat";
+        this.ping = DSF.Ping.getDefaultInstance();
     }
 
     @Override
@@ -298,13 +299,14 @@ public class RequestRouter extends AbstractActor {
         log.trace("Check offline servcie: {}@{} ",instance.name, instance.addr);
         ActorSelection service = context().actorSelection(instance.path);
         ActorRef self = self();
-        Patterns.ask(service, heartbeatMessage, 5000).onSuccess(
-            new OnSuccess<Object>() {
-                public void onSuccess(Object obj) {
+        Patterns.ask(service, ping, 5000).onComplete(new OnComplete<Object>() {
+            @Override
+            public void onComplete(Throwable failure, Object success) throws Throwable {
+                if (failure == null && success instanceof DSF.Pong) {
                     self.tell(new ServiceAlive(instance.addr, InstanceStatus.UP), ActorRef.noSender());
                 }
-            }, context().dispatcher()
-        );
+            }
+        }, context().dispatcher());
     }
     //------------------------------------------------------------------------------------
     class ServiceAlive {

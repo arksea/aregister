@@ -83,15 +83,6 @@ public class DemoActor extends AbstractActor {
     private void onMessage(ServiceRequest request) {
         String msg = (String)request.message;
         switch (msg) {
-            case "heartbeat":
-                if (port == 8772) {
-                    if (online) {
-                        sender().tell(new ServiceResponse(msg,request), self());
-                    }
-                } else {
-                    sender().tell(new ServiceResponse(msg,request), self());
-                }
-                break;
             case "online":
                 log.info("onMessage: {}", msg);
                 online = true;

@@ -9,7 +9,7 @@ import java.util.UUID;
  *
  * Created by xiaohaixing on 2018/5/7.
  */
-public class ProtocolBufferCodes implements ICodes {
+public class ProtocolBufferCodes extends JavaSerializeCodes {
     private final Descriptors.GenericDescriptor descriptor;
     public ProtocolBufferCodes(Descriptors.GenericDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -30,16 +30,20 @@ public class ProtocolBufferCodes implements ICodes {
                 .setTypeName(msg.getDescriptorForType().getName())
                 .build();
         } else {
-            throw new RuntimeException("The object is not a Protocol Buffer message: " + obj.getClass().getName());
+            return super.encodeRequest(obj, oneway);
         }
     }
 
     @Override
     public Object decodeRequest(DSF.ServiceRequest msg) {
         try {
-            Descriptors.Descriptor d = descriptor.getFile().findMessageTypeByName(msg.getTypeName());
-            DynamicMessage.Builder b = DynamicMessage.newBuilder(d);
-            return b.mergeFrom(msg.getPayload()).build();
+            if ("_JAVA_".equals(msg.getTypeName())) {
+                return super.decodeRequest(msg);
+            } else {
+                Descriptors.Descriptor d = descriptor.getFile().findMessageTypeByName(msg.getTypeName());
+                DynamicMessage.Builder b = DynamicMessage.newBuilder(d);
+                return b.mergeFrom(msg.getPayload()).build();
+            }
         } catch (InvalidProtocolBufferException e) {
             throw new RuntimeException("protocol error", e);
         }
@@ -57,16 +61,20 @@ public class ProtocolBufferCodes implements ICodes {
                 .setTypeName(msg.getDescriptorForType().getName())
                 .build();
         } else {
-            throw new RuntimeException("The object is not a Protocol Buffer message: " + obj.getClass().getName());
+            return super.encodeResponse(obj, reqid);
         }
     }
 
     @Override
     public Object decodeResponse(DSF.ServiceResponse response) {
         try {
-            Descriptors.Descriptor d = descriptor.getFile().findMessageTypeByName(response.getTypeName());
-            DynamicMessage.Builder b = DynamicMessage.newBuilder(d);
-            return b.mergeFrom(response.getPayload()).build();
+            if ("_JAVA_".equals(response.getTypeName())) {
+                return super.decodeResponse(response);
+            } else {
+                Descriptors.Descriptor d = descriptor.getFile().findMessageTypeByName(response.getTypeName());
+                DynamicMessage.Builder b = DynamicMessage.newBuilder(d);
+                return b.mergeFrom(response.getPayload()).build();
+            }
         } catch (InvalidProtocolBufferException e) {
             throw new RuntimeException("Invalid protocol", e);
         }

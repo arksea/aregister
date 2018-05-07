@@ -28,7 +28,7 @@ public class JavaSerializeCodes implements ICodes {
                 .setRequestId(makeRequestId())
                 .setPayload(payload)
                 .setSerialize(DSF.EnumSerialize.JAVA)
-                .setTypeName(msg.getClass().getName())
+                .setTypeName("_JAVA_")
                 .build();
         } catch (IOException ex) {
             throw new RuntimeException("Invalid protocol", ex);
@@ -58,7 +58,7 @@ public class JavaSerializeCodes implements ICodes {
                 .setRequestId(reqid)
                 .setPayload(payload)
                 .setSerialize(DSF.EnumSerialize.JAVA)
-                .setTypeName(msg.getClass().getName())
+                .setTypeName("_JAVA_")
                 .build();
         } catch (IOException ex) {
             throw new RuntimeException("protocol error", ex);

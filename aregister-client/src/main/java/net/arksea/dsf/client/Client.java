@@ -9,6 +9,7 @@ import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategyFactory;
+import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
 import scala.concurrent.Future;
 
@@ -36,6 +37,13 @@ public class Client {
         router = system.actorOf(RequestRouter.props(serviceName, routeStrategy));
     }
 
+    public Client(String serviceName, RouteStrategy strategy, ActorSystem system) {
+        this.system = system;
+        this.codes = new JavaSerializeCodes();
+        IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
+        router = system.actorOf(RequestRouter.props(serviceName, routeStrategy));
+    }
+
     /**
      * 序列化：Protocol Buffer
      * @param serviceName
@@ -47,6 +55,13 @@ public class Client {
     public Client(String serviceName, RouteStrategy strategy, ICodes codes, ActorSystem system, RegisterClient register) {
         this.system = system;
         this.codes = codes;
+        IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
+        router = system.actorOf(RequestRouter.props(serviceName, register,routeStrategy));
+    }
+
+    public Client(String serviceName, RouteStrategy strategy, ActorSystem system, RegisterClient register) {
+        this.system = system;
+        this.codes = new JavaSerializeCodes();
         IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
         router = system.actorOf(RequestRouter.props(serviceName, register,routeStrategy));
     }
