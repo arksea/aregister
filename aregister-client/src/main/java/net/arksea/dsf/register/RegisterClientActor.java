@@ -109,7 +109,7 @@ public class RegisterClientActor extends AbstractActor {
             List<DSF.Instance> instances = msg.getInstancesList();
             info.instances.clear();
             instances.forEach(i -> info.instances.put(i.getAddr(),
-                    new net.arksea.dsf.store.Instance(msg.getName(), i.getAddr(), i.getPath()))
+                    new net.arksea.dsf.store.Instance(i.getAddr(), i.getPath()))
             );
             info.clientSet.forEach(c -> c.tell(msg, self()));
             save(msg.getName(), info.instances.values());
@@ -195,7 +195,7 @@ public class RegisterClientActor extends AbstractActor {
         log.trace("RegisterClientActor.handleRegService({})", msg.getAddr());
         ServiceInfo info = serviceInfoMap.computeIfAbsent(msg.getName(), k -> new ServiceInfo());
         info.instances.computeIfAbsent(msg.getAddr(), addr ->
-            new net.arksea.dsf.store.Instance(msg.getName(), addr,msg.getPath()));
+            new net.arksea.dsf.store.Instance(addr,msg.getPath()));
         info.clientSet.forEach(c -> c.tell(msg, self()));
     }
     //-------------------------------------------------------------------------------------------------

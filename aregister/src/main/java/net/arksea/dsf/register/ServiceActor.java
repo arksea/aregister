@@ -206,7 +206,7 @@ public class ServiceActor extends AbstractActor {
         list.forEach(it -> {
             InstanceInfo old = instances.remove(it.getAddr());
             if (old == null) {
-                newInstances.put(it.getAddr(), new InstanceInfo(it.getName(),it.getAddr(),it.getPath(), false));
+                newInstances.put(it.getAddr(), new InstanceInfo(serviceName,it.getAddr(),it.getPath(), false));
                 this.serialId = makeSerialId();
                 logger.info("Service ADD : {}@{}, online={}", serviceName, it.getAddr(), false);
             } else {

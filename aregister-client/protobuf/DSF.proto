@@ -49,3 +49,24 @@ message SubService {
 message UnsubService {
     string service = 1;
 }
+
+enum EnumSerialize {
+    BYTES = 0;
+    JAVA = 1;
+    PROTO = 2;
+}
+
+message ServiceRequest {
+    string requestId = 1;
+    bool  oneway = 2;
+    bytes payload = 3;
+    EnumSerialize serialize = 4;
+    string typeName = 5;
+}
+
+message ServiceResponse {
+    string requestId = 1;
+    bytes payload = 2;
+    EnumSerialize serialize = 3;
+    string typeName = 4;
+}

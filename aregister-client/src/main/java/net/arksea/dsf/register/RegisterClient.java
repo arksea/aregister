@@ -36,6 +36,7 @@ public class RegisterClient {
         registerClient.tell(new RegLocalService(name,addr,path), ActorRef.noSender());
     }
 
+
     public void unregister(String name, String addr) {
         registerClient.tell(new UnregLocalService(name,addr), ActorRef.noSender());
     }

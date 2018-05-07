@@ -41,15 +41,13 @@ public class InstanceQuality {
         }
     }
 
-    public void respond(boolean isSucceed, long time) {
-        if (isSucceed) {
-            ++succeedCount;
-        }
+    public void respond(long time) {
+        ++succeedCount;
         this.respondTime += time;
     }
 
     public void timeout(long time) {
-        ++this.timeoutCount;
+        ++timeoutCount;
         this.respondTime += time;
     }
 

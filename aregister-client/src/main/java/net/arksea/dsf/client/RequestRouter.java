@@ -5,11 +5,7 @@ import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.arksea.dsf.DSF;
-import net.arksea.dsf.ServiceRequest;
-import net.arksea.dsf.ServiceResponse;
 import net.arksea.dsf.client.route.IRouteStrategy;
-import net.arksea.dsf.config.FileConfigPersistence;
-import net.arksea.dsf.config.IConfigPersistence;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -27,8 +23,8 @@ import java.util.concurrent.TimeUnit;
  *
  * Created by xiaohaixing on 2018/4/20.
  */
-public class ActorClient extends AbstractActor {
-    private final Logger log = LogManager.getLogger(ActorClient.class);
+public class RequestRouter extends AbstractActor {
+    private final Logger log = LogManager.getLogger(RequestRouter.class);
     private final String serviceName;
     //private final ActorSelection register;
     private final IRouteStrategy routeStrategy;
@@ -44,7 +40,7 @@ public class ActorClient extends AbstractActor {
     private RegisterClient registerClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private ActorClient(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy) {
+    private RequestRouter(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy) {
         this.serviceName = serviceName;
         this.registerClient = registerClient;
         this.routeStrategy = routeStrategy;
@@ -53,7 +49,7 @@ public class ActorClient extends AbstractActor {
 
     @Override
     public void preStart() {
-        log.debug("ActorClient preStart: {}", serviceName);
+        log.debug("RequestRouter preStart: {}", serviceName);
         if (registerClient == null) {
             loadFromLocalCache();
         } else {
@@ -108,7 +104,7 @@ public class ActorClient extends AbstractActor {
     }
     @Override
     public void postStop() {
-        log.debug("ActorClient postStop: {}", serviceName);
+        log.debug("RequestRouter postStop: {}", serviceName);
         if (registerClient != null) {
             registerClient.unsubscribe(serviceName, self());
         }
@@ -124,19 +120,19 @@ public class ActorClient extends AbstractActor {
 
     //优先从注册服务器获取服务列表
     public static Props props(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy) {
-        return Props.create(ActorClient.class, () -> new ActorClient(serviceName,registerClient,routeStrategy));
+        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,registerClient,routeStrategy));
     }
 
     //只从本地配置文件获取服务列表
     public static Props props(String serviceName, IRouteStrategy routeStrategy) {
-        return Props.create(ActorClient.class, () -> new ActorClient(serviceName,null,routeStrategy));
+        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,null,routeStrategy));
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-            .match(ServiceRequest.class,    this::handleServiceRequest)
-            .match(ServiceResponse.class,   this::handleServiceResponse)
+            .match(DSF.ServiceRequest.class,    this::handleServiceRequest)
+            .match(DSF.ServiceResponse.class,   this::handleServiceResponse)
             .match(DSF.RegService.class,    this::handleRegService)
             .match(DSF.UnregService.class,  this::handleUnregService)
             .match(SaveStatData.class,      this::handleSaveStatData)
@@ -147,33 +143,41 @@ public class ActorClient extends AbstractActor {
     }
 
     //------------------------------------------------------------------------------------
-    private void handleServiceRequest(ServiceRequest msg) {
+    private void handleServiceRequest(DSF.ServiceRequest msg) {
+        log.trace("handleServiceRequest({},{})", msg.getTypeName(), msg.getRequestId());
         long startTime = System.currentTimeMillis();
         Optional<Instance> op = routeStrategy.getInstance(instances);
         final ActorRef requester = sender();
         if (op.isPresent()) {
             Instance instance = op.get();
             InstanceQuality q = qualityMap.get(instance.addr);
-            q.request(msg.isOnewayRequest());
+            q.request(msg.getOneway());
+            log.trace("service instance: {}", instance.path);
             ActorSelection service = context().actorSelection(instance.path);
             service.tell(msg,self());
-            if (!msg.isOnewayRequest()) {
+            if (!msg.getOneway()) {
                 RequestState state = new RequestState(requester, startTime, msg, instance);
                 requests.put(msg.getRequestId(), state);
             }
         } else {
-            requester.tell(new NoUseableService(msg.getRequestId()), self());
+            requester.tell(new NoUseableService(), self());
         }
     }
     //------------------------------------------------------------------------------------
-    private void handleServiceResponse(ServiceResponse msg) {
+    private void handleServiceResponse(DSF.ServiceResponse msg) {
+        log.trace("handleServiceResponse({},{})", msg.getTypeName(), msg.getRequestId());
         RequestState state = requests.remove(msg.getRequestId());
         if (state == null) {
             log.warn("not fond the request state : {}", msg.getRequestId());
         } else {
             state.requester.forward(msg, context());
             InstanceQuality q = qualityMap.get(state.instance.addr);
-            q.respond(msg.isSucceed(), System.currentTimeMillis() - state.startTime);
+            long time = System.currentTimeMillis() - state.startTime;
+            if (time > REQUEST_TIMEOUT) {
+                q.timeout(time);
+            } else {
+                q.respond(time);
+            }
         }
     }
     //-------------------------------------------------------------------------------
@@ -211,6 +215,7 @@ public class ActorClient extends AbstractActor {
     }
     //------------------------------------------------------------------------------------
     private void handleSvcInstances(DSF.SvcInstances msg) {
+        log.trace("handleSvcInstances(), instanceCount={}",msg.getInstancesCount());
         Map<String,Instance> oldMap = new HashMap<>();
         this.instances.forEach(it -> oldMap.put(it.addr, it));
         this.instances.clear();
@@ -290,7 +295,7 @@ public class ActorClient extends AbstractActor {
         });
     }
     private void checkServiceAlive(Instance instance) {
-        log.debug("Check offline servcie: {}@{} ",instance.name, instance.addr);
+        log.trace("Check offline servcie: {}@{} ",instance.name, instance.addr);
         ActorSelection service = context().actorSelection(instance.path);
         ActorRef self = self();
         Patterns.ask(service, heartbeatMessage, 5000).onSuccess(

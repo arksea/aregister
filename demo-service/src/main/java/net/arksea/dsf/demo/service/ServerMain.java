@@ -4,7 +4,9 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import net.arksea.dsf.DSF;
 import net.arksea.dsf.register.RegisterClient;
+import net.arksea.dsf.register.ServiceAdaptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,15 +32,7 @@ public final class ServerMain {
             ActorRef demoService = system.actorOf(DemoActor.props(port),"DemoService");
             Thread.sleep(3000);
             String serviceName = "net.arksea.dsf.DemoService-1.0";
-            String instanceId = host+":"+port;
-            String path = "akka.tcp://DemoSystem@"+host+":"+port+"/user/DemoService";
-            register.register(serviceName, instanceId, path);
-            system.registerOnTermination(new Runnable() {
-                @Override
-                public void run() {
-                    register.unregister(serviceName, instanceId);
-                }
-            });
+            system.actorOf(ServiceAdaptor.props(serviceName, host, port, demoService, register), "DemoServiceAdaptor");
             if (port == 8772) {
                 Thread.sleep(400000);
                 system.terminate().value();
