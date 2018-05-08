@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.register.RegisterClient;
+import net.arksea.dsf.store.LocalStore;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +37,6 @@ public class RequestRouter extends AbstractActor {
     private static final int CHECK_OFFLINE_SECONDS = 5; //测试OFFLINE服务是否存活
     private final DSF.Ping ping;
     private RegisterClient registerClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private RequestRouter(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy, ISwitchCondition condition) {
         this.serviceName = serviceName;
@@ -78,22 +78,17 @@ public class RequestRouter extends AbstractActor {
 
     private void loadFromLocalCache() {
         try {
-            String fileName = "./config/" + serviceName + ".svc";
-            File file = new File(fileName);
+            List<net.arksea.dsf.store.Instance> list = LocalStore.load(serviceName);
             DSF.SvcInstances.Builder builder = DSF.SvcInstances.newBuilder()
                 .setName(serviceName)
                 .setSerialId("");
-            List<String> lines = Files.readAllLines(file.toPath());
-            for (String line: lines){
-                if (StringUtils.isNotBlank(line)) {
-                    net.arksea.dsf.store.Instance i = objectMapper.readValue(line, net.arksea.dsf.store.Instance.class);
-                    builder.addInstances(
-                        DSF.Instance.newBuilder()
-                            .setAddr(i.getAddr())
-                            .setPath(i.getPath())
-                            .setOnline(true)
-                            .build());
-                }
+            for (net.arksea.dsf.store.Instance i : list){
+                builder.addInstances(
+                    DSF.Instance.newBuilder()
+                        .setAddr(i.getAddr())
+                        .setPath(i.getPath())
+                        .setOnline(true)
+                        .build());
             }
             handleSvcInstances(builder.build());
             log.info("Load service list form local cache file succeed",serviceName);
@@ -101,6 +96,7 @@ public class RequestRouter extends AbstractActor {
             log.warn("Load service list form local cache file failed: {}",serviceName,ex);
         }
     }
+
     @Override
     public void postStop() {
         log.debug("RequestRouter postStop: {}", serviceName);
@@ -130,14 +126,14 @@ public class RequestRouter extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-            .match(DSF.ServiceRequest.class,    this::handleServiceRequest)
-            .match(DSF.ServiceResponse.class,   this::handleServiceResponse)
-            .match(DSF.RegService.class,    this::handleRegService)
-            .match(DSF.UnregService.class,  this::handleUnregService)
-            .match(SaveStatData.class,      this::handleSaveStatData)
-            .match(DSF.SvcInstances.class,  this::handleSvcInstances)
-            .match(CheckOfflineService.class, this::handleCheckOfflineService)
-            .match(ServiceAlive.class,      this::handleServiceAlive)
+            .match(DSF.ServiceRequest.class, this::handleServiceRequest)
+            .match(DSF.ServiceResponse.class,this::handleServiceResponse)
+            .match(DSF.RegService.class,     this::handleRegService)
+            .match(DSF.UnregService.class,   this::handleUnregService)
+            .match(SaveStatData.class,       this::handleSaveStatData)
+            .match(DSF.SvcInstances.class,   this::handleSvcInstances)
+            .match(CheckOfflineService.class,this::handleCheckOfflineService)
+            .match(ServiceAlive.class,       this::handleServiceAlive)
             .build();
     }
 

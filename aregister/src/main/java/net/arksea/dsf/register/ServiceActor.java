@@ -7,6 +7,7 @@ import akka.pattern.Patterns;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.store.IRegisterStore;
 import net.arksea.dsf.store.Instance;
+import net.arksea.dsf.store.LocalStore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
@@ -82,7 +83,7 @@ public class ServiceActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
             .match(SubscriberTerminated.class,  this::handleSubscriberTerminated)
-            .match(DSF.SyncSvcInstances.class,   this::handleSyncSvcInstances)
+            .match(DSF.SyncSvcInstances.class,  this::handleSyncSvcInstances)
             .match(DSF.GetSvcInstances.class,   this::handleGetSvcInstances)
             .match(DSF.RegService.class,        this::handleRegService)
             .match(DSF.UnregService.class,      this::handleUnregService)
@@ -201,27 +202,63 @@ public class ServiceActor extends AbstractActor {
      * 加载实例信息
      */
     private void loadServiceInfo() {
-        List<Instance> list = store.getServiceInstances(serviceName);
-        logger.trace("Load service info, instance size = {}", list.size());
-        Map<String, InstanceInfo> newInstances = new HashMap<>();
-        list.forEach(it -> {
-            InstanceInfo old = instances.remove(it.getAddr());
-            if (old == null) {
-                newInstances.put(it.getAddr(), new InstanceInfo(serviceName,it.getAddr(),it.getPath(), false));
-                this.serialId = makeSerialId();
-                logger.info("Service ADD : {}@{}, online={}", serviceName, it.getAddr(), false);
-            } else {
-                newInstances.put(it.getAddr(), old);
+        List<Instance> list;
+        if (store == null) {
+            list = loadFromLocalFile();
+        } else {
+            try {
+                list =store.getServiceInstances(serviceName);
+                logger.info("Load service list from register store succeed", serviceName);
+            } catch (Exception ex) {
+                list = loadFromLocalFile();
             }
-        });
-        if (instances.size() > 0) {
-            this.serialId = makeSerialId();
-            for (String addr : instances.keySet()) {
-                logger.info("Service DEL : {}@{}", serviceName, addr);
-            }
-            this.instances.clear();
         }
-        this.instances = newInstances;
+        if (list != null) {
+            boolean changed = false;
+            logger.trace("Load service info, instance size = {}", list.size());
+            Map<String, InstanceInfo> newInstances = new HashMap<>();
+            for (Instance it : list) {
+                InstanceInfo old = instances.remove(it.getAddr());
+                if (old == null) {
+                    changed = true;
+                    newInstances.put(it.getAddr(), new InstanceInfo(serviceName, it.getAddr(), it.getPath(), false));
+                    logger.info("Service ADD : {}@{}, online={}", serviceName, it.getAddr(), false);
+                } else {
+                    newInstances.put(it.getAddr(), old);
+                }
+            }
+            if (instances.size() > 0) {
+                changed = true;
+                for (String addr : instances.keySet()) {
+                    logger.info("Service DEL : {}@{}", serviceName, addr);
+                }
+                this.instances.clear();
+            }
+            if (changed) {
+                this.serialId = makeSerialId();
+                saveToLocalFile(list);
+            }
+            this.instances = newInstances;
+        }
+    }
+
+    private List<Instance> loadFromLocalFile() {
+        try {
+            List<Instance> list = LocalStore.load(serviceName);
+            logger.info("Load service list form local cache file succeed",serviceName);
+            return list;
+        } catch (Exception ex1) {
+            logger.warn("Load service list form local cache file failed: {}",serviceName,ex1);
+            return null;
+        }
+    }
+
+    private void saveToLocalFile(List<Instance> list) {
+        try {
+            LocalStore.save(serviceName, list);
+        } catch (Exception ex) {
+            logger.error("Write service instancs to local cache file failed: {}", serviceName, ex);
+        }
     }
     //-------------------------------------------------------------------------------
     private class CheckServiceAlive {}
