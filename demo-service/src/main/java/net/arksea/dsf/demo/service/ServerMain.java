@@ -26,10 +26,9 @@ public final class ServerMain {
             ActorSystem system = ActorSystem.create("DemoSystem",cfg);
             RegisterClient registerClient = new RegisterClient("DemoService","127.0.0.1:6501");
             String serviceName = "net.arksea.dsf.DemoService-1.0";
-            String host = cfg.getString("akka.remote.netty.tcp.hostname");
             int port = cfg.getInt("akka.remote.netty.tcp.port");
             ActorRef service = system.actorOf(DemoActor.props(port), "DemoService");
-            registerClient.register(serviceName, host, port, service, system);
+            registerClient.register(serviceName, port, service, system);
             Thread.sleep(3000);
             if (port == 8772) {
                 Thread.sleep(400000);

@@ -39,6 +39,7 @@ public class DemoActor extends AbstractActor {
     public Receive createReceive() {
         return ReceiveBuilder.create()
             .match(ServiceRequest.class, this::onRequest)
+            .match(String.class, this::onMessage)
             .build();
     }
 
@@ -46,11 +47,12 @@ public class DemoActor extends AbstractActor {
     public void preStart() throws Exception {
         super.preStart();
         log.info("DemoActor preStart()");
-        context().system().scheduler().scheduleOnce(Duration.create(30, TimeUnit.SECONDS),
-        self(),"offline",context().dispatcher(),self());
-
-        context().system().scheduler().scheduleOnce(Duration.create(130, TimeUnit.SECONDS),
-            self(),"online",context().dispatcher(),self());
+        if (port == 8772) {
+            context().system().scheduler().scheduleOnce(Duration.create(80, TimeUnit.SECONDS),
+                self(), "offline", context().dispatcher(), self());
+            context().system().scheduler().scheduleOnce(Duration.create(180, TimeUnit.SECONDS),
+                self(), "online", context().dispatcher(), self());
+        }
     }
 
     @Override
@@ -74,14 +76,11 @@ public class DemoActor extends AbstractActor {
                 ServiceResponse response = new ServiceResponse(resule, msg);
                 sender().tell(response, self());
             }
-        } else if (msg.message instanceof  String){
-            onMessage(msg);
         }
     }
 
     boolean online = true;
-    private void onMessage(ServiceRequest request) {
-        String msg = (String)request.message;
+    private void onMessage(String msg) {
         switch (msg) {
             case "online":
                 log.info("onMessage: {}", msg);

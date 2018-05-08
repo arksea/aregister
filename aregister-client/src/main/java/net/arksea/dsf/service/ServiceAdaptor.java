@@ -12,6 +12,9 @@ import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.concurrent.duration.Duration;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -61,12 +64,14 @@ public class ServiceAdaptor extends AbstractActor {
             .match(DSF.ServiceRequest.class,this::handleServiceRequest)
             .match(ServiceResponse.class,   this::handleServiceResponse)
             .match(DSF.Ping.class,          this::handlePing)
+            .match(DelayRegister.class,     this::handleDelayRegister)
             .build();
     }
 
     @Override
     public void preStart() throws Exception {
-        register.register(serviceName, serviceAddr, servicePath);
+        context().system().scheduler().scheduleOnce(Duration.create(3, TimeUnit.SECONDS),
+            self(),new DelayRegister(),context().dispatcher(),self());
     }
 
     @Override
@@ -93,8 +98,12 @@ public class ServiceAdaptor extends AbstractActor {
             msg.request.sender.forward(r, context());
         }
     }
+    private void handleDelayRegister(DelayRegister msg) {
+        register.register(serviceName, serviceAddr, servicePath);
+    }
     //------------------------------------------------------------------------------------
     private void handlePing(DSF.Ping msg) {
         sender().tell(DSF.Pong.getDefaultInstance(), self());
     }
+    class DelayRegister {}
 }

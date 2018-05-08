@@ -9,7 +9,6 @@ import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategyFactory;
-import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
 import scala.concurrent.Future;
 
@@ -20,50 +19,23 @@ import static akka.japi.Util.classTag;
  * Created by xiaohaixing on 2018/5/4.
  */
 public class Client {
+    public final ActorSystem system;
     public final ActorRef router;
-    private final ActorSystem system;
-    private final ICodes codes;
-
-    /**
-     * @param serviceName
-     * @param strategy
-     * @param codes
-     * @param system
-     */
-    public Client(String serviceName, RouteStrategy strategy, ICodes codes, ActorSystem system) {
-        this.system = system;
-        this.codes = codes;
-        IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
-        router = system.actorOf(RequestRouter.props(serviceName, routeStrategy));
-    }
-
-    public Client(String serviceName, RouteStrategy strategy, ActorSystem system) {
-        this.system = system;
-        this.codes = new JavaSerializeCodes();
-        IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
-        router = system.actorOf(RequestRouter.props(serviceName, routeStrategy));
-    }
+    public final ICodes codes;
 
     /**
      * 序列化：Protocol Buffer
      * @param serviceName
      * @param strategy
-     * @param register   注册服务客户端，没有指定此参数则读取本地配置文件
+     * @param register 注册服务客户端，没有指定此参数则读取本地配置文件
      * @param codes
      * @param system
      */
-    public Client(String serviceName, RouteStrategy strategy, ICodes codes, ActorSystem system, RegisterClient register) {
+    public Client(String serviceName, RouteStrategy strategy, ICodes codes, ISwitchCondition condition, ActorSystem system, RegisterClient register) {
         this.system = system;
         this.codes = codes;
         IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
-        router = system.actorOf(RequestRouter.props(serviceName, register,routeStrategy));
-    }
-
-    public Client(String serviceName, RouteStrategy strategy, ActorSystem system, RegisterClient register) {
-        this.system = system;
-        this.codes = new JavaSerializeCodes();
-        IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
-        router = system.actorOf(RequestRouter.props(serviceName, register,routeStrategy));
+        router = system.actorOf(RequestRouter.props(serviceName, register,routeStrategy, condition));
     }
 
     public void tell(Object msg, boolean oneway, ActorRef sender) {

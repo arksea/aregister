@@ -26,25 +26,24 @@ import java.util.concurrent.TimeUnit;
 public class RequestRouter extends AbstractActor {
     private final Logger log = LogManager.getLogger(RequestRouter.class);
     private final String serviceName;
-    //private final ActorSelection register;
+    private final ISwitchCondition switchCondition;
     private final IRouteStrategy routeStrategy;
     private final Map<String,InstanceQuality> qualityMap = new HashMap<>();
     private final List<Instance> instances = new LinkedList<>();
     private final Map<String, RequestState> requests = new HashMap<>();
     private Cancellable saveStatDataTimer; //保存历史统计数据定时器
     private Cancellable checkOfflineTimer;
-    private static final int SAVE_DELAY_SECONDS = 10; //保存统计历史数据的周期(s)
-    private static final int CHECK_OFFLINE_SECONDS = 10; //测试OFFLINE服务是否存活
-    private static final int REQUEST_TIMEOUT = 10000; //请求超时时间(ms)
+    private static final int CHECK_OFFLINE_SECONDS = 5; //测试OFFLINE服务是否存活
     private final DSF.Ping ping;
     private RegisterClient registerClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private RequestRouter(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy) {
+    private RequestRouter(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy, ISwitchCondition condition) {
         this.serviceName = serviceName;
         this.registerClient = registerClient;
         this.routeStrategy = routeStrategy;
         this.ping = DSF.Ping.getDefaultInstance();
+        this.switchCondition = condition;
     }
 
     @Override
@@ -68,8 +67,8 @@ public class RequestRouter extends AbstractActor {
             registerClient.subscribe(serviceName, self());
         }
         saveStatDataTimer = context().system().scheduler().schedule(
-            Duration.create(SAVE_DELAY_SECONDS, TimeUnit.SECONDS),
-            Duration.create(SAVE_DELAY_SECONDS,TimeUnit.SECONDS),
+            Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
+            Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
             self(),new SaveStatData(),context().dispatcher(),self());
         checkOfflineTimer = context().system().scheduler().schedule(
             Duration.create(CHECK_OFFLINE_SECONDS, TimeUnit.SECONDS),
@@ -119,13 +118,13 @@ public class RequestRouter extends AbstractActor {
     }
 
     //优先从注册服务器获取服务列表
-    public static Props props(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy) {
-        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,registerClient,routeStrategy));
+    public static Props props(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy, ISwitchCondition condition) {
+        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,registerClient,routeStrategy, condition));
     }
 
     //只从本地配置文件获取服务列表
-    public static Props props(String serviceName, IRouteStrategy routeStrategy) {
-        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,null,routeStrategy));
+    public static Props props(String serviceName, IRouteStrategy routeStrategy, ISwitchCondition condition) {
+        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,null,routeStrategy,condition));
     }
 
     @Override
@@ -173,7 +172,7 @@ public class RequestRouter extends AbstractActor {
             state.requester.forward(msg, context());
             InstanceQuality q = qualityMap.get(state.instance.addr);
             long time = System.currentTimeMillis() - state.startTime;
-            if (time > REQUEST_TIMEOUT) {
+            if (time > switchCondition.requestTimeout()) {
                 q.timeout(time);
             } else {
                 q.succeed(time);
@@ -191,18 +190,7 @@ public class RequestRouter extends AbstractActor {
             this.instances.add(instance);
             q = new InstanceQuality(msg.getAddr());
             qualityMap.put(msg.getAddr(), q);
-            instance.status = InstanceStatus.UP;
-            log.info("Service UP : {}@{}", instance.name, instance.addr);
-        } else {
-            for (Instance i : instances) {
-                if (i.addr.equals(msg.getAddr())) {
-                    if (i.status == InstanceStatus.OFFLINE) {
-                        i.status = InstanceStatus.UP;
-                        log.info("Service UP : {}@{}", i.name, i.addr);
-                    }
-                    break;
-                }
-            }
+            instance.status = InstanceStatus.OFFLINE;
         }
     }
     //-------------------------------------------------------------------------------
@@ -220,6 +208,7 @@ public class RequestRouter extends AbstractActor {
         this.instances.forEach(it -> oldMap.put(it.addr, it));
         this.instances.clear();
         msg.getInstancesList().forEach(it -> {
+            qualityMap.computeIfAbsent(it.getAddr(), k -> new InstanceQuality(it.getAddr()));
             Instance old = oldMap.remove(it.getAddr());
             if (old == null) {
                 InstanceStatus status = it.getOnline() ? InstanceStatus.ONLINE : InstanceStatus.OFFLINE;
@@ -232,7 +221,6 @@ public class RequestRouter extends AbstractActor {
                 //所以此处不使用Register获取到的值进行更新
                 this.instances.add(old);
             }
-            qualityMap.computeIfAbsent(it.getAddr(), k -> new InstanceQuality(it.getAddr()));
         });
         if (oldMap.size() > 0) {
             for (String addr : oldMap.keySet()) {
@@ -248,11 +236,11 @@ public class RequestRouter extends AbstractActor {
         long now = System.currentTimeMillis();
         List<String> timeoutRequests = new LinkedList<>();
         for (Map.Entry<String, RequestState> e: requests.entrySet()) {
-            if (now - e.getValue().startTime > REQUEST_TIMEOUT) {
+            if (now - e.getValue().startTime > switchCondition.requestTimeout()) {
                 timeoutRequests.add(e.getKey());
                 Instance i = e.getValue().instance;
                 InstanceQuality q = qualityMap.get(i.addr);
-                q.timeout(REQUEST_TIMEOUT);
+                q.timeout(switchCondition.requestTimeout());
             }
         }
         timeoutRequests.forEach(requests::remove);
@@ -269,17 +257,16 @@ public class RequestRouter extends AbstractActor {
 
     private void updateInstanceStatus(Instance it) {
         InstanceQuality q = qualityMap.get(it.addr);
-        float timeoutRate1M = q.getTimeoutRate(1);
         if (it.status == InstanceStatus.ONLINE){
-            if (timeoutRate1M > 0.5f) {
+            if (switchCondition.onlineToOffline(q)) {
                 it.status = InstanceStatus.OFFLINE;
                 log.error("Service OFFLINE : {}@{}", it.name, it.addr);
             }
         } else if (it.status == InstanceStatus.UP) {
-            if (timeoutRate1M > 0.5f) {
+            if (switchCondition.upToOffline(q)) {
                 it.status = InstanceStatus.OFFLINE;
                 log.error("Service OFFLINE : {}@{}", it.name, it.addr);
-            } else if (q.getRequestCount(1)>0 && timeoutRate1M < 0.2f) {
+            } else if (switchCondition.upToOnline(q)) {
                 it.status = InstanceStatus.ONLINE;
                 log.info("Service ONLINE : {}@{}", it.name, it.addr);
             }
@@ -298,11 +285,19 @@ public class RequestRouter extends AbstractActor {
         log.trace("Check offline servcie: {}@{} ",instance.name, instance.addr);
         ActorSelection service = context().actorSelection(instance.path);
         ActorRef self = self();
-        Patterns.ask(service, ping, 5000).onComplete(new OnComplete<Object>() {
+        InstanceQuality q = qualityMap.get(instance.addr);
+        long start = System.currentTimeMillis();
+        q.request(false);
+        long PING_TIMEOUT = 3000;
+        Patterns.ask(service, ping, PING_TIMEOUT).onComplete(new OnComplete<Object>() {
             @Override
             public void onComplete(Throwable failure, Object success) throws Throwable {
+                long time = System.currentTimeMillis() - start;
                 if (failure == null && success instanceof DSF.Pong) {
+                    q.succeed(time);
                     self.tell(new ServiceAlive(instance.addr, InstanceStatus.UP), ActorRef.noSender());
+                } else if (time > PING_TIMEOUT){
+                    q.timeout(PING_TIMEOUT);
                 }
             }
         }, context().dispatcher());
@@ -320,8 +315,11 @@ public class RequestRouter extends AbstractActor {
         for (Instance i : instances) {
             if (i.addr.equals(msg.addr)) {
                 if (i.status == InstanceStatus.OFFLINE) {
-                    i.status = msg.status;
-                    log.info("Service {} : {}@{}", msg.status, i.name, i.addr);
+                    InstanceQuality q = qualityMap.get(msg.addr);
+                    if (switchCondition.offlineToUp(q)) {
+                        i.status = msg.status;
+                        log.info("Service {} : {}@{}", msg.status, i.name, i.addr);
+                    }
                 }
                 break;
             }
