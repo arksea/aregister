@@ -41,7 +41,7 @@ public class InstanceQuality {
         }
     }
 
-    public void respond(long time) {
+    public void succeed(long time) {
         ++succeedCount;
         this.respondTime += time;
     }
@@ -52,7 +52,7 @@ public class InstanceQuality {
     }
 
     /**
-     * 保存当前统计数据，每分钟调度一次，当然更长或者更短，比如10秒钟一次
+     * 保存当前统计数据
      */
     public void saveHistory() {
         ++lastHistoryIndex;

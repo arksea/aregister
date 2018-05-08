@@ -2,7 +2,6 @@ package net.arksea.dsf.client;
 
 import akka.actor.*;
 import akka.dispatch.OnComplete;
-import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.arksea.dsf.DSF;
@@ -177,7 +176,7 @@ public class RequestRouter extends AbstractActor {
             if (time > REQUEST_TIMEOUT) {
                 q.timeout(time);
             } else {
-                q.respond(time);
+                q.succeed(time);
             }
         }
     }
