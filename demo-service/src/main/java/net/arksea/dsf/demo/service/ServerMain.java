@@ -4,10 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import net.arksea.dsf.codes.ICodes;
-import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
-import net.arksea.dsf.service.ServiceAdaptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,19 +24,18 @@ public final class ServerMain {
             logger.info("启动DEMO服务");
             Config cfg = ConfigFactory.load();
             ActorSystem system = ActorSystem.create("DemoSystem",cfg);
-            RegisterClient register = new RegisterClient("DemoService","127.0.0.1:6501");
+            RegisterClient registerClient = new RegisterClient("DemoService","127.0.0.1:6501");
+            String serviceName = "net.arksea.dsf.DemoService-1.0";
             String host = cfg.getString("akka.remote.netty.tcp.hostname");
             int port = cfg.getInt("akka.remote.netty.tcp.port");
-            ActorRef demoService = system.actorOf(DemoActor.props(port),"DemoService");
+            ActorRef service = system.actorOf(DemoActor.props(port), "DemoService");
+            registerClient.register(serviceName, host, port, service, system);
             Thread.sleep(3000);
-            String serviceName = "net.arksea.dsf.DemoService-1.0";
-            ICodes codes = new JavaSerializeCodes();
-            system.actorOf(ServiceAdaptor.props(serviceName, host, port, demoService, codes, register), "DemoServiceAdaptor");
             if (port == 8772) {
                 Thread.sleep(400000);
                 system.terminate().value();
                 Thread.sleep(10000);
-                register.stop();
+                registerClient.stop();
                 Thread.sleep(5000);
             }
         } catch (Exception ex) {

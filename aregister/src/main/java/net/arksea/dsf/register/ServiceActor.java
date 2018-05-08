@@ -23,7 +23,7 @@ public class ServiceActor extends AbstractActor {
     private final Logger logger = LogManager.getLogger(ServiceActor.class);
 
     private final String serviceName;
-    private String serialId;
+    private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发
     private final Map<String,String> attributes = new HashMap<>();
     private Map<String, InstanceInfo> instances = new HashMap<>();
     private Map<ActorRef, SubscriberInfo> subscriberMap = new HashMap<>();
@@ -237,7 +237,7 @@ public class ServiceActor extends AbstractActor {
         Patterns.ask(service, ping, 5000).onComplete(new OnComplete<Object>() {
             @Override
             public void onComplete(Throwable failure, Object success) throws Throwable {
-                boolean online = (failure == null && success instanceof DSF.Pong);
+                boolean online = failure == null && success instanceof DSF.Pong;
                 self.tell(new ServiceAlive(instance.addr, online), ActorRef.noSender());
             }
         }, context().dispatcher());
@@ -277,13 +277,12 @@ public class ServiceActor extends AbstractActor {
     }
     //------------------------------------------------------------------------------------
     class SubscriberInfo {
+        public final String name;
+        public boolean active;
         public SubscriberInfo(String name) {
             this.name = name;
             this.active = true;
         }
-
-        public final String name;
-        public boolean active;
     }
 
     private String makeSerialId() {

@@ -33,7 +33,7 @@ public class ServiceAdaptor extends AbstractActor {
         Address address = Address.apply("akka.tcp",context().system().name(),host, port);
         serviceAddr = host + ":" + port;
         servicePath = self().path().toStringWithAddress(address);
-        logger.debug("addr: {}, path: {}", serviceAddr, servicePath);
+        logger.info("Create Service Adaptor: addr={}, path={}", serviceAddr, servicePath);
     }
 
 
@@ -87,10 +87,10 @@ public class ServiceAdaptor extends AbstractActor {
         logger.trace("handleServiceResponse({})", msg.request.reqid);
         if (msg.result instanceof Message) {
             DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
-            msg.request.sender.tell(r, self());
+            msg.request.sender.forward(r, context());
         } else {
             DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
-            msg.request.sender.tell(r, self());
+            msg.request.sender.forward(r, context());
         }
     }
     //------------------------------------------------------------------------------------

@@ -3,13 +3,11 @@ package net.arksea.dsf.register;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Terminated;
-import akka.dispatch.OnComplete;
 import akka.pattern.Patterns;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.DSF;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.arksea.dsf.service.ServiceAdaptor;
 import scala.concurrent.Future;
 
 import static akka.japi.Util.classTag;
@@ -20,8 +18,7 @@ import static akka.japi.Util.classTag;
  */
 public class RegisterClient {
     public static final String SYSTEM_NAME = "DsfClientSystem";
-    private static final Logger logger = LogManager.getLogger(RegisterClient.class);
-    public final ActorSystem system;
+    private final ActorSystem system;
     private final ActorRef registerClient;
     private final String clientName;
 
@@ -32,13 +29,16 @@ public class RegisterClient {
         registerClient = system.actorOf(RegisterClientActor.props(clientName, serverAddr), RegisterClientActor.ACTOR_NAME);
     }
 
-    public void register(String name, String addr, String path) {
-        registerClient.tell(new RegLocalService(name,addr,path), ActorRef.noSender());
+    public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem) {
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
     }
 
+    public void register(String serivceName, String addr, String path) {
+        registerClient.tell(new RegLocalService(serivceName,addr,path), ActorRef.noSender());
+    }
 
-    public void unregister(String name, String addr) {
-        registerClient.tell(new UnregLocalService(name,addr), ActorRef.noSender());
+    public void unregister(String serviceName, String addr) {
+        registerClient.tell(new UnregLocalService(serviceName,addr), ActorRef.noSender());
     }
 
     public Future<DSF.SvcInstances> getServiceList(String serviceName, long timeout) {
@@ -61,25 +61,7 @@ public class RegisterClient {
             .build(), subscriber);
     }
 
-    public void syncServiceList(String serviceName, String serialId, ActorRef subscriber) {
-        DSF.SyncSvcInstances get = DSF.SyncSvcInstances.newBuilder()
-            .setName(serviceName)
-            .setSerialId(serialId)
-            .setSubscriber(clientName)
-            .build();
-        registerClient.tell(get, subscriber);
-    }
-
-    public void stop() {
-        this.system.terminate().onComplete(new OnComplete<Terminated>() {
-            @Override
-            public void onComplete(Throwable failure, Terminated success) throws Throwable {
-                if (failure == null) {
-                    logger.info("DSF Register Client stoped");
-                } else {
-                    logger.info("stop DSF Register Client failed", failure);
-                }
-            }
-        }, system.dispatcher());
+    public Future<Terminated> stop() {
+        return this.system.terminate();
     }
 }
