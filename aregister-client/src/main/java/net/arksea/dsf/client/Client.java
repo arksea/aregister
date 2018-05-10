@@ -10,7 +10,13 @@ import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategyFactory;
 import net.arksea.dsf.register.RegisterClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import scala.concurrent.Await;
 import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
+
+import java.util.concurrent.TimeUnit;
 
 import static akka.japi.Util.classTag;
 
@@ -22,6 +28,7 @@ public class Client {
     public final ActorSystem system;
     public final ActorRef router;
     public final ICodes codes;
+    private final Logger log = LogManager.getLogger(Client.class);
 
     /**
      * 序列化：Protocol Buffer
@@ -36,6 +43,12 @@ public class Client {
         this.codes = codes;
         IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
         router = system.actorOf(RequestRouter.props(serviceName, register,routeStrategy, condition));
+        Future f = Patterns.ask(router, new RequestRouter.Ready(), 25000); //等待RequestRouter初始化完毕
+        try {
+            Await.result(f, Duration.create(30, TimeUnit.SECONDS));
+        } catch (Exception e) {
+            log.warn("Client wait RequestRouter init timeout", e);
+        }
     }
 
     public void tell(Object msg, boolean oneway, ActorRef sender) {

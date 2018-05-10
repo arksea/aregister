@@ -5,13 +5,15 @@ import akka.actor.ActorRef;
 import akka.actor.Address;
 import akka.actor.Props;
 import akka.japi.Creator;
-import com.google.protobuf.*;
+import com.google.protobuf.Message;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
@@ -65,6 +67,7 @@ public class ServiceAdaptor extends AbstractActor {
             .match(ServiceResponse.class,   this::handleServiceResponse)
             .match(DSF.Ping.class,          this::handlePing)
             .match(DelayRegister.class,     this::handleDelayRegister)
+            .match(Unregister.class,        this::handleUnregister)
             .build();
     }
 
@@ -75,12 +78,17 @@ public class ServiceAdaptor extends AbstractActor {
     }
 
     @Override
-    public void postStop() {
-        register.unregister(serviceName, serviceAddr);
+    public void postStop() throws Exception {
+        try {
+            Future f = register.unregisterInfo(serviceName, serviceAddr, 10000);
+            Await.result(f, Duration.create(10, TimeUnit.SECONDS));
+        } catch (Exception ex) {
+            logger.warn("Unregister service timeout: {}@{}", serviceName, serviceAddr, ex);
+        }
     }
     //------------------------------------------------------------------------------------
     private void handleServiceRequest(DSF.ServiceRequest msg) {
-        logger.trace("handleServiceRequest({},{})", msg.getTypeName(), msg.getRequestId());
+        logger.trace("handleServiceRequest(type={},reqid={})", msg.getTypeName(), msg.getRequestId());
         ServiceRequest request;
         ActorRef sender = sender();
         Object obj = codes.decodeRequest(msg);
@@ -98,12 +106,18 @@ public class ServiceAdaptor extends AbstractActor {
             msg.request.sender.forward(r, context());
         }
     }
+
+    class DelayRegister {}
     private void handleDelayRegister(DelayRegister msg) {
-        register.register(serviceName, serviceAddr, servicePath);
+        register.registerInfo(serviceName, serviceAddr, servicePath);
     }
     //------------------------------------------------------------------------------------
     private void handlePing(DSF.Ping msg) {
         sender().tell(DSF.Pong.getDefaultInstance(), self());
     }
-    class DelayRegister {}
+    //------------------------------------------------------------------------------------
+    public static class Unregister {}
+    private void handleUnregister(Unregister msg) {
+        register.unregisterInfo(serviceName, serviceAddr, sender());
+    }
 }

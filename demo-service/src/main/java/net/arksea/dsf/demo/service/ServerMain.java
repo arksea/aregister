@@ -7,6 +7,11 @@ import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -32,13 +37,21 @@ public final class ServerMain {
             Thread.sleep(3000);
             if (port == 8772) {
                 Thread.sleep(400000);
-                system.terminate().value();
+                wait(system.terminate());
                 Thread.sleep(10000);
-                registerClient.stop();
+                wait(registerClient.stop());
                 Thread.sleep(5000);
             }
         } catch (Exception ex) {
             LogManager.getLogger(ServerMain.class).error("启动DEMO服务失败", ex);
+        }
+    }
+
+    private static void wait(Future f) throws Exception {
+        try {
+            Await.result(f, Duration.create(10, TimeUnit.SECONDS));
+        } catch (Exception ex) {
+            logger.warn("Await timeout", ex);
         }
     }
 }

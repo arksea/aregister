@@ -208,7 +208,7 @@ public class ServiceActor extends AbstractActor {
         } else {
             try {
                 list =store.getServiceInstances(serviceName);
-                logger.info("Load service list from register store succeed", serviceName);
+                logger.trace("Load service list from register store succeed", serviceName);
             } catch (Exception ex) {
                 list = loadFromLocalFile();
             }

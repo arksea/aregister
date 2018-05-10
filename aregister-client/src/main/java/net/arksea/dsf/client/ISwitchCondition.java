@@ -9,9 +9,9 @@ public interface ISwitchCondition {
     default long statPeriod() {
         return 10;
     }
-    //请求超过此时间（秒）判为超时
+    //请求超过此时间（毫秒）判为超时
     default long requestTimeout() {
-        return 10;
+        return 10000;
     }
     //默认实现：3个周期内超时率低于10%，将服务从offline状态切换为up状态
     //此时Router将调度正常状态时1/10的流量到此实例，直到被upToOnline将其切换为其他状态

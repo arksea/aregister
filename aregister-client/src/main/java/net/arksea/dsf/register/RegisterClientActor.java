@@ -31,7 +31,7 @@ public class RegisterClientActor extends AbstractActor {
     private ActorSelection register;
     private Map<String, ServiceInfo> serviceInfoMap = new HashMap<>();
     private long timeout = 10000;
-    private final static int MIN_RETRY_DELAY = 10000;
+    private final static int MIN_RETRY_DELAY = 2000;
     private final static int MAX_RETRY_DELAY = 300000;
     private long backoff = MIN_RETRY_DELAY;
     private final String clientName;
@@ -56,7 +56,7 @@ public class RegisterClientActor extends AbstractActor {
 
     @Override
     public void preStart() {
-        log.info("ServiceRegisterActor preStart");
+        log.info("RegisterClientActor preStart");
         updateTimer = context().system().scheduler().schedule(
             Duration.create(UPDATE_DELAY_SECONDS, TimeUnit.SECONDS),
             Duration.create(UPDATE_DELAY_SECONDS,TimeUnit.SECONDS),
@@ -69,7 +69,7 @@ public class RegisterClientActor extends AbstractActor {
             updateTimer.cancel();
             updateTimer = null;
         }
-        log.info("ServiceRegisterActor postStop");
+        log.info("RegisterClientActor postStop");
     }
 
     @Override
@@ -186,6 +186,7 @@ public class RegisterClientActor extends AbstractActor {
     //-------------------------------------------------------------------------------------------------
     private void handleUnregLocalService(UnregLocalService msg) {
         log.trace("RegisterClientActor.handleUnregLocalService({})", msg.addr);
+        final ActorRef sender = sender();
         DSF.UnregService dsfmsg = DSF.UnregService.newBuilder()
             .setName(msg.name)
             .setAddr(msg.addr)
@@ -196,6 +197,7 @@ public class RegisterClientActor extends AbstractActor {
                 public void onComplete(Throwable failure, Boolean success) throws Throwable {
                     if (failure == null) {
                         if (success) {
+                            sender.tell(true, ActorRef.noSender());
                             log.info("unregister Service success: {}@{}", msg.name, msg.addr);
                             resetBackoffDelay();
                             return;

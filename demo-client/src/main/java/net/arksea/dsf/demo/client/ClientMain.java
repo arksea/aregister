@@ -6,6 +6,10 @@ import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.concurrent.Await;
+import scala.concurrent.duration.Duration;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -39,7 +43,7 @@ public final class ClientMain {
                 Thread.sleep(1000);
             }
             Thread.sleep(10000);
-            client.system.terminate().value();
+            Await.result(client.system.terminate(), Duration.apply(10, TimeUnit.SECONDS));
         } catch (Exception ex) {
             logger.error("Start DEMO Client failed", ex);
         }

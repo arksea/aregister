@@ -3,20 +3,16 @@ package net.arksea.dsf.client;
 import akka.actor.*;
 import akka.dispatch.OnComplete;
 import akka.pattern.Patterns;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.register.RegisterClient;
 import net.arksea.dsf.store.LocalStore;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * Created by xiaohaixing on 2018/4/20.
  */
 public class RequestRouter extends AbstractActor {
-    private final Logger log = LogManager.getLogger(RequestRouter.class);
+    private static final Logger log = LogManager.getLogger(RequestRouter.class);
     private final String serviceName;
     private final ISwitchCondition switchCondition;
     private final IRouteStrategy routeStrategy;
@@ -44,18 +40,28 @@ public class RequestRouter extends AbstractActor {
         this.routeStrategy = routeStrategy;
         this.ping = DSF.Ping.getDefaultInstance();
         this.switchCondition = condition;
+
     }
 
     @Override
     public void preStart() {
         log.debug("RequestRouter preStart: {}", serviceName);
+        init();
+        getSvcInstances();
+    }
+
+    @Override
+    public void postStop() {
+        log.debug("RequestRouter postStop: {}", serviceName);
+        fini();
+    }
+
+
+    private void getSvcInstances() {
         if (registerClient == null) {
             loadFromLocalCache();
         } else {
             try {
-                DSF.GetSvcInstances get = DSF.GetSvcInstances.newBuilder()
-                    .setName(serviceName)
-                    .build();
                 Future<DSF.SvcInstances> future = registerClient.getServiceList(serviceName, 5000);
                 DSF.SvcInstances result = Await.result(future, Duration.create(5000, "ms"));
                 handleSvcInstances(result);
@@ -64,7 +70,14 @@ public class RequestRouter extends AbstractActor {
                 log.warn("Load service list form register failed: {}", serviceName, e);
                 loadFromLocalCache();
             }
-            registerClient.subscribe(serviceName, self());
+        }
+    }
+
+    private void init() {
+        if (registerClient != null) {
+            //订阅服务实例更新事件，如果此处请求错误，会在定时更新服务端服务实例时得到补救：
+            //注册服务器在收到请求同步服务实例消息时，将其视为订阅者，如果不在列表中的话会进行补登记
+            registerClient.subscribeInfo(serviceName, self());
         }
         saveStatDataTimer = context().system().scheduler().schedule(
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
@@ -74,6 +87,20 @@ public class RequestRouter extends AbstractActor {
             Duration.create(CHECK_OFFLINE_SECONDS, TimeUnit.SECONDS),
             Duration.create(CHECK_OFFLINE_SECONDS,TimeUnit.SECONDS),
             self(),new CheckOfflineService(),context().dispatcher(),self());
+    }
+
+    private void fini() {
+        if (registerClient != null) {
+            registerClient.unsubscribeInfo(serviceName, self());
+        }
+        if (saveStatDataTimer != null) {
+            saveStatDataTimer.cancel();
+            saveStatDataTimer = null;
+        }
+        if (checkOfflineTimer != null) {
+            checkOfflineTimer.cancel();
+            checkOfflineTimer = null;
+        }
     }
 
     private void loadFromLocalCache() {
@@ -97,22 +124,6 @@ public class RequestRouter extends AbstractActor {
         }
     }
 
-    @Override
-    public void postStop() {
-        log.debug("RequestRouter postStop: {}", serviceName);
-        if (registerClient != null) {
-            registerClient.unsubscribe(serviceName, self());
-        }
-        if (saveStatDataTimer != null) {
-            saveStatDataTimer.cancel();
-            saveStatDataTimer = null;
-        }
-        if (checkOfflineTimer != null) {
-            checkOfflineTimer.cancel();
-            checkOfflineTimer = null;
-        }
-    }
-
     //优先从注册服务器获取服务列表
     public static Props props(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy, ISwitchCondition condition) {
         return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,registerClient,routeStrategy, condition));
@@ -120,7 +131,7 @@ public class RequestRouter extends AbstractActor {
 
     //只从本地配置文件获取服务列表
     public static Props props(String serviceName, IRouteStrategy routeStrategy, ISwitchCondition condition) {
-        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,null,routeStrategy,condition));
+        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,null, routeStrategy, condition));
     }
 
     @Override
@@ -134,12 +145,13 @@ public class RequestRouter extends AbstractActor {
             .match(DSF.SvcInstances.class,   this::handleSvcInstances)
             .match(CheckOfflineService.class,this::handleCheckOfflineService)
             .match(ServiceAlive.class,       this::handleServiceAlive)
+            .match(Ready.class,              this::handleReady)
             .build();
     }
 
     //------------------------------------------------------------------------------------
     private void handleServiceRequest(DSF.ServiceRequest msg) {
-        log.trace("handleServiceRequest({},{})", msg.getTypeName(), msg.getRequestId());
+        log.trace("handleServiceRequest({},{},{})", msg.getTypeName(), msg.getRequestId(), msg.getOneway());
         long startTime = System.currentTimeMillis();
         Optional<Instance> op = routeStrategy.getInstance(instances);
         final ActorRef requester = sender();
@@ -320,5 +332,10 @@ public class RequestRouter extends AbstractActor {
                 break;
             }
         }
+    }
+    //
+    public static class Ready {}
+    private void handleReady(Ready msg) {
+        sender().tell(true, self());
     }
 }
