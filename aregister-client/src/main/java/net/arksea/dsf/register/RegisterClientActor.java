@@ -198,7 +198,7 @@ public class RegisterClientActor extends AbstractActor {
                     if (failure == null) {
                         if (success) {
                             sender.tell(true, ActorRef.noSender());
-                            log.info("unregister Service success: {}@{}", msg.name, msg.addr);
+                            log.info("Unregister service success: {}@{}", msg.name, msg.addr);
                             resetBackoffDelay();
                             return;
                         } else {

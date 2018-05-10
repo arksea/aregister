@@ -15,10 +15,15 @@ import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.service.ServiceAdaptor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import scala.concurrent.Await;
 import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
 
 import static akka.japi.Util.classTag;
 
@@ -27,6 +32,7 @@ import static akka.japi.Util.classTag;
  * Created by xiaohaixing on 2018/4/20.
  */
 public class RegisterClient {
+    private static final Logger logger = LogManager.getLogger(RegisterClient.class);
     public static final String REG_CLIENT_SYSTEM_NAME = "DsfRegisterClientSystem";
     public static final String SVC_CLIENT_SYSTEM_NAME = "DsfServiceClientSystem";
     public final ActorRef registerClient;
@@ -111,5 +117,16 @@ public class RegisterClient {
 
     public Future<Terminated> stop() {
         return this.system.terminate();
+    }
+
+    public void stopAndWait(long waitSeconds) {
+        try {
+            logger.info("Stopping register client system");
+            Future f = this.system.terminate();
+            Await.result(f, Duration.apply(waitSeconds, TimeUnit.SECONDS));
+            logger.info("Register client system stopped");
+        } catch (Exception e) {
+            logger.warn("Stop register client system timeout", e);
+        }
     }
 }
