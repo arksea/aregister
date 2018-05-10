@@ -22,9 +22,13 @@ public final class ServerMain {
     public static void main(final String[] args) {
         try {
             logger.info("启动注册服务");
-            String host = "172.17"+".149.54";
-            IRegisterStore store = new RedisRegister(host,6379, 5000, null);
             Config cfg = ConfigFactory.load();
+            String redisHost = cfg.getString("register.store.redis-host");
+            int redisPort = cfg.getInt("register.store.redis-port");
+            String pwdPath = "register.store.redis-password";
+            String redisPwd = cfg.hasPath(pwdPath) ? cfg.getString(pwdPath) : null;
+            logger.info("redisHost={}, redisPort={}", redisHost, redisPort);
+            IRegisterStore store = new RedisRegister(redisHost,redisPort, 5000, redisPwd);
             ActorSystem system = ActorSystem.create("DsfCluster", cfg);
             system.actorOf(ServiceManagerActor.props(store), ServiceManagerActor.ACTOR_NAME);
             system.actorOf(RegisterActor.props(store), RegisterActor.ACTOR_NAME);

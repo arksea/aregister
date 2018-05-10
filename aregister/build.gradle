@@ -60,3 +60,61 @@ pmd {
         'java-unusedcode'
     ]
 }
+
+
+//拷贝部署文件到指定目录
+task publishOnline <<{
+    //拷贝前先删除部署目录
+    delete('publish/online/lib')
+    delete('publish/online/config')
+    copy{ //拷贝本项目打包的jar文件
+        from 'build/libs/'
+        into 'publish/online'
+    }
+    copy{ //拷贝依赖库
+        from configurations.runtime
+        into 'publish/online/lib'
+    }
+    copy{ //拷贝配置文件
+        from 'config/'
+        into 'publish/online/config'
+    }
+}
+publishOnline.dependsOn(build)
+
+//发布部署文件，并提交到部署SVN
+task publishToSvnOnline(type: Exec) {
+    commandLine 'cmd', '/c', 'TortoiseProc.exe /command:commit /path:"./publish/online"'
+}
+publishToSvnOnline.dependsOn(publishOnline)
+
+
+//拷贝部署文件到指定目录
+task publishDEV <<{
+    //拷贝前先删除部署目录
+    delete('publish/develop/lib')
+    delete('publish/develop/config')
+    copy{ //拷贝本项目打包的jar文件
+        from 'build/libs/'
+        into 'publish/develop'
+    }
+    copy{ //拷贝依赖库
+        from configurations.runtime
+        into 'publish/develop/lib'
+    }
+    copy{ //拷贝配置文件
+        from 'config/'
+        into 'publish/develop/config'
+    }
+    copy{ //拷贝资源
+        from 'build/resources/test/'
+        into 'publish/develop/config'
+    }
+}
+publishDEV.dependsOn(build)
+
+//发布部署文件，并提交到部署SVN
+task publishToSvnDEV(type: Exec) {
+    commandLine 'cmd', '/c', 'TortoiseProc.exe /command:commit /path:"./publish/develop"'
+}
+publishToSvnDEV.dependsOn(publishDEV)

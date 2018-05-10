@@ -7,6 +7,11 @@ import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -24,30 +29,29 @@ public final class ServerMain {
             logger.info("启动DEMO服务");
             Config cfg = ConfigFactory.load();
             ActorSystem system = ActorSystem.create("DemoSystem",cfg);
-            RegisterClient register = new RegisterClient("DemoService","127.0.0.1:6501");
-            String host = cfg.getString("akka.remote.netty.tcp.hostname");
-            int port = cfg.getInt("akka.remote.netty.tcp.port");
-            ActorRef demoService = system.actorOf(DemoActor.props(port),"DemoService");
-            Thread.sleep(3000);
+            RegisterClient registerClient = new RegisterClient("DemoService","127.0.0.1:6501");
             String serviceName = "net.arksea.dsf.DemoService-1.0";
-            String instanceId = host+":"+port;
-            String path = "akka.tcp://DemoSystem@"+host+":"+port+"/user/DemoService";
-            register.register(serviceName, instanceId, path);
-            system.registerOnTermination(new Runnable() {
-                @Override
-                public void run() {
-                    register.unregister(serviceName, instanceId);
-                }
-            });
+            int port = cfg.getInt("akka.remote.netty.tcp.port");
+            ActorRef service = system.actorOf(DemoActor.props(port), "DemoService");
+            registerClient.register(serviceName, port, service, system);
+            Thread.sleep(3000);
             if (port == 8772) {
                 Thread.sleep(400000);
-                system.terminate().value();
+                wait(system.terminate());
                 Thread.sleep(10000);
-                register.stop();
+                wait(registerClient.stop());
                 Thread.sleep(5000);
             }
         } catch (Exception ex) {
             LogManager.getLogger(ServerMain.class).error("启动DEMO服务失败", ex);
+        }
+    }
+
+    private static void wait(Future f) throws Exception {
+        try {
+            Await.result(f, Duration.create(10, TimeUnit.SECONDS));
+        } catch (Exception ex) {
+            logger.warn("Await timeout", ex);
         }
     }
 }

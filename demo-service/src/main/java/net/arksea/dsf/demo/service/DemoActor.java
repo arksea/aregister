@@ -1,12 +1,13 @@
 package net.arksea.dsf.demo.service;
 
 import akka.actor.AbstractActor;
-import akka.actor.Actor;
 import akka.actor.Props;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
 import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.demo.DemoResponse1;
+import net.arksea.dsf.service.ServiceRequest;
+import net.arksea.dsf.service.ServiceResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
@@ -37,7 +38,7 @@ public class DemoActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return ReceiveBuilder.create()
-            .match(DemoRequest1.class, this::onRequest)
+            .match(ServiceRequest.class, this::onRequest)
             .match(String.class, this::onMessage)
             .build();
     }
@@ -46,11 +47,12 @@ public class DemoActor extends AbstractActor {
     public void preStart() throws Exception {
         super.preStart();
         log.info("DemoActor preStart()");
-        context().system().scheduler().scheduleOnce(Duration.create(30, TimeUnit.SECONDS),
-        self(),"offline",context().dispatcher(),self());
-
-        context().system().scheduler().scheduleOnce(Duration.create(130, TimeUnit.SECONDS),
-            self(),"online",context().dispatcher(),self());
+        if (port == 8772) {
+            context().system().scheduler().scheduleOnce(Duration.create(80, TimeUnit.SECONDS),
+                self(), "offline", context().dispatcher(), self());
+            context().system().scheduler().scheduleOnce(Duration.create(180, TimeUnit.SECONDS),
+                self(), "online", context().dispatcher(), self());
+        }
     }
 
     @Override
@@ -59,29 +61,27 @@ public class DemoActor extends AbstractActor {
         super.postStop();
     }
 
-    private void onRequest(DemoRequest1 request) {
-        log.info("onRequest: {}, online: {}",request.msg, online);
-        if (port == 8772) {
-            if (online) {
-                sender().tell(new DemoResponse1(0, "received: " + request.msg, request.getRequestId()), self());
+    private void onRequest(ServiceRequest msg) {
+        if (msg.message instanceof DemoRequest1) {
+            DemoRequest1 request = (DemoRequest1) msg.message;
+            log.info("onRequest: {}, online: {}", request.msg, online);
+            if (port == 8772) {
+                if (online) {
+                    DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);
+                    ServiceResponse response = new ServiceResponse(resule, msg);
+                    sender().tell(response, self());
+                }
+            } else {
+                DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);
+                ServiceResponse response = new ServiceResponse(resule, msg);
+                sender().tell(response, self());
             }
-        } else {
-            sender().tell(new DemoResponse1(0, "received: " + request.msg, request.getRequestId()), self());
         }
     }
 
     boolean online = true;
     private void onMessage(String msg) {
         switch (msg) {
-            case "heartbeat":
-                if (port == 8772) {
-                    if (online) {
-                        sender().tell(msg, self());
-                    }
-                } else {
-                    sender().tell(msg, self());
-                }
-                break;
             case "online":
                 log.info("onMessage: {}", msg);
                 online = true;

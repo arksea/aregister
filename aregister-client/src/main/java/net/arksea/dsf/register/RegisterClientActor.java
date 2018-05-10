@@ -7,11 +7,13 @@ import akka.pattern.Patterns;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.store.Instance;
+import net.arksea.dsf.store.LocalStore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
@@ -25,17 +27,17 @@ import static akka.japi.Util.classTag;
  */
 public class RegisterClientActor extends AbstractActor {
     public static final String ACTOR_NAME = "registerClient";
-    private final Logger log = LogManager.getLogger(RegisterClientActor.class);
+    private static final Logger log = LogManager.getLogger(RegisterClientActor.class);
     private ActorSelection register;
     private Map<String, ServiceInfo> serviceInfoMap = new HashMap<>();
     private long timeout = 10000;
-    private final static int MIN_RETRY_DELAY = 10000;
+    private final static int MIN_RETRY_DELAY = 2000;
     private final static int MAX_RETRY_DELAY = 300000;
     private long backoff = MIN_RETRY_DELAY;
     private final String clientName;
     private Cancellable updateTimer;
     private static final int UPDATE_DELAY_SECONDS = 60;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     public RegisterClientActor(String clientName, String serverAddr) {
         this.clientName = clientName;
@@ -54,7 +56,7 @@ public class RegisterClientActor extends AbstractActor {
 
     @Override
     public void preStart() {
-        log.info("ServiceRegisterActor preStart");
+        log.info("RegisterClientActor preStart");
         updateTimer = context().system().scheduler().schedule(
             Duration.create(UPDATE_DELAY_SECONDS, TimeUnit.SECONDS),
             Duration.create(UPDATE_DELAY_SECONDS,TimeUnit.SECONDS),
@@ -67,7 +69,7 @@ public class RegisterClientActor extends AbstractActor {
             updateTimer.cancel();
             updateTimer = null;
         }
-        log.info("ServiceRegisterActor postStop");
+        log.info("RegisterClientActor postStop");
     }
 
     @Override
@@ -109,31 +111,14 @@ public class RegisterClientActor extends AbstractActor {
             List<DSF.Instance> instances = msg.getInstancesList();
             info.instances.clear();
             instances.forEach(i -> info.instances.put(i.getAddr(),
-                    new net.arksea.dsf.store.Instance(msg.getName(), i.getAddr(), i.getPath()))
+                    new net.arksea.dsf.store.Instance(i.getAddr(), i.getPath()))
             );
             info.clientSet.forEach(c -> c.tell(msg, self()));
-            save(msg.getName(), info.instances.values());
-        }
-    }
-    private void save(String serviceName, Collection<Instance> instances) {
-        String fileName = "./config/" + serviceName + ".svc";
-        try {
-            File file = new File(fileName);
-            File dir = file.getParentFile();
-            if (!dir.exists()) {
-                Files.createDirectories(dir.toPath());
+            try {
+                LocalStore.save(msg.getName(), info.instances.values());
+            } catch (IOException ex) {
+                log.error("Write service instancs to local cache file failed: {}", msg.getName(), ex);
             }
-            StringBuilder sb = new StringBuilder();
-            for(Instance instance : instances) {
-                String line = objectMapper.writeValueAsString(instance);
-                sb.append(line).append("\n");
-            }
-            Files.write(file.toPath(), sb.toString().getBytes("UTF-8"),
-                StandardOpenOption.WRITE,
-                StandardOpenOption.TRUNCATE_EXISTING,
-                StandardOpenOption.CREATE);
-        } catch (Exception ex) {
-            log.error("Write service instancs to local cache file failed: {}", fileName,ex);
         }
     }
     //-------------------------------------------------------------------------------------------------
@@ -195,12 +180,13 @@ public class RegisterClientActor extends AbstractActor {
         log.trace("RegisterClientActor.handleRegService({})", msg.getAddr());
         ServiceInfo info = serviceInfoMap.computeIfAbsent(msg.getName(), k -> new ServiceInfo());
         info.instances.computeIfAbsent(msg.getAddr(), addr ->
-            new net.arksea.dsf.store.Instance(msg.getName(), addr,msg.getPath()));
+            new net.arksea.dsf.store.Instance(addr,msg.getPath()));
         info.clientSet.forEach(c -> c.tell(msg, self()));
     }
     //-------------------------------------------------------------------------------------------------
     private void handleUnregLocalService(UnregLocalService msg) {
         log.trace("RegisterClientActor.handleUnregLocalService({})", msg.addr);
+        final ActorRef sender = sender();
         DSF.UnregService dsfmsg = DSF.UnregService.newBuilder()
             .setName(msg.name)
             .setAddr(msg.addr)
@@ -211,6 +197,7 @@ public class RegisterClientActor extends AbstractActor {
                 public void onComplete(Throwable failure, Boolean success) throws Throwable {
                     if (failure == null) {
                         if (success) {
+                            sender.tell(true, ActorRef.noSender());
                             log.info("unregister Service success: {}@{}", msg.name, msg.addr);
                             resetBackoffDelay();
                             return;

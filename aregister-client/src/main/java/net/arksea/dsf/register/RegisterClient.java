@@ -1,16 +1,24 @@
 package net.arksea.dsf.register;
 
 import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.Terminated;
-import akka.dispatch.OnComplete;
 import akka.pattern.Patterns;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.DSF;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.arksea.dsf.client.Client;
+import net.arksea.dsf.client.DefaultSwitchCondition;
+import net.arksea.dsf.client.ISwitchCondition;
+import net.arksea.dsf.client.route.RouteStrategy;
+import net.arksea.dsf.codes.ICodes;
+import net.arksea.dsf.codes.JavaSerializeCodes;
+import net.arksea.dsf.service.ServiceAdaptor;
 import scala.concurrent.Future;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import static akka.japi.Util.classTag;
 
@@ -19,25 +27,66 @@ import static akka.japi.Util.classTag;
  * Created by xiaohaixing on 2018/4/20.
  */
 public class RegisterClient {
-    public static final String SYSTEM_NAME = "DsfClientSystem";
-    private static final Logger logger = LogManager.getLogger(RegisterClient.class);
-    public final ActorSystem system;
-    private final ActorRef registerClient;
-    private final String clientName;
-
+    public static final String REG_CLIENT_SYSTEM_NAME = "DsfRegisterClientSystem";
+    public static final String SVC_CLIENT_SYSTEM_NAME = "DsfServiceClientSystem";
+    public final ActorRef registerClient;
+    public final String clientName;
+    private final ActorSystem system;
+    /**
+     *
+     * @param clientName 用于注册服务分辨客户端
+     * @param serverAddr
+     */
     public RegisterClient(String clientName, String serverAddr) {
         this.clientName = clientName;
-        Config config = ConfigFactory.parseResources("default-dsf-client.conf");
-        this.system = ActorSystem.create(SYSTEM_NAME,config.getConfig(SYSTEM_NAME).withFallback(config));
+        Config config = ConfigFactory.parseResources("default-register-client.conf");
+        this.system = ActorSystem.create(REG_CLIENT_SYSTEM_NAME,config.getConfig(REG_CLIENT_SYSTEM_NAME).withFallback(config));
         registerClient = system.actorOf(RegisterClientActor.props(clientName, serverAddr), RegisterClientActor.ACTOR_NAME);
     }
 
-    public void register(String name, String addr, String path) {
-        registerClient.tell(new RegLocalService(name,addr,path), ActorRef.noSender());
+    public Client subscribe(String serviceName) {
+        ICodes codes = new JavaSerializeCodes();
+        ISwitchCondition condition = new DefaultSwitchCondition();
+        Config config = ConfigFactory.parseResources("default-service-client.conf");
+        ActorSystem clientSystem = ActorSystem.create(SVC_CLIENT_SYSTEM_NAME,config.getConfig(SVC_CLIENT_SYSTEM_NAME).withFallback(config));
+        return subscribe(serviceName, RouteStrategy.ROUNDROBIN, codes, condition, clientSystem);
     }
 
-    public void unregister(String name, String addr) {
-        registerClient.tell(new UnregLocalService(name,addr), ActorRef.noSender());
+    public Client subscribe(String serviceName, ICodes codes, ActorSystem clientSystem) {
+        ISwitchCondition condition = new DefaultSwitchCondition();
+        return subscribe(serviceName, RouteStrategy.ROUNDROBIN, codes, condition, clientSystem);
+    }
+
+    public Client subscribe(String serviceName, RouteStrategy routeStrategy, ICodes codes, ISwitchCondition condition, ActorSystem clientSystem) {
+        return new Client(serviceName, routeStrategy, codes, condition, clientSystem, this);
+    }
+
+    public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem) {
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
+    }
+
+    public void register(String serviceName, int bindPort, ActorRef service, ActorSystem serviceSystem) throws UnknownHostException {
+        InetAddress addr = InetAddress.getLocalHost();
+        final String bindHost = addr.getHostAddress();
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
+    }
+
+    public Future<Boolean> unregister(String serviceName, ActorSystem serviceSystem, long timeoutMillis) {
+        ActorSelection sel = serviceSystem.actorSelection(serviceName+"-Adaptor");
+        return Patterns.ask(sel, new ServiceAdaptor.Unregister(), timeoutMillis)
+            .mapTo(classTag(Boolean.class));
+    }
+
+    public void registerInfo(String serivceName, String addr, String path) {
+        registerClient.tell(new RegLocalService(serivceName,addr,path), ActorRef.noSender());
+    }
+
+    public void unregisterInfo(String serviceName, String addr, ActorRef requester) {
+        registerClient.tell(new UnregLocalService(serviceName,addr), requester);
+    }
+
+    public Future<Boolean> unregisterInfo(String serviceName, String addr, long timeout) {
+        return Patterns.ask(registerClient, new UnregLocalService(serviceName,addr), timeout).mapTo(classTag(Boolean.class));
     }
 
     public Future<DSF.SvcInstances> getServiceList(String serviceName, long timeout) {
@@ -47,38 +96,20 @@ public class RegisterClient {
         return Patterns.ask(registerClient, get, timeout).mapTo(classTag(DSF.SvcInstances.class));
     }
 
-    public void subscribe(String serviceName, ActorRef subscriber) {
+    public void subscribeInfo(String serviceName, ActorRef subscriber) {
         registerClient.tell(DSF.SubService.newBuilder()
                                     .setService(serviceName)
                                     .setSubscriber(clientName)
                                     .build(), subscriber);
     }
 
-    public void unsubscribe(String serviceName, ActorRef subscriber) {
+    public void unsubscribeInfo(String serviceName, ActorRef subscriber) {
         registerClient.tell(DSF.UnsubService.newBuilder()
             .setService(serviceName)
             .build(), subscriber);
     }
 
-    public void syncServiceList(String serviceName, String serialId, ActorRef subscriber) {
-        DSF.SyncSvcInstances get = DSF.SyncSvcInstances.newBuilder()
-            .setName(serviceName)
-            .setSerialId(serialId)
-            .setSubscriber(clientName)
-            .build();
-        registerClient.tell(get, subscriber);
-    }
-
-    public void stop() {
-        this.system.terminate().onComplete(new OnComplete<Terminated>() {
-            @Override
-            public void onComplete(Throwable failure, Terminated success) throws Throwable {
-                if (failure == null) {
-                    logger.info("DSF Register Client stoped");
-                } else {
-                    logger.info("stop DSF Register Client failed", failure);
-                }
-            }
-        }, system.dispatcher());
+    public Future<Terminated> stop() {
+        return this.system.terminate();
     }
 }

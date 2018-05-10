@@ -53,10 +53,10 @@ public class RedisRegister implements IRegisterStore {
     }
 
     @Override
-    public boolean addServiceInstance(Instance instance) throws RegisterStoreException {
+    public boolean addServiceInstance(String name, Instance instance) throws RegisterStoreException {
         try(Jedis jedis = jedisPool.getResource()) {
             String json = objectMapper.writeValueAsString(instance);
-            String key = "dsf:"+instance.getName()+":inst";
+            String key = "dsf:"+name+":inst";
             return jedis.hset(key, instance.getAddr(), json) == 1;
         } catch (JsonProcessingException e) {
             throw new RegisterStoreException("serialize Instance failed", e);

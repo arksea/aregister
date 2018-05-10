@@ -41,20 +41,18 @@ public class InstanceQuality {
         }
     }
 
-    public void respond(boolean isSucceed, long time) {
-        if (isSucceed) {
-            ++succeedCount;
-        }
+    public void succeed(long time) {
+        ++succeedCount;
         this.respondTime += time;
     }
 
     public void timeout(long time) {
-        ++this.timeoutCount;
+        ++timeoutCount;
         this.respondTime += time;
     }
 
     /**
-     * 保存当前统计数据，每分钟调度一次，当然更长或者更短，比如10秒钟一次
+     * 保存当前统计数据
      */
     public void saveHistory() {
         ++lastHistoryIndex;
