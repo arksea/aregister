@@ -5,21 +5,15 @@ package net.arksea.dsf.store;
  * Created by xiaohaixing on 2018/4/19.
  */
 public class Instance implements Comparable {
-    private String name;
     private String addr;
     private String path;
 
-    public Instance(String name, String addr, String path) {
-        this.name = name;
+    public Instance(String addr, String path) {
         this.addr = addr;
         this.path = path;
     }
 
     private Instance() {}
-
-    public String getName() {
-        return name;
-    }
 
     public String getAddr() {
         return addr;

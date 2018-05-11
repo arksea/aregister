@@ -57,7 +57,7 @@ public class RegisterActor extends AbstractActor {
     private void handleRegService(DSF.RegService msg) {
         log.trace("RegisterActor.handleRegService({},{},{})", msg.getName(), msg.getAddr(), msg.getPath());
         try {
-            store.addServiceInstance(new Instance(msg.getName(), msg.getAddr(), msg.getPath()));
+            store.addServiceInstance(msg.getName(), new Instance(msg.getAddr(), msg.getPath()));
             serviceManagerActor.tell(new MSG.SendToAll(msg), self());
             sender().tell(true, self());
         } catch (Exception ex) {

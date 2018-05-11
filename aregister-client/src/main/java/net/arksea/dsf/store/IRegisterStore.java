@@ -8,6 +8,6 @@ import java.util.List;
  */
 public interface IRegisterStore {
     List<Instance> getServiceInstances(String name);
-    boolean addServiceInstance(Instance instance);
+    boolean addServiceInstance(String name, Instance instance);
     boolean delServiceInstance(String name, String addr);
 }

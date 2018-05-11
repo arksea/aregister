@@ -7,6 +7,7 @@ import akka.pattern.Patterns;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.store.IRegisterStore;
 import net.arksea.dsf.store.Instance;
+import net.arksea.dsf.store.LocalStore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
@@ -23,7 +24,7 @@ public class ServiceActor extends AbstractActor {
     private final Logger logger = LogManager.getLogger(ServiceActor.class);
 
     private final String serviceName;
-    private String serialId;
+    private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发
     private final Map<String,String> attributes = new HashMap<>();
     private Map<String, InstanceInfo> instances = new HashMap<>();
     private Map<ActorRef, SubscriberInfo> subscriberMap = new HashMap<>();
@@ -32,6 +33,7 @@ public class ServiceActor extends AbstractActor {
     private Cancellable checkAliveTimer;
     private static final int LOAD_SVC_DELAY_SECONDS = 300; //从注册服务器更新实例列表的周期(s)
     private static final int CHECK_ALIVE_SECONDS = 60; //测试服务是否存活
+    private final DSF.Ping ping = DSF.Ping.getDefaultInstance();
 
     public static Props props(String serviceId, IRegisterStore store) {
         return Props.create(ServiceActor.class, new Creator<ServiceActor>() {
@@ -45,7 +47,7 @@ public class ServiceActor extends AbstractActor {
     public ServiceActor(String serviceName, IRegisterStore store) {
         this.serviceName = serviceName;
         this.store = store;
-        this.serialId = UUID.randomUUID().toString();
+        this.serialId = "";
     }
 
     @Override
@@ -81,7 +83,7 @@ public class ServiceActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
             .match(SubscriberTerminated.class,  this::handleSubscriberTerminated)
-            .match(DSF.SyncSvcInstances.class,   this::handleSyncSvcInstances)
+            .match(DSF.SyncSvcInstances.class,  this::handleSyncSvcInstances)
             .match(DSF.GetSvcInstances.class,   this::handleGetSvcInstances)
             .match(DSF.RegService.class,        this::handleRegService)
             .match(DSF.UnregService.class,      this::handleUnregService)
@@ -96,7 +98,7 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     private void handleRegService(DSF.RegService msg) {
         instances.put(msg.getAddr(),new InstanceInfo(msg.getName(),msg.getAddr(),msg.getPath(),true));
-        this.serialId = UUID.randomUUID().toString();
+        this.serialId = makeSerialId();
         subscriberMap.keySet().forEach(actor -> {
             actor.tell(msg, self());
         });
@@ -106,7 +108,7 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     private void handleUnregService(DSF.UnregService msg) {
         instances.remove(msg.getAddr());
-        this.serialId = UUID.randomUUID().toString();
+        this.serialId = makeSerialId();
         subscriberMap.keySet().forEach(actor -> {
             actor.tell(msg, self());
         });
@@ -120,6 +122,7 @@ public class ServiceActor extends AbstractActor {
     }
     private void handleSyncSvcInstances(DSF.SyncSvcInstances msg) {
         logger.trace("Service.handleSyncSvcInstances({},{}),instances.size={},", msg.getName(),msg.getSerialId(),instances.size());
+        subscribeService(msg.getSubscriber(), sender());
         if (!this.serialId.equals(msg.getSerialId())) {
             getSvcInstances();
         }
@@ -199,30 +202,65 @@ public class ServiceActor extends AbstractActor {
      * 加载实例信息
      */
     private void loadServiceInfo() {
-        List<Instance> list = store.getServiceInstances(serviceName);
-        logger.trace("Load service info, instance size = {}", list.size());
-        Map<String, InstanceInfo> newInstances = new HashMap<>();
-        list.forEach(it -> {
-            InstanceInfo old = instances.remove(it.getAddr());
-            if (old == null) {
-                newInstances.put(it.getAddr(), new InstanceInfo(it.getName(),it.getAddr(),it.getPath(), false));
-                this.serialId = UUID.randomUUID().toString();
-                logger.info("Service ADD : {}@{}, online={}", serviceName, it.getAddr(), false);
-            } else {
-                newInstances.put(it.getAddr(), old);
+        List<Instance> list;
+        if (store == null) {
+            list = loadFromLocalFile();
+        } else {
+            try {
+                list =store.getServiceInstances(serviceName);
+                logger.trace("Load service list from register store succeed", serviceName);
+            } catch (Exception ex) {
+                list = loadFromLocalFile();
             }
-        });
-        if (instances.size() > 0) {
-            this.serialId = UUID.randomUUID().toString();
-            for (String addr : instances.keySet()) {
-                logger.info("Service DEL : {}@{}", serviceName, addr);
-            }
-            this.instances.clear();
         }
-        this.instances = newInstances;
+        if (list != null) {
+            boolean changed = false;
+            logger.trace("Load service info, instance size = {}", list.size());
+            Map<String, InstanceInfo> newInstances = new HashMap<>();
+            for (Instance it : list) {
+                InstanceInfo old = instances.remove(it.getAddr());
+                if (old == null) {
+                    changed = true;
+                    newInstances.put(it.getAddr(), new InstanceInfo(serviceName, it.getAddr(), it.getPath(), false));
+                    logger.info("Service ADD : {}@{}, online={}", serviceName, it.getAddr(), false);
+                } else {
+                    newInstances.put(it.getAddr(), old);
+                }
+            }
+            if (instances.size() > 0) {
+                changed = true;
+                for (String addr : instances.keySet()) {
+                    logger.info("Service DEL : {}@{}", serviceName, addr);
+                }
+                this.instances.clear();
+            }
+            if (changed) {
+                this.serialId = makeSerialId();
+                saveToLocalFile(list);
+            }
+            this.instances = newInstances;
+        }
+    }
+
+    private List<Instance> loadFromLocalFile() {
+        try {
+            List<Instance> list = LocalStore.load(serviceName);
+            logger.info("Load service list form local cache file succeed",serviceName);
+            return list;
+        } catch (Exception ex1) {
+            logger.warn("Load service list form local cache file failed: {}",serviceName,ex1);
+            return null;
+        }
+    }
+
+    private void saveToLocalFile(List<Instance> list) {
+        try {
+            LocalStore.save(serviceName, list);
+        } catch (Exception ex) {
+            logger.error("Write service instancs to local cache file failed: {}", serviceName, ex);
+        }
     }
     //-------------------------------------------------------------------------------
-    private String heartbeatMessage = "heartbeat";
     private class CheckServiceAlive {}
     private void handleCheckServiceAlive(CheckServiceAlive msg) {
         this.instances.forEach((addr,it) -> {
@@ -233,10 +271,10 @@ public class ServiceActor extends AbstractActor {
         logger.trace("Check servcie alive: {}@{} ",instance.name, instance.addr);
         ActorSelection service = context().actorSelection(instance.path);
         ActorRef self = self();
-        Patterns.ask(service, heartbeatMessage, 5000).onComplete(new OnComplete<Object>() {
+        Patterns.ask(service, ping, 5000).onComplete(new OnComplete<Object>() {
             @Override
             public void onComplete(Throwable failure, Object success) throws Throwable {
-                boolean online = (failure == null);
+                boolean online = failure == null && success instanceof DSF.Pong;
                 self.tell(new ServiceAlive(instance.addr, online), ActorRef.noSender());
             }
         }, context().dispatcher());
@@ -276,12 +314,16 @@ public class ServiceActor extends AbstractActor {
     }
     //------------------------------------------------------------------------------------
     class SubscriberInfo {
+        public final String name;
+        public boolean active;
         public SubscriberInfo(String name) {
             this.name = name;
             this.active = true;
         }
+    }
 
-        public final String name;
-        public boolean active;
+    private String makeSerialId() {
+        //todo: 计算实例集合的HashCode或者MD5
+        return UUID.randomUUID().toString();
     }
 }

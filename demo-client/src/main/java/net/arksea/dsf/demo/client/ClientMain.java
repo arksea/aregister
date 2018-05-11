@@ -1,20 +1,15 @@
 package net.arksea.dsf.demo.client;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
-import akka.pattern.Patterns;
-import net.arksea.dsf.ServiceResponse;
-import net.arksea.dsf.client.ActorClient;
-import net.arksea.dsf.client.route.IRouteStrategy;
-import net.arksea.dsf.client.route.RouteStrategy;
-import net.arksea.dsf.client.route.RouteStrategyFactory;
+import net.arksea.dsf.client.Client;
 import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.concurrent.Await;
+import scala.concurrent.duration.Duration;
 
-import static akka.japi.Util.classTag;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -30,39 +25,27 @@ public final class ClientMain {
     public static void main(final String[] args) {
         try {
             logger.info("Start DEMO Client");
-            ActorSystem system = ActorSystem.create("system");
             String serviceName = "net.arksea.dsf.DemoService-1.0";
-            RegisterClient registerClient = new RegisterClient("TestClient","127.0.0.1:6501");
-            IRouteStrategy routeStrategy = RouteStrategyFactory.create(RouteStrategy.ROUNDROBIN);
-            ActorRef client = system.actorOf(ActorClient.props(serviceName, registerClient,routeStrategy));
+            RegisterClient register = new RegisterClient("TestClient","127.0.0.1:6501");
+            Client client = register.subscribe(serviceName);
             for (int i=0; i<80000; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
-                call(client, msg, system);
+                client.request(msg, 10000).onComplete(
+                    new OnComplete<Object>() {
+                        @Override
+                        public void onComplete(Throwable failure, Object ret) throws Throwable {
+                            if (failure != null) {
+                                logger.warn("failed", failure);
+                            }
+                        }
+                    }, client.system.dispatcher()
+                );
                 Thread.sleep(1000);
             }
             Thread.sleep(10000);
-            system.terminate().value();
+            Await.result(client.system.terminate(), Duration.apply(10, TimeUnit.SECONDS));
         } catch (Exception ex) {
             logger.error("Start DEMO Client failed", ex);
         }
-    }
-
-    private static void call(ActorRef client, DemoRequest1 msg, ActorSystem system) {
-        Patterns.ask(client, msg, 10000).mapTo(classTag(ServiceResponse.class)).onComplete(
-            new OnComplete<ServiceResponse>() {
-                @Override
-                public void onComplete(Throwable failure, ServiceResponse ret) throws Throwable {
-                    if (failure == null) {
-                        if (ret.isSucceed()) {
-                            //logger.info(ret.msg);
-                        } else {
-                            logger.info(ret.getClass().getName());
-                        }
-                    } else {
-                        logger.warn("failed", failure);
-                    }
-                }
-            }, system.dispatcher()
-        );
     }
 }
