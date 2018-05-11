@@ -152,21 +152,21 @@ public class RegisterClientActor extends AbstractActor {
                 public void onComplete(Throwable failure, Boolean success) throws Throwable {
                     if (failure == null) {
                         if (success) {
-                            log.info("register Service success: {}@{}", msg.name, msg.addr);
+                            log.info("Register service success: {}@{}", msg.name, msg.addr);
                             resetBackoffDelay();
                             return;
                         } else {
                             if (backoff >= MAX_RETRY_DELAY) {
-                                log.error("register Service failed: {}@{}", msg.name, msg.addr);
+                                log.error("Register service failed: {}@{}", msg.name, msg.addr);
                             } else {
-                                log.warn("register Service failed: {}@{}", msg.name, msg.addr);
+                                log.warn("Register service failed: {}@{}", msg.name, msg.addr);
                             }
                         }
                     } else {
                         if (backoff >= MAX_RETRY_DELAY) {
-                            log.error("register Service failed: {}@{}", msg.name, msg.addr, failure);
+                            log.error("Register service failed: {}@{}", msg.name, msg.addr, failure);
                         } else {
-                            log.warn("register Service failed: {}@{}", msg.name, msg.addr, failure);
+                            log.warn("Register service failed: {}@{}", msg.name, msg.addr, failure);
                         }
                     }
                     context().system().scheduler().scheduleOnce(
@@ -203,16 +203,16 @@ public class RegisterClientActor extends AbstractActor {
                             return;
                         } else {
                             if (backoff >= MAX_RETRY_DELAY) {
-                                log.error("unregister Service failed: {}@{}", msg.name, msg.addr);
+                                log.error("Unregister service failed: {}@{}", msg.name, msg.addr);
                             } else {
-                                log.warn("unregister Service failed: {}@{}", msg.name, msg.addr);
+                                log.warn("Unregister service failed: {}@{}", msg.name, msg.addr);
                             }
                         }
                     } else {
                         if (backoff >= MAX_RETRY_DELAY) {
-                            log.error("unregister Service failed: {}@{}", msg.name, msg.addr, failure);
+                            log.error("Unregister service failed: {}@{}", msg.name, msg.addr, failure);
                         } else {
-                            log.warn("unregister Service failed: {}@{}", msg.name, msg.addr, failure);
+                            log.warn("Unregister service failed: {}@{}", msg.name, msg.addr, failure);
                         }
                     }
                     context().system().scheduler().scheduleOnce(

@@ -38,9 +38,7 @@ public final class ServerMain {
             if (port == 8772) {
                 Thread.sleep(400000);
                 wait(system.terminate());
-                Thread.sleep(10000);
-                wait(registerClient.stop());
-                Thread.sleep(5000);
+                registerClient.stopAndWait(10);
             }
         } catch (Exception ex) {
             LogManager.getLogger(ServerMain.class).error("启动DEMO服务失败", ex);
