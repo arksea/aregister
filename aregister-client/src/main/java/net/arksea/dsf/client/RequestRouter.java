@@ -5,12 +5,8 @@ import akka.dispatch.OnComplete;
 import akka.pattern.Patterns;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.route.IRouteStrategy;
-import net.arksea.dsf.register.RegisterClient;
-import net.arksea.dsf.store.LocalStore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.*;
@@ -32,11 +28,11 @@ public class RequestRouter extends AbstractActor {
     private Cancellable checkOfflineTimer;
     private static final int CHECK_OFFLINE_SECONDS = 5; //测试OFFLINE服务是否存活
     private final DSF.Ping ping;
-    private RegisterClient registerClient;
+    private IInstanceSource instanceSource;
 
-    private RequestRouter(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy, ISwitchCondition condition) {
+    private RequestRouter(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
         this.serviceName = serviceName;
-        this.registerClient = registerClient;
+        this.instanceSource = instanceSource;
         this.routeStrategy = routeStrategy;
         this.ping = DSF.Ping.getDefaultInstance();
         this.switchCondition = condition;
@@ -58,27 +54,16 @@ public class RequestRouter extends AbstractActor {
 
 
     private void getSvcInstances() {
-        if (registerClient == null) {
-            loadFromLocalCache();
-        } else {
-            try {
-                Future<DSF.SvcInstances> future = registerClient.getServiceList(serviceName, 5000);
-                DSF.SvcInstances result = Await.result(future, Duration.create(5000, "ms"));
-                handleSvcInstances(result);
-                log.info("Load service list form register succeed", serviceName);
-            } catch (Exception e) {
-                log.warn("Load service list form register failed: {}", serviceName, e);
-                loadFromLocalCache();
-            }
+        try {
+            DSF.SvcInstances result = instanceSource.getSvcInstances();
+            handleSvcInstances(result);
+        } catch (Exception ex) {
+            log.warn("Load service list failed: {}",serviceName,ex);
         }
     }
 
     private void init() {
-        if (registerClient != null) {
-            //订阅服务实例更新事件，如果此处请求错误，会在定时更新服务端服务实例时得到补救：
-            //注册服务器在收到请求同步服务实例消息时，将其视为订阅者，如果不在列表中的话会进行补登记
-            registerClient.subscribeInfo(serviceName, self());
-        }
+        instanceSource.subscribe(self());
         saveStatDataTimer = context().system().scheduler().schedule(
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
@@ -90,9 +75,7 @@ public class RequestRouter extends AbstractActor {
     }
 
     private void fini() {
-        if (registerClient != null) {
-            registerClient.unsubscribeInfo(serviceName, self());
-        }
+        instanceSource.unsubscribe(self());
         if (saveStatDataTimer != null) {
             saveStatDataTimer.cancel();
             saveStatDataTimer = null;
@@ -103,35 +86,8 @@ public class RequestRouter extends AbstractActor {
         }
     }
 
-    private void loadFromLocalCache() {
-        try {
-            List<net.arksea.dsf.store.Instance> list = LocalStore.load(serviceName);
-            DSF.SvcInstances.Builder builder = DSF.SvcInstances.newBuilder()
-                .setName(serviceName)
-                .setSerialId("");
-            for (net.arksea.dsf.store.Instance i : list){
-                builder.addInstances(
-                    DSF.Instance.newBuilder()
-                        .setAddr(i.getAddr())
-                        .setPath(i.getPath())
-                        .setOnline(true)
-                        .build());
-            }
-            handleSvcInstances(builder.build());
-            log.info("Load service list form local cache file succeed",serviceName);
-        } catch (Exception ex) {
-            log.warn("Load service list form local cache file failed: {}",serviceName,ex);
-        }
-    }
-
-    //优先从注册服务器获取服务列表
-    public static Props props(String serviceName, RegisterClient registerClient, IRouteStrategy routeStrategy, ISwitchCondition condition) {
-        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,registerClient,routeStrategy, condition));
-    }
-
-    //只从本地配置文件获取服务列表
-    public static Props props(String serviceName, IRouteStrategy routeStrategy, ISwitchCondition condition) {
-        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,null, routeStrategy, condition));
+    public static Props props(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
+        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,instanceSource,routeStrategy, condition));
     }
 
     @Override
