@@ -11,6 +11,7 @@ import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.Client;
 import net.arksea.dsf.client.DefaultSwitchCondition;
 import net.arksea.dsf.client.ISwitchCondition;
+import net.arksea.dsf.client.ServiceInstanceSource;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
@@ -64,7 +65,7 @@ public class RegisterClient {
     }
 
     public Client subscribe(String serviceName, RouteStrategy routeStrategy, ICodes codes, ISwitchCondition condition, ActorSystem clientSystem) {
-        return new Client(serviceName, routeStrategy, codes, condition, clientSystem, this);
+        return new Client(serviceName, routeStrategy, codes, condition, clientSystem, new ServiceInstanceSource(serviceName, this));
     }
 
     public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem) {
