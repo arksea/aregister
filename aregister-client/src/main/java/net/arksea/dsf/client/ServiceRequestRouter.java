@@ -104,23 +104,4 @@ public class ServiceRequestRouter extends RequestRouter {
         }
         timeoutRequests.forEach(requests::remove);
     }
-    //---------------------------------------------------------------------------------------
-//    class ForwardRawMessage {
-//        public ForwardRawMessage(Object message) {
-//            this.message = message;
-//        }
-//        public final Object message;
-//    }
-//    private void handleForwardRawMessage(ForwardRawMessage f) {
-//        Optional<Instance> op = routeStrategy.getInstance(instances);
-//        final ActorRef requester = sender();
-//        if (op.isPresent()) {
-//            Instance instance = op.get();
-//            log.trace("service instance: {}", instance.path);
-//            ActorSelection service = context().actorSelection(instance.path);
-//            service.tell(f.message,requester);
-//        } else {
-//            requester.tell(new NoUseableService(serviceName), self());
-//        }
-//    }
 }
