@@ -11,6 +11,7 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
+import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,17 +30,19 @@ public final class ServerMain {
             logger.info("启动DEMO服务");
             Config cfg = ConfigFactory.load();
             ActorSystem system = ActorSystem.create("DemoSystem",cfg);
-            RegisterClient registerClient = new RegisterClient("DemoService","127.0.0.1:6501");
+            LinkedList<String> addrs = new LinkedList<>();
+            addrs.add("127.0.0.1:6501");
+            RegisterClient registerClient = new RegisterClient("TestClient",addrs);
             String serviceName = "net.arksea.dsf.DemoService-1.0";
             int port = cfg.getInt("akka.remote.netty.tcp.port");
             ActorRef service = system.actorOf(DemoActor.props(port), "DemoService");
             registerClient.register(serviceName, port, service, system);
             Thread.sleep(3000);
-            if (port == 8772) {
-                Thread.sleep(400000);
-                wait(system.terminate());
-                registerClient.stopAndWait(10);
-            }
+//            if (port == 8772) {
+//                Thread.sleep(400000);
+//                wait(system.terminate());
+//                registerClient.stopAndWait(10);
+//            }
         } catch (Exception ex) {
             LogManager.getLogger(ServerMain.class).error("启动DEMO服务失败", ex);
         }

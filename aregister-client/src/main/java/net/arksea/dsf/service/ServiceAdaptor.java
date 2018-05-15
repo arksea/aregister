@@ -2,21 +2,15 @@ package net.arksea.dsf.service;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.actor.Address;
 import akka.actor.Props;
 import akka.japi.Creator;
+import akka.japi.pf.ReceiveBuilder;
 import com.google.protobuf.Message;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
-import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -26,65 +20,39 @@ public class ServiceAdaptor extends AbstractActor {
     private static final Logger logger = LogManager.getLogger(ServiceAdaptor.class);
     private final ActorRef service;
     private final ICodes codes;
-    private final RegisterClient register;
-    private final String serviceName;
-    private final String serviceAddr;
-    private final String servicePath;
-    private ServiceAdaptor(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register) {
-        this.serviceName = serviceName;
+    protected ServiceAdaptor(ActorRef service, ICodes codes) {
         this.service = service;
-        this.register = register;
         this.codes = codes;
-        Address address = Address.apply("akka.tcp",context().system().name(),host, port);
-        serviceAddr = host + ":" + port;
-        servicePath = self().path().toStringWithAddress(address);
-        logger.info("Create Service Adaptor: addr={}, path={}", serviceAddr, servicePath);
     }
 
-
-    public static Props props(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register) {
+    public static Props props(ActorRef service, ICodes codes) {
         return Props.create(new Creator<ServiceAdaptor>() {
             @Override
             public ServiceAdaptor create() throws Exception {
-                return new ServiceAdaptor(serviceName, host, port, service, codes, register);
+                return new ServiceAdaptor(service, codes);
             }
         });
     }
 
-    public static Props props(String serviceName, String host, int port, ActorRef service, RegisterClient register) {
+    public static Props props(ActorRef service) {
         return Props.create(new Creator<ServiceAdaptor>() {
             @Override
             public ServiceAdaptor create() throws Exception {
-                return new ServiceAdaptor(serviceName, host, port, service, new JavaSerializeCodes(), register);
+                return new ServiceAdaptor(service, new JavaSerializeCodes());
             }
         });
     }
 
     @Override
     public Receive createReceive() {
+        return createReceiveBuilder().build();
+    }
+
+    protected ReceiveBuilder createReceiveBuilder() {
         return receiveBuilder()
             .match(DSF.ServiceRequest.class,this::handleServiceRequest)
             .match(ServiceResponse.class,   this::handleServiceResponse)
-            .match(DSF.Ping.class,          this::handlePing)
-            .match(DelayRegister.class,     this::handleDelayRegister)
-            .match(Unregister.class,        this::handleUnregister)
-            .build();
-    }
-
-    @Override
-    public void preStart() throws Exception {
-        context().system().scheduler().scheduleOnce(Duration.create(3, TimeUnit.SECONDS),
-            self(),new DelayRegister(),context().dispatcher(),self());
-    }
-
-    @Override
-    public void postStop() throws Exception {
-        try {
-            Future f = register.unregisterInfo(serviceName, serviceAddr, 10000);
-            Await.result(f, Duration.create(10, TimeUnit.SECONDS));
-        } catch (Exception ex) {
-            logger.warn("Unregister service timeout: {}@{}", serviceName, serviceAddr, ex);
-        }
+            .match(DSF.Ping.class,          this::handlePing);
     }
     //------------------------------------------------------------------------------------
     private void handleServiceRequest(DSF.ServiceRequest msg) {
@@ -107,17 +75,8 @@ public class ServiceAdaptor extends AbstractActor {
         }
     }
 
-    class DelayRegister {}
-    private void handleDelayRegister(DelayRegister msg) {
-        register.registerInfo(serviceName, serviceAddr, servicePath);
-    }
     //------------------------------------------------------------------------------------
     private void handlePing(DSF.Ping msg) {
         sender().tell(DSF.Pong.getDefaultInstance(), self());
-    }
-    //------------------------------------------------------------------------------------
-    public static class Unregister {}
-    private void handleUnregister(Unregister msg) {
-        register.unregisterInfo(serviceName, serviceAddr, sender());
     }
 }

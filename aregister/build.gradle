@@ -29,6 +29,13 @@ task run2(type: JavaExec, dependsOn: 'classes') {
     standardInput = System.in
 }
 
+task run3(type: JavaExec, dependsOn: 'classes') {
+    classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
+    main = runMainClass
+    jvmArgs = ['-Dakka.remote.netty.tcp.port=6503']
+    standardInput = System.in
+}
+
 task debug1(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
     main = runMainClass
