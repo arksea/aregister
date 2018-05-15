@@ -29,22 +29,25 @@ public class RequestRouter extends AbstractActor {
     private final DSF.Ping ping;
     private IInstanceSource instanceSource;
     private final IRouteStrategy routeStrategy;
+    private final boolean checkOnlineServiceAlive;
 
-    protected RequestRouter(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
+    protected RequestRouter(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition,boolean checkOnlineServiceAlive) {
         this.serviceName = serviceName;
         this.instanceSource = instanceSource;
         this.ping = DSF.Ping.getDefaultInstance();
         this.routeStrategy = routeStrategy;
         this.switchCondition = condition;
+        this.checkOnlineServiceAlive = checkOnlineServiceAlive;
     }
 
-    public static Props props(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
-        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,instanceSource, routeStrategy, condition));
+    public static Props props(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition,boolean checkOnlineServiceAlive) {
+        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,instanceSource, routeStrategy, condition, checkOnlineServiceAlive));
     }
 
     @Override
     public void preStart() {
         log.debug("RequestRouter preStart: {}", serviceName);
+        instanceSource.subscribe(self());
         saveStatDataTimer = context().system().scheduler().schedule(
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
@@ -52,7 +55,7 @@ public class RequestRouter extends AbstractActor {
         checkOfflineTimer = context().system().scheduler().schedule(
             Duration.create(CHECK_OFFLINE_SECONDS, TimeUnit.SECONDS),
             Duration.create(CHECK_OFFLINE_SECONDS,TimeUnit.SECONDS),
-            self(),new CheckOfflineService(),context().dispatcher(),self());
+            self(),new CheckServiceAlive(),context().dispatcher(),self());
         try {
             initInstances(instanceSource.getSvcInstances());
         } catch (Exception ex) {
@@ -63,6 +66,7 @@ public class RequestRouter extends AbstractActor {
     @Override
     public void postStop() {
         log.debug("RequestRouter postStop: {}", serviceName);
+        instanceSource.unsubscribe(self());
         if (saveStatDataTimer != null) {
             saveStatDataTimer.cancel();
             saveStatDataTimer = null;
@@ -111,7 +115,7 @@ public class RequestRouter extends AbstractActor {
         return receiveBuilder()
 
             .match(SaveStatData.class,       this::handleSaveStatData)
-            .match(CheckOfflineService.class,this::handleCheckOfflineService)
+            .match(CheckServiceAlive.class,this::handleCheckServiceAlive)
             .match(ServiceAlive.class,       this::handleServiceAlive)
             .match(Ready.class,              this::handleReady);
     }
@@ -181,10 +185,10 @@ public class RequestRouter extends AbstractActor {
         }
     }
     //------------------------------------------------------------------------------------
-    private class CheckOfflineService {}
-    private void handleCheckOfflineService(CheckOfflineService msg) {
+    private class CheckServiceAlive {}
+    private void handleCheckServiceAlive(CheckServiceAlive msg) {
         this.instances.forEach(it -> {
-            if (it.status == InstanceStatus.OFFLINE) {
+            if (checkOnlineServiceAlive || it.status == InstanceStatus.OFFLINE) {
                 checkServiceAlive(it);
             }
         });

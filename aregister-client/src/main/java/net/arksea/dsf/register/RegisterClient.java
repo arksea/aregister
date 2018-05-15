@@ -24,6 +24,7 @@ import scala.concurrent.duration.Duration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static akka.japi.Util.classTag;
@@ -42,13 +43,13 @@ public class RegisterClient {
     /**
      *
      * @param clientName 用于注册服务分辨客户端
-     * @param serverAddr
+     * @param serverAddrs
      */
-    public RegisterClient(String clientName, String serverAddr) {
+    public RegisterClient(String clientName, List<String> serverAddrs) {
         this.clientName = clientName;
         Config config = ConfigFactory.parseResources("default-register-client.conf");
         this.system = ActorSystem.create(REG_CLIENT_SYSTEM_NAME,config.getConfig(REG_CLIENT_SYSTEM_NAME).withFallback(config));
-        registerClient = system.actorOf(RegisterClientActor.props(clientName, serverAddr), RegisterClientActor.ACTOR_NAME);
+        registerClient = system.actorOf(RegisterClientActor.props(clientName, serverAddrs), RegisterClientActor.ACTOR_NAME);
     }
 
     public Client subscribe(String serviceName) {

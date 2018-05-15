@@ -19,7 +19,7 @@ public class ServiceRequestRouter extends RequestRouter {
 
     private final Map<String, RequestState> requests = new HashMap<>();
     protected ServiceRequestRouter(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
-        super(serviceName, instanceSource, routeStrategy, condition);
+        super(serviceName, instanceSource, routeStrategy, condition, false);
 
     }
 

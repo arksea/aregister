@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
+import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -26,7 +27,10 @@ public final class ClientMain {
         try {
             logger.info("Start DEMO Client");
             String serviceName = "net.arksea.dsf.DemoService-1.0";
-            RegisterClient register = new RegisterClient("TestClient","127.0.0.1:6501");
+            LinkedList<String> addrs = new LinkedList<>();
+            addrs.add("127.0.0.1:6501");
+            addrs.add("127.0.0.1:6502");
+            RegisterClient register = new RegisterClient("TestClient",addrs);
             Client client = register.subscribe(serviceName);
             for (int i=0; i<80000; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
