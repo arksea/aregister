@@ -123,7 +123,7 @@ public class RequestRouter extends AbstractActor {
                 requests.put(msg.getRequestId(), state);
             }
         } else {
-            requester.tell(new NoUseableService(), self());
+            requester.tell(new NoUseableService(serviceName), self());
         }
     }
     //------------------------------------------------------------------------------------
