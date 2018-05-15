@@ -6,6 +6,7 @@ import akka.japi.Creator;
 import akka.pattern.Patterns;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.DefaultSwitchCondition;
+import net.arksea.dsf.client.IInstanceSource;
 import net.arksea.dsf.client.Instance;
 import net.arksea.dsf.client.RequestRouter;
 import net.arksea.dsf.client.route.HotStandby;
@@ -37,20 +38,20 @@ public class RegisterClientActor extends RequestRouter {
     private Cancellable updateTimer;
     private static final int UPDATE_DELAY_SECONDS = 60;
 
-    public RegisterClientActor(String clientName, List<String> serverAddrs) {
+    public RegisterClientActor(String clientName, IInstanceSource instanceSource) {
         super("dsfRegister",
-            new FixedRegisterInstanceSource("dsfRegister", serverAddrs),
+            instanceSource,
             new HotStandby(),
             new DefaultSwitchCondition(),
             true);
         this.clientName = clientName;
     }
 
-    public static Props props(String clientName, List<String> serverAddrs) {
+    public static Props props(String clientName, IInstanceSource instanceSource) {
         return Props.create(new Creator<RegisterClientActor>() {
             @Override
             public RegisterClientActor create() throws Exception {
-                return new RegisterClientActor(clientName, serverAddrs);
+                return new RegisterClientActor(clientName, instanceSource);
             }
         });
     }
@@ -166,7 +167,7 @@ public class RegisterClientActor extends RequestRouter {
             Instance i = op.get();
             ActorSelection register = context().actorSelection(i.path);
             Patterns.ask(register, dsfmsg, timeout).mapTo(classTag(Boolean.class)).onComplete(
-                new TryUntilSucceed(sender(), self(), msg, backoff,
+                new TryUntilSucceed(self(), msg, backoff,
                     () -> "Register service success: "+msg.name+"@"+msg.addr,
                     () -> "Register service failed: "+msg.name+"@"+msg.addr)
                 , context().dispatcher());
@@ -197,7 +198,7 @@ public class RegisterClientActor extends RequestRouter {
             Instance i = op.get();
             ActorSelection register = context().actorSelection(i.path);
             Patterns.ask(register, dsfmsg, timeout).mapTo(classTag(Boolean.class)).onComplete(
-                new TryUntilSucceed(sender(), self(), msg, backoff,
+                new TryUntilSucceed(self(), msg, backoff,
                     () -> "Unregister service success: " + msg.name + "@" + msg.addr,
                     () -> "Unregister service failed: " + msg.name + "@" + msg.addr)
                 , context().dispatcher());
@@ -232,16 +233,14 @@ public class RegisterClientActor extends RequestRouter {
     }
     //-------------------------------------------------------------------------------------------------
     public class TryUntilSucceed extends OnComplete<Boolean> {
-        private ActorRef requester;
         private ActorRef registerClient;
         private Object message;
         private Callable<String> succeedLogInfo;
         private Callable<String> failedLogInfo;
         private final long failedDelay;
-        public TryUntilSucceed(ActorRef requester, ActorRef registerClient,
+        public TryUntilSucceed(ActorRef registerClient,
                                Object msg, long failedDelay,
                                Callable<String> succeedLogInfo, Callable<String> failedLogInfo) {
-            this.requester = requester;
             this.registerClient = registerClient;
             this.message = msg;
             this.succeedLogInfo = succeedLogInfo;
@@ -253,7 +252,6 @@ public class RegisterClientActor extends RequestRouter {
         public void onComplete(Throwable failure, Boolean success) throws Throwable {
             if (failure == null) {
                 if (success) {
-                    //requester.tell(true, ActorRef.noSender());
                     log.info(succeedLogInfo.call());
                     registerClient.tell(new RegisterRequestSucceed(), ActorRef.noSender());
                     return;

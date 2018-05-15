@@ -8,10 +8,7 @@ import akka.pattern.Patterns;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.DSF;
-import net.arksea.dsf.client.Client;
-import net.arksea.dsf.client.DefaultSwitchCondition;
-import net.arksea.dsf.client.ISwitchCondition;
-import net.arksea.dsf.client.ServiceInstanceSource;
+import net.arksea.dsf.client.*;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
@@ -49,7 +46,8 @@ public class RegisterClient {
         this.clientName = clientName;
         Config config = ConfigFactory.parseResources("default-register-client.conf");
         this.system = ActorSystem.create(REG_CLIENT_SYSTEM_NAME,config.getConfig(REG_CLIENT_SYSTEM_NAME).withFallback(config));
-        registerClient = system.actorOf(RegisterClientActor.props(clientName, serverAddrs), RegisterClientActor.ACTOR_NAME);
+        IInstanceSource instanceSource = new RegisterInstanceSource(serverAddrs, this.system);
+        registerClient = system.actorOf(RegisterClientActor.props(clientName, instanceSource), RegisterClientActor.ACTOR_NAME);
     }
 
     public Client subscribe(String serviceName) {

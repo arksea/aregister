@@ -3,7 +3,6 @@ package net.arksea.dsf.register;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.IInstanceSource;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,15 +14,9 @@ public class FixedRegisterInstanceSource implements IInstanceSource {
     protected final String serviceName;
     protected final List<String> registerAddrs;
 
-    public FixedRegisterInstanceSource(String serviceName, List<String> registerAddrs) {
-        this.serviceName = serviceName;
+    public FixedRegisterInstanceSource(List<String> registerAddrs) {
+        this.serviceName = "dsfRegister";
         this.registerAddrs = registerAddrs;
-    }
-
-    public FixedRegisterInstanceSource(String serviceName, String registerAddr) {
-        this.serviceName = serviceName;
-        registerAddrs = new LinkedList<>();
-        registerAddrs.add(registerAddr);
     }
 
     @Override

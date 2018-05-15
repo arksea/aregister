@@ -1,12 +1,18 @@
 package net.arksea.dsf.register;
 
 import akka.actor.*;
+import akka.cluster.Cluster;
+import akka.cluster.Member;
 import akka.japi.Creator;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.store.IRegisterStore;
 import net.arksea.dsf.store.Instance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.collection.Iterator;
+import scala.collection.SortedSet;
+
+import java.util.UUID;
 
 /**
  * 负责响应客户端请求
@@ -18,6 +24,7 @@ public class RegisterActor extends AbstractActor {
     private final Logger log = LogManager.getLogger(ServiceActor.class);
     private IRegisterStore store;
     private ActorSelection serviceManagerActor;
+    private final Cluster cluster = Cluster.get(getContext().getSystem());
     public RegisterActor(IRegisterStore store) {
         this.store = store;
         serviceManagerActor = context().actorSelection("/user/"+ServiceManagerActor.ACTOR_NAME);
@@ -52,6 +59,7 @@ public class RegisterActor extends AbstractActor {
             .match(DSF.SubService.class,          this::handleSubService)
             .match(DSF.UnsubService.class,        this::handleUnsubService)
             .match(DSF.Ping.class,                this::handlePing)
+            .match(DSF.GetRegisterInstances.class,this::handleGetRegisterInstances)
             .build();
     }
 
@@ -101,5 +109,27 @@ public class RegisterActor extends AbstractActor {
 
     private void handlePing(DSF.Ping msg) {
         sender().tell(DSF.Pong.getDefaultInstance(), self());
+    }
+
+    private void handleGetRegisterInstances(DSF.GetRegisterInstances msg) {
+        DSF.SvcInstances.Builder builder = DSF.SvcInstances.newBuilder()
+            .setName("dsfRegister")
+            .setSerialId(UUID.randomUUID().toString());
+
+        SortedSet<Member> members = cluster.state().members();
+        Iterator<Member> it = members.iterator();
+        while (it.hasNext()) {
+            Member m = it.next();
+            Address a = m.address();
+            String addr = a.host().get()+":"+a.port().get();
+            String path = "akka.tcp://DsfCluster@"+addr+"/user/dsfRegister";
+            builder.addInstances(
+                DSF.Instance.newBuilder()
+                    .setAddr(addr)
+                    .setPath(path)
+                    .setOnline(true)
+                    .build());
+        }
+        sender().tell(builder.build(), self());
     }
 }

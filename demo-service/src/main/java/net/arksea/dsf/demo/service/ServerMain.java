@@ -32,7 +32,6 @@ public final class ServerMain {
             ActorSystem system = ActorSystem.create("DemoSystem",cfg);
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
-            addrs.add("127.0.0.1:6502");
             RegisterClient registerClient = new RegisterClient("TestClient",addrs);
             String serviceName = "net.arksea.dsf.DemoService-1.0";
             int port = cfg.getInt("akka.remote.netty.tcp.port");
