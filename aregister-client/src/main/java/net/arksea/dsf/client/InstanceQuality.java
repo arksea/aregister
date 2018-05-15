@@ -35,10 +35,8 @@ public class InstanceQuality {
         }
     }
 
-    public void request(boolean isOnewayRequest) {
-        if (!isOnewayRequest) {
-            ++requestCount;
-        }
+    public void request() {
+        ++requestCount;
     }
 
     public void succeed(long time) {

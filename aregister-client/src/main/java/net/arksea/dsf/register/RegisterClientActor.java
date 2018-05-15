@@ -12,6 +12,7 @@ import scala.concurrent.duration.Duration;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static akka.japi.Util.classTag;
@@ -32,12 +33,17 @@ public class RegisterClientActor extends AbstractActor {
     private final String clientName;
     private Cancellable updateTimer;
     private static final int UPDATE_DELAY_SECONDS = 60;
+//    private ActorRef registerRouter;
 
 
     public RegisterClientActor(String clientName, String serverAddr) {
         this.clientName = clientName;
         String path = "akka.tcp://DsfCluster@"+serverAddr+"/user/dsfRegister";
         register = context().actorSelection(path);
+//        IInstanceSource instanceSource = new FixedRegisterInstanceSource("dsfRegister", serverAddr);
+//        IRouteStrategy routeStrategy = new HotStandby();
+//        ISwitchCondition switchCondition = new DefaultSwitchCondition();
+//        registerRouter = context().actorOf(RequestRouter.props("dsfRegister",instanceSource, routeStrategy, switchCondition));
     }
 
     public static Props props(String clientName, String serverAddr) {
@@ -79,6 +85,8 @@ public class RegisterClientActor extends AbstractActor {
             .match(DSF.RegService.class,      this::handleRegService)
             .match(DSF.UnregService.class,    this::handleUnregService)
             .match(UpdateSubscribe.class,     this::handleUpdateSubscribe)
+            .match(RegisterRequestSucceed.class,  this::handleRegisterRequestSucceed)
+            .match(RegisterRequestFailed.class,   this::handleRegisterRequestFailed)
             .build();
     }
     //-------------------------------------------------------------------------------------------------
@@ -142,33 +150,10 @@ public class RegisterClientActor extends AbstractActor {
             .setPath(msg.path)
             .build();
         Patterns.ask(register, dsfmsg, timeout).mapTo(classTag(Boolean.class)).onComplete(
-            new OnComplete<Boolean>() {
-                @Override
-                public void onComplete(Throwable failure, Boolean success) throws Throwable {
-                    if (failure == null) {
-                        if (success) {
-                            log.info("Register service success: {}@{}", msg.name, msg.addr);
-                            resetBackoffDelay();
-                            return;
-                        } else {
-                            if (backoff >= MAX_RETRY_DELAY) {
-                                log.error("Register service failed: {}@{}", msg.name, msg.addr);
-                            } else {
-                                log.warn("Register service failed: {}@{}", msg.name, msg.addr);
-                            }
-                        }
-                    } else {
-                        if (backoff >= MAX_RETRY_DELAY) {
-                            log.error("Register service failed: {}@{}", msg.name, msg.addr, failure);
-                        } else {
-                            log.warn("Register service failed: {}@{}", msg.name, msg.addr, failure);
-                        }
-                    }
-                    context().system().scheduler().scheduleOnce(
-                        Duration.create(getBackoffDelay(), TimeUnit.SECONDS),self(),dsfmsg,context().dispatcher(),self()
-                    );
-                }
-            }, context().dispatcher());
+            new TryUntilSucceed(sender(), self(), dsfmsg, backoff,
+                () -> "Register service success: "+msg.name+"@"+msg.addr,
+                () -> "Register service failed: "+msg.name+"@"+msg.addr)
+            , context().dispatcher());
     }
     //将集群中广播的注册事件分发给所有本地订阅者
     private void handleRegService(DSF.RegService msg) {
@@ -181,40 +166,15 @@ public class RegisterClientActor extends AbstractActor {
     //-------------------------------------------------------------------------------------------------
     private void handleUnregLocalService(UnregLocalService msg) {
         log.trace("RegisterClientActor.handleUnregLocalService({})", msg.addr);
-        final ActorRef sender = sender();
         DSF.UnregService dsfmsg = DSF.UnregService.newBuilder()
             .setName(msg.name)
             .setAddr(msg.addr)
             .build();
         Patterns.ask(register, dsfmsg, timeout).mapTo(classTag(Boolean.class)).onComplete(
-            new OnComplete<Boolean>() {
-                @Override
-                public void onComplete(Throwable failure, Boolean success) throws Throwable {
-                    if (failure == null) {
-                        if (success) {
-                            sender.tell(true, ActorRef.noSender());
-                            log.info("Unregister service success: {}@{}", msg.name, msg.addr);
-                            resetBackoffDelay();
-                            return;
-                        } else {
-                            if (backoff >= MAX_RETRY_DELAY) {
-                                log.error("Unregister service failed: {}@{}", msg.name, msg.addr);
-                            } else {
-                                log.warn("Unregister service failed: {}@{}", msg.name, msg.addr);
-                            }
-                        }
-                    } else {
-                        if (backoff >= MAX_RETRY_DELAY) {
-                            log.error("Unregister service failed: {}@{}", msg.name, msg.addr, failure);
-                        } else {
-                            log.warn("Unregister service failed: {}@{}", msg.name, msg.addr, failure);
-                        }
-                    }
-                    context().system().scheduler().scheduleOnce(
-                        Duration.create(getBackoffDelay(), TimeUnit.SECONDS),self(),dsfmsg,context().dispatcher(),self()
-                    );
-                }
-            }, context().dispatcher());
+            new TryUntilSucceed(sender(), self(), dsfmsg, backoff,
+                () -> "Unregister service success: "+msg.name+"@"+msg.addr,
+                () -> "Unregister service failed: "+msg.name+"@"+msg.addr)
+           , context().dispatcher());
     }
     //将集群中广播的注销事件分发给所有订阅者
     private void handleUnregService(DSF.UnregService msg) {
@@ -224,18 +184,66 @@ public class RegisterClientActor extends AbstractActor {
         info.clientSet.forEach(c -> c.tell(msg, self()));
     }
     //-------------------------------------------------------------------------------------------------
-    private long getBackoffDelay() {
-        this.backoff = Math.min(MAX_RETRY_DELAY, backoff*2);
-        return backoff;
-    }
-
-    private void resetBackoffDelay() {
-        this.backoff = MIN_RETRY_DELAY;
-    }
-
     class ServiceInfo {
         String serialId = ""; //注册服务下发的实例集合的序列号，注册服务用此序列号判断订阅者是否需要更新实例列表
         final Set<ActorRef> clientSet = new HashSet<>();
         final Map<String, net.arksea.dsf.store.Instance> instances = new HashMap<>();
+    }
+
+    class RegisterRequestSucceed {}
+    private void handleRegisterRequestSucceed(RegisterRequestSucceed msg) {
+        this.backoff = MIN_RETRY_DELAY;
+    }
+
+    class RegisterRequestFailed {}
+    private void handleRegisterRequestFailed(RegisterRequestFailed msg) {
+        this.backoff = Math.min(MAX_RETRY_DELAY, backoff*2);
+    }
+    //-------------------------------------------------------------------------------------------------
+    public class TryUntilSucceed extends OnComplete<Boolean> {
+        private ActorRef requester;
+        private ActorRef registerClient;
+        private Object message;
+        private Callable<String> succeedLogInfo;
+        private Callable<String> failedLogInfo;
+        private final long failedDelay;
+        public TryUntilSucceed(ActorRef requester, ActorRef registerClient,
+                               Object msg, long failedDelay,
+                               Callable<String> succeedLogInfo, Callable<String> failedLogInfo) {
+            this.requester = requester;
+            this.registerClient = registerClient;
+            this.message = msg;
+            this.succeedLogInfo = succeedLogInfo;
+            this.failedLogInfo = failedLogInfo;
+            this.failedDelay = failedDelay;
+        }
+
+        @Override
+        public void onComplete(Throwable failure, Boolean success) throws Throwable {
+            if (failure == null) {
+                if (success) {
+                    requester.tell(true, ActorRef.noSender());
+                    log.info(succeedLogInfo.call());
+                    registerClient.tell(new RegisterRequestSucceed(), ActorRef.noSender());
+                    return;
+                } else {
+                    if (failedDelay >= MAX_RETRY_DELAY) {
+                        log.error(failedLogInfo.call());
+                    } else {
+                        log.warn(failedLogInfo.call());
+                    }
+                }
+            } else {
+                if (failedDelay >= MAX_RETRY_DELAY) {
+                    log.error(failedLogInfo.call());
+                } else {
+                    log.warn(failedLogInfo.call());
+                }
+            }
+            registerClient.tell(new RegisterRequestFailed(), ActorRef.noSender());
+            context().system().scheduler().scheduleOnce(
+                Duration.create(failedDelay, TimeUnit.SECONDS),self(),message,context().dispatcher(),self()
+            );
+        }
     }
 }

@@ -2,6 +2,7 @@ package net.arksea.dsf.client;
 
 import akka.actor.*;
 import akka.dispatch.OnComplete;
+import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.Patterns;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.route.IRouteStrategy;
@@ -18,52 +19,32 @@ import java.util.concurrent.TimeUnit;
  */
 public class RequestRouter extends AbstractActor {
     private static final Logger log = LogManager.getLogger(RequestRouter.class);
-    private final String serviceName;
+    protected final String serviceName;
     private final ISwitchCondition switchCondition;
-    private final IRouteStrategy routeStrategy;
     private final Map<String,InstanceQuality> qualityMap = new HashMap<>();
     private final List<Instance> instances = new LinkedList<>();
-    private final Map<String, RequestState> requests = new HashMap<>();
     private Cancellable saveStatDataTimer; //保存历史统计数据定时器
     private Cancellable checkOfflineTimer;
     private static final int CHECK_OFFLINE_SECONDS = 5; //测试OFFLINE服务是否存活
     private final DSF.Ping ping;
     private IInstanceSource instanceSource;
+    private final IRouteStrategy routeStrategy;
 
-    private RequestRouter(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
+    protected RequestRouter(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
         this.serviceName = serviceName;
         this.instanceSource = instanceSource;
-        this.routeStrategy = routeStrategy;
         this.ping = DSF.Ping.getDefaultInstance();
+        this.routeStrategy = routeStrategy;
         this.switchCondition = condition;
+    }
 
+    public static Props props(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
+        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,instanceSource, routeStrategy, condition));
     }
 
     @Override
     public void preStart() {
         log.debug("RequestRouter preStart: {}", serviceName);
-        init();
-        getSvcInstances();
-    }
-
-    @Override
-    public void postStop() {
-        log.debug("RequestRouter postStop: {}", serviceName);
-        fini();
-    }
-
-
-    private void getSvcInstances() {
-        try {
-            DSF.SvcInstances result = instanceSource.getSvcInstances();
-            handleSvcInstances(result);
-        } catch (Exception ex) {
-            log.warn("Load service list failed: {}",serviceName,ex);
-        }
-    }
-
-    private void init() {
-        instanceSource.subscribe(self());
         saveStatDataTimer = context().system().scheduler().schedule(
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
@@ -72,10 +53,16 @@ public class RequestRouter extends AbstractActor {
             Duration.create(CHECK_OFFLINE_SECONDS, TimeUnit.SECONDS),
             Duration.create(CHECK_OFFLINE_SECONDS,TimeUnit.SECONDS),
             self(),new CheckOfflineService(),context().dispatcher(),self());
+        try {
+            initInstances(instanceSource.getSvcInstances());
+        } catch (Exception ex) {
+            log.warn("Load service list failed: {}",serviceName,ex);
+        }
     }
 
-    private void fini() {
-        instanceSource.unsubscribe(self());
+    @Override
+    public void postStop() {
+        log.debug("RequestRouter postStop: {}", serviceName);
         if (saveStatDataTimer != null) {
             saveStatDataTimer.cancel();
             saveStatDataTimer = null;
@@ -86,88 +73,8 @@ public class RequestRouter extends AbstractActor {
         }
     }
 
-    public static Props props(String serviceName, IInstanceSource instanceSource, IRouteStrategy routeStrategy, ISwitchCondition condition) {
-        return Props.create(RequestRouter.class, () -> new RequestRouter(serviceName,instanceSource,routeStrategy, condition));
-    }
-
-    @Override
-    public Receive createReceive() {
-        return receiveBuilder()
-            .match(DSF.ServiceRequest.class, this::handleServiceRequest)
-            .match(DSF.ServiceResponse.class,this::handleServiceResponse)
-            .match(DSF.RegService.class,     this::handleRegService)
-            .match(DSF.UnregService.class,   this::handleUnregService)
-            .match(SaveStatData.class,       this::handleSaveStatData)
-            .match(DSF.SvcInstances.class,   this::handleSvcInstances)
-            .match(CheckOfflineService.class,this::handleCheckOfflineService)
-            .match(ServiceAlive.class,       this::handleServiceAlive)
-            .match(Ready.class,              this::handleReady)
-            .build();
-    }
-
-    //------------------------------------------------------------------------------------
-    private void handleServiceRequest(DSF.ServiceRequest msg) {
-        log.trace("handleServiceRequest({},{},{})", msg.getTypeName(), msg.getRequestId(), msg.getOneway());
-        long startTime = System.currentTimeMillis();
-        Optional<Instance> op = routeStrategy.getInstance(instances);
-        final ActorRef requester = sender();
-        if (op.isPresent()) {
-            Instance instance = op.get();
-            InstanceQuality q = qualityMap.get(instance.addr);
-            q.request(msg.getOneway());
-            log.trace("service instance: {}", instance.path);
-            ActorSelection service = context().actorSelection(instance.path);
-            service.tell(msg,self());
-            if (!msg.getOneway()) {
-                RequestState state = new RequestState(requester, startTime, msg, instance);
-                requests.put(msg.getRequestId(), state);
-            }
-        } else {
-            requester.tell(new NoUseableService(serviceName), self());
-        }
-    }
-    //------------------------------------------------------------------------------------
-    private void handleServiceResponse(DSF.ServiceResponse msg) {
-        log.trace("handleServiceResponse({},{})", msg.getTypeName(), msg.getRequestId());
-        RequestState state = requests.remove(msg.getRequestId());
-        if (state == null) {
-            log.warn("not fond the request state : {}", msg.getRequestId());
-        } else {
-            state.requester.forward(msg, context());
-            InstanceQuality q = qualityMap.get(state.instance.addr);
-            long time = System.currentTimeMillis() - state.startTime;
-            if (time > switchCondition.requestTimeout()) {
-                q.timeout(time);
-            } else {
-                q.succeed(time);
-            }
-        }
-    }
-    //-------------------------------------------------------------------------------
-    private void handleRegService(DSF.RegService msg) {
-        log.info("Service REG : {}@{}",msg.getName(),msg.getAddr());
-        //当收到服务实例的注册事件时，如果他在本地被标记为OFFLINE状态，则将其切换到UP状态
-        //这样他将会有机会使用部分流量进行测试，直到被切换到ONLINE或者OFFLINE状态
-        InstanceQuality q = qualityMap.get(msg.getAddr());
-        if (q == null) {
-            Instance instance =  new Instance(serviceName, msg.getAddr(), msg.getPath());
-            this.instances.add(instance);
-            q = new InstanceQuality(msg.getAddr());
-            qualityMap.put(msg.getAddr(), q);
-            instance.status = InstanceStatus.OFFLINE;
-        }
-    }
-    //-------------------------------------------------------------------------------
-    private void handleUnregService(DSF.UnregService msg) {
-        log.info("Service UNREG : {}@{}",msg.getName(),msg.getAddr());
-        if (qualityMap.remove(msg.getAddr()) != null ) {
-            Instance instance =  new Instance(serviceName, msg.getAddr(), null);
-            this.instances.remove(instance);
-        }
-    }
-    //------------------------------------------------------------------------------------
-    private void handleSvcInstances(DSF.SvcInstances msg) {
-        log.trace("handleSvcInstances(), instanceCount={}",msg.getInstancesCount());
+    protected void initInstances(DSF.SvcInstances msg) {
+        log.trace("initInstances(), instanceCount={}",msg.getInstancesCount());
         Map<String,Instance> oldMap = new HashMap<>();
         this.instances.forEach(it -> oldMap.put(it.addr, it));
         this.instances.clear();
@@ -194,25 +101,62 @@ public class RequestRouter extends AbstractActor {
             oldMap.clear();
         }
     }
-    //------------------------------------------------------------------------------------
+
+    @Override
+    public Receive createReceive() {
+        return createReceiveBuilder().build();
+    }
+
+    protected ReceiveBuilder createReceiveBuilder() {
+        return receiveBuilder()
+
+            .match(SaveStatData.class,       this::handleSaveStatData)
+            .match(CheckOfflineService.class,this::handleCheckOfflineService)
+            .match(ServiceAlive.class,       this::handleServiceAlive)
+            .match(Ready.class,              this::handleReady);
+    }
+
+    //-------------------------------------------------------------------------------
     private static class SaveStatData {}
     private void handleSaveStatData(SaveStatData msg) {
-        long now = System.currentTimeMillis();
-        List<String> timeoutRequests = new LinkedList<>();
-        for (Map.Entry<String, RequestState> e: requests.entrySet()) {
-            if (now - e.getValue().startTime > switchCondition.requestTimeout()) {
-                timeoutRequests.add(e.getKey());
-                Instance i = e.getValue().instance;
-                InstanceQuality q = qualityMap.get(i.addr);
-                q.timeout(switchCondition.requestTimeout());
-            }
-        }
-        timeoutRequests.forEach(requests::remove);
+        checkTimeoutRequest();
         this.instances.forEach(it -> {
             InstanceQuality q = qualityMap.get(it.addr);
             q.saveHistory();
         });
         updateInstanceStatus();
+    }
+
+    protected void checkTimeoutRequest() {
+    }
+
+    protected void onRequest(Instance i) {
+        qualityMap.get(i.addr).request();
+    }
+    protected void onRequestSucceed(Instance i, long timeMills) {
+        qualityMap.get(i.addr).succeed(timeMills);
+    }
+    protected void onRequestTimeout(Instance i, long timeMills) {
+        qualityMap.get(i.addr).timeout(timeMills);
+    }
+    protected void onAddInstance(Instance i) {
+        InstanceQuality q = qualityMap.get(i.addr);
+        if (q == null) {
+            this.instances.add(i);
+            q = new InstanceQuality(i.addr);
+            qualityMap.put(i.addr, q);
+            i.status = InstanceStatus.OFFLINE;
+        }
+    }
+    protected long getReuqestTimeout() {
+        return switchCondition.requestTimeout();
+    }
+    protected void onDelInstance(Instance i) {
+        this.qualityMap.remove(i.addr);
+        this.instances.remove(i);
+    }
+    protected Optional<Instance> getInstance() {
+        return this.routeStrategy.getInstance(instances);
     }
     //------------------------------------------------------------------------------------
     private void updateInstanceStatus() {
@@ -245,13 +189,13 @@ public class RequestRouter extends AbstractActor {
             }
         });
     }
-    private void checkServiceAlive(Instance instance) {
+    protected void checkServiceAlive(Instance instance) {
         log.trace("Check offline servcie: {}@{} ",instance.name, instance.addr);
         ActorSelection service = context().actorSelection(instance.path);
         ActorRef self = self();
         InstanceQuality q = qualityMap.get(instance.addr);
         long start = System.currentTimeMillis();
-        q.request(false);
+        q.request();
         long PING_TIMEOUT = 3000;
         Patterns.ask(service, ping, PING_TIMEOUT).onComplete(new OnComplete<Object>() {
             @Override

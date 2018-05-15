@@ -40,8 +40,8 @@ public class Client {
         this.system = system;
         this.codes = codes;
         IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
-        router = system.actorOf(RequestRouter.props(serviceName, instanceSource, routeStrategy, condition));
-        Future f = Patterns.ask(router, new RequestRouter.Ready(), 25000); //等待RequestRouter初始化完毕
+        router = system.actorOf(ServiceRequestRouter.props(serviceName, instanceSource, routeStrategy, condition));
+        Future f = Patterns.ask(router, new ServiceRequestRouter.Ready(), 25000); //等待RequestRouter初始化完毕
         try {
             Await.result(f, Duration.create(30, TimeUnit.SECONDS));
         } catch (Exception e) {

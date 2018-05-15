@@ -15,7 +15,7 @@ import net.arksea.dsf.client.ServiceInstanceSource;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
-import net.arksea.dsf.service.ServiceAdaptor;
+import net.arksea.dsf.service.RegisteredServiceAdaptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -69,18 +69,18 @@ public class RegisterClient {
     }
 
     public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem) {
-        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
+        serviceSystem.actorOf(RegisteredServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
     }
 
     public void register(String serviceName, int bindPort, ActorRef service, ActorSystem serviceSystem) throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         final String bindHost = addr.getHostAddress();
-        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
+        serviceSystem.actorOf(RegisteredServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
     }
 
     public Future<Boolean> unregister(String serviceName, ActorSystem serviceSystem, long timeoutMillis) {
         ActorSelection sel = serviceSystem.actorSelection(serviceName+"-Adaptor");
-        return Patterns.ask(sel, new ServiceAdaptor.Unregister(), timeoutMillis)
+        return Patterns.ask(sel, new RegisteredServiceAdaptor.Unregister(), timeoutMillis)
             .mapTo(classTag(Boolean.class));
     }
 
