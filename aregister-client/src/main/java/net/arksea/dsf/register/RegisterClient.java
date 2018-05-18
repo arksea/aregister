@@ -58,6 +58,14 @@ public class RegisterClient {
         return subscribe(serviceName, RouteStrategy.ROUNDROBIN, codes, condition, clientSystem);
     }
 
+    public Client subscribe(String serviceName, RouteStrategy routeStrategy) {
+        ICodes codes = new JavaSerializeCodes();
+        ISwitchCondition condition = new DefaultSwitchCondition();
+        Config config = ConfigFactory.parseResources("default-service-client.conf");
+        ActorSystem clientSystem = ActorSystem.create(SVC_CLIENT_SYSTEM_NAME,config.getConfig(SVC_CLIENT_SYSTEM_NAME).withFallback(config));
+        return subscribe(serviceName, routeStrategy, codes, condition, clientSystem);
+    }
+
     public Client subscribe(String serviceName, ICodes codes, ActorSystem clientSystem) {
         ISwitchCondition condition = new DefaultSwitchCondition();
         return subscribe(serviceName, RouteStrategy.ROUNDROBIN, codes, condition, clientSystem);
