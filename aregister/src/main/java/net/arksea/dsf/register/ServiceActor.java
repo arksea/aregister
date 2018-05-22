@@ -133,14 +133,17 @@ public class ServiceActor extends AbstractActor {
             .setName(serviceName)
             .setSerialId(serialId);
         this.instances.forEach((addr,it) -> {
-            if (!it.isUnregistered()) {
-                builder.addInstances(
-                    DSF.Instance.newBuilder()
-                        .setAddr(addr)
-                        .setPath(it.path)
-                        .setOnline(it.isOnline())
-                        .build());
-            }
+            builder.addInstances(
+                DSF.Instance.newBuilder()
+                    .setAddr(addr)
+                    .setPath(it.path)
+                    .setOnline(it.isOnline())
+                    .setUnregistered(it.isUnregistered())
+                    .setRegisterTime(it.registerTime)
+                    .setUnregisterTime(it.getUnregisterTime())
+                    .setLastOfflineTime(it.getLastOfflineTime())
+                    .setLastOnlineTime(it.getLastOnlineTime())
+                    .build());
         });
         sender().tell(builder.build(), self());
     }

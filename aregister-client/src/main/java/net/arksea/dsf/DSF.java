@@ -2958,6 +2958,31 @@ public final class DSF {
      * <code>bool online = 3;</code>
      */
     boolean getOnline();
+
+    /**
+     * <code>bool unregistered = 6;</code>
+     */
+    boolean getUnregistered();
+
+    /**
+     * <code>int64 registerTime = 7;</code>
+     */
+    long getRegisterTime();
+
+    /**
+     * <code>int64 unregisterTime = 8;</code>
+     */
+    long getUnregisterTime();
+
+    /**
+     * <code>int64 lastOfflineTime = 9;</code>
+     */
+    long getLastOfflineTime();
+
+    /**
+     * <code>int64 lastOnlineTime = 10;</code>
+     */
+    long getLastOnlineTime();
   }
   /**
    * Protobuf type {@code net.arksea.dsf.Instance}
@@ -2975,6 +3000,11 @@ public final class DSF {
       addr_ = "";
       path_ = "";
       online_ = false;
+      unregistered_ = false;
+      registerTime_ = 0L;
+      unregisterTime_ = 0L;
+      lastOfflineTime_ = 0L;
+      lastOnlineTime_ = 0L;
     }
 
     @java.lang.Override
@@ -3023,6 +3053,31 @@ public final class DSF {
             case 24: {
 
               online_ = input.readBool();
+              break;
+            }
+            case 48: {
+
+              unregistered_ = input.readBool();
+              break;
+            }
+            case 56: {
+
+              registerTime_ = input.readInt64();
+              break;
+            }
+            case 64: {
+
+              unregisterTime_ = input.readInt64();
+              break;
+            }
+            case 72: {
+
+              lastOfflineTime_ = input.readInt64();
+              break;
+            }
+            case 80: {
+
+              lastOnlineTime_ = input.readInt64();
               break;
             }
           }
@@ -3126,6 +3181,51 @@ public final class DSF {
       return online_;
     }
 
+    public static final int UNREGISTERED_FIELD_NUMBER = 6;
+    private boolean unregistered_;
+    /**
+     * <code>bool unregistered = 6;</code>
+     */
+    public boolean getUnregistered() {
+      return unregistered_;
+    }
+
+    public static final int REGISTERTIME_FIELD_NUMBER = 7;
+    private long registerTime_;
+    /**
+     * <code>int64 registerTime = 7;</code>
+     */
+    public long getRegisterTime() {
+      return registerTime_;
+    }
+
+    public static final int UNREGISTERTIME_FIELD_NUMBER = 8;
+    private long unregisterTime_;
+    /**
+     * <code>int64 unregisterTime = 8;</code>
+     */
+    public long getUnregisterTime() {
+      return unregisterTime_;
+    }
+
+    public static final int LASTOFFLINETIME_FIELD_NUMBER = 9;
+    private long lastOfflineTime_;
+    /**
+     * <code>int64 lastOfflineTime = 9;</code>
+     */
+    public long getLastOfflineTime() {
+      return lastOfflineTime_;
+    }
+
+    public static final int LASTONLINETIME_FIELD_NUMBER = 10;
+    private long lastOnlineTime_;
+    /**
+     * <code>int64 lastOnlineTime = 10;</code>
+     */
+    public long getLastOnlineTime() {
+      return lastOnlineTime_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -3147,6 +3247,21 @@ public final class DSF {
       if (online_ != false) {
         output.writeBool(3, online_);
       }
+      if (unregistered_ != false) {
+        output.writeBool(6, unregistered_);
+      }
+      if (registerTime_ != 0L) {
+        output.writeInt64(7, registerTime_);
+      }
+      if (unregisterTime_ != 0L) {
+        output.writeInt64(8, unregisterTime_);
+      }
+      if (lastOfflineTime_ != 0L) {
+        output.writeInt64(9, lastOfflineTime_);
+      }
+      if (lastOnlineTime_ != 0L) {
+        output.writeInt64(10, lastOnlineTime_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -3164,6 +3279,26 @@ public final class DSF {
       if (online_ != false) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(3, online_);
+      }
+      if (unregistered_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(6, unregistered_);
+      }
+      if (registerTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(7, registerTime_);
+      }
+      if (unregisterTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(8, unregisterTime_);
+      }
+      if (lastOfflineTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(9, lastOfflineTime_);
+      }
+      if (lastOnlineTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(10, lastOnlineTime_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3187,6 +3322,16 @@ public final class DSF {
           .equals(other.getPath());
       result = result && (getOnline()
           == other.getOnline());
+      result = result && (getUnregistered()
+          == other.getUnregistered());
+      result = result && (getRegisterTime()
+          == other.getRegisterTime());
+      result = result && (getUnregisterTime()
+          == other.getUnregisterTime());
+      result = result && (getLastOfflineTime()
+          == other.getLastOfflineTime());
+      result = result && (getLastOnlineTime()
+          == other.getLastOnlineTime());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -3205,6 +3350,21 @@ public final class DSF {
       hash = (37 * hash) + ONLINE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getOnline());
+      hash = (37 * hash) + UNREGISTERED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getUnregistered());
+      hash = (37 * hash) + REGISTERTIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getRegisterTime());
+      hash = (37 * hash) + UNREGISTERTIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getUnregisterTime());
+      hash = (37 * hash) + LASTOFFLINETIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getLastOfflineTime());
+      hash = (37 * hash) + LASTONLINETIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getLastOnlineTime());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -3340,6 +3500,16 @@ public final class DSF {
 
         online_ = false;
 
+        unregistered_ = false;
+
+        registerTime_ = 0L;
+
+        unregisterTime_ = 0L;
+
+        lastOfflineTime_ = 0L;
+
+        lastOnlineTime_ = 0L;
+
         return this;
       }
 
@@ -3365,6 +3535,11 @@ public final class DSF {
         result.addr_ = addr_;
         result.path_ = path_;
         result.online_ = online_;
+        result.unregistered_ = unregistered_;
+        result.registerTime_ = registerTime_;
+        result.unregisterTime_ = unregisterTime_;
+        result.lastOfflineTime_ = lastOfflineTime_;
+        result.lastOnlineTime_ = lastOnlineTime_;
         onBuilt();
         return result;
       }
@@ -3416,6 +3591,21 @@ public final class DSF {
         }
         if (other.getOnline() != false) {
           setOnline(other.getOnline());
+        }
+        if (other.getUnregistered() != false) {
+          setUnregistered(other.getUnregistered());
+        }
+        if (other.getRegisterTime() != 0L) {
+          setRegisterTime(other.getRegisterTime());
+        }
+        if (other.getUnregisterTime() != 0L) {
+          setUnregisterTime(other.getUnregisterTime());
+        }
+        if (other.getLastOfflineTime() != 0L) {
+          setLastOfflineTime(other.getLastOfflineTime());
+        }
+        if (other.getLastOnlineTime() != 0L) {
+          setLastOnlineTime(other.getLastOnlineTime());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -3604,6 +3794,136 @@ public final class DSF {
       public Builder clearOnline() {
         
         online_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean unregistered_ ;
+      /**
+       * <code>bool unregistered = 6;</code>
+       */
+      public boolean getUnregistered() {
+        return unregistered_;
+      }
+      /**
+       * <code>bool unregistered = 6;</code>
+       */
+      public Builder setUnregistered(boolean value) {
+        
+        unregistered_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool unregistered = 6;</code>
+       */
+      public Builder clearUnregistered() {
+        
+        unregistered_ = false;
+        onChanged();
+        return this;
+      }
+
+      private long registerTime_ ;
+      /**
+       * <code>int64 registerTime = 7;</code>
+       */
+      public long getRegisterTime() {
+        return registerTime_;
+      }
+      /**
+       * <code>int64 registerTime = 7;</code>
+       */
+      public Builder setRegisterTime(long value) {
+        
+        registerTime_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 registerTime = 7;</code>
+       */
+      public Builder clearRegisterTime() {
+        
+        registerTime_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long unregisterTime_ ;
+      /**
+       * <code>int64 unregisterTime = 8;</code>
+       */
+      public long getUnregisterTime() {
+        return unregisterTime_;
+      }
+      /**
+       * <code>int64 unregisterTime = 8;</code>
+       */
+      public Builder setUnregisterTime(long value) {
+        
+        unregisterTime_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 unregisterTime = 8;</code>
+       */
+      public Builder clearUnregisterTime() {
+        
+        unregisterTime_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long lastOfflineTime_ ;
+      /**
+       * <code>int64 lastOfflineTime = 9;</code>
+       */
+      public long getLastOfflineTime() {
+        return lastOfflineTime_;
+      }
+      /**
+       * <code>int64 lastOfflineTime = 9;</code>
+       */
+      public Builder setLastOfflineTime(long value) {
+        
+        lastOfflineTime_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 lastOfflineTime = 9;</code>
+       */
+      public Builder clearLastOfflineTime() {
+        
+        lastOfflineTime_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long lastOnlineTime_ ;
+      /**
+       * <code>int64 lastOnlineTime = 10;</code>
+       */
+      public long getLastOnlineTime() {
+        return lastOnlineTime_;
+      }
+      /**
+       * <code>int64 lastOnlineTime = 10;</code>
+       */
+      public Builder setLastOnlineTime(long value) {
+        
+        lastOnlineTime_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 lastOnlineTime = 10;</code>
+       */
+      public Builder clearLastOnlineTime() {
+        
+        lastOnlineTime_ = 0L;
         onChanged();
         return this;
       }
@@ -8829,23 +9149,26 @@ public final class DSF {
       "\001(\t\"*\n\014UnregService\022\014\n\004name\030\001 \001(\t\022\014\n\004add" +
       "r\030\002 \001(\t\"\037\n\017GetSvcInstances\022\014\n\004name\030\001 \001(\t" +
       "\"F\n\020SyncSvcInstances\022\014\n\004name\030\001 \001(\t\022\020\n\010se" +
-      "rialId\030\002 \001(\t\022\022\n\nsubscriber\030\003 \001(\t\"6\n\010Inst" +
-      "ance\022\014\n\004addr\030\001 \001(\t\022\014\n\004path\030\002 \001(\t\022\016\n\006onli" +
-      "ne\030\003 \001(\010\"[\n\014SvcInstances\022\014\n\004name\030\001 \001(\t\022\020" +
-      "\n\010serialId\030\002 \001(\t\022+\n\tinstances\030\003 \003(\0132\030.ne" +
-      "t.arksea.dsf.Instance\"1\n\nSubService\022\017\n\007s" +
-      "ervice\030\001 \001(\t\022\022\n\nsubscriber\030\002 \001(\t\"\037\n\014Unsu" +
-      "bService\022\017\n\007service\030\001 \001(\t\"\210\001\n\016ServiceReq" +
-      "uest\022\021\n\trequestId\030\001 \001(\t\022\016\n\006oneway\030\002 \001(\010\022" +
-      "\017\n\007payload\030\003 \001(\014\0220\n\tserialize\030\004 \001(\0162\035.ne" +
-      "t.arksea.dsf.EnumSerialize\022\020\n\010typeName\030\005" +
-      " \001(\t\"y\n\017ServiceResponse\022\021\n\trequestId\030\001 \001" +
-      "(\t\022\017\n\007payload\030\002 \001(\014\0220\n\tserialize\030\003 \001(\0162\035" +
-      ".net.arksea.dsf.EnumSerialize\022\020\n\010typeNam" +
-      "e\030\004 \001(\t\"\026\n\024GetRegisterInstances\"\006\n\004Ping\"" +
-      "\006\n\004Pong*/\n\rEnumSerialize\022\t\n\005BYTES\020\000\022\010\n\004J" +
-      "AVA\020\001\022\t\n\005PROTO\020\002B\025\n\016net.arksea.dsfB\003DSFb" +
-      "\006proto3"
+      "rialId\030\002 \001(\t\022\022\n\nsubscriber\030\003 \001(\t\"\253\001\n\010Ins" +
+      "tance\022\014\n\004addr\030\001 \001(\t\022\014\n\004path\030\002 \001(\t\022\016\n\006onl" +
+      "ine\030\003 \001(\010\022\024\n\014unregistered\030\006 \001(\010\022\024\n\014regis" +
+      "terTime\030\007 \001(\003\022\026\n\016unregisterTime\030\010 \001(\003\022\027\n" +
+      "\017lastOfflineTime\030\t \001(\003\022\026\n\016lastOnlineTime" +
+      "\030\n \001(\003\"[\n\014SvcInstances\022\014\n\004name\030\001 \001(\t\022\020\n\010" +
+      "serialId\030\002 \001(\t\022+\n\tinstances\030\003 \003(\0132\030.net." +
+      "arksea.dsf.Instance\"1\n\nSubService\022\017\n\007ser" +
+      "vice\030\001 \001(\t\022\022\n\nsubscriber\030\002 \001(\t\"\037\n\014UnsubS" +
+      "ervice\022\017\n\007service\030\001 \001(\t\"\210\001\n\016ServiceReque" +
+      "st\022\021\n\trequestId\030\001 \001(\t\022\016\n\006oneway\030\002 \001(\010\022\017\n" +
+      "\007payload\030\003 \001(\014\0220\n\tserialize\030\004 \001(\0162\035.net." +
+      "arksea.dsf.EnumSerialize\022\020\n\010typeName\030\005 \001" +
+      "(\t\"y\n\017ServiceResponse\022\021\n\trequestId\030\001 \001(\t" +
+      "\022\017\n\007payload\030\002 \001(\014\0220\n\tserialize\030\003 \001(\0162\035.n" +
+      "et.arksea.dsf.EnumSerialize\022\020\n\010typeName\030" +
+      "\004 \001(\t\"\026\n\024GetRegisterInstances\"\006\n\004Ping\"\006\n" +
+      "\004Pong*/\n\rEnumSerialize\022\t\n\005BYTES\020\000\022\010\n\004JAV" +
+      "A\020\001\022\t\n\005PROTO\020\002B\025\n\016net.arksea.dsfB\003DSFb\006p" +
+      "roto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -8888,7 +9211,7 @@ public final class DSF {
     internal_static_net_arksea_dsf_Instance_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_Instance_descriptor,
-        new java.lang.String[] { "Addr", "Path", "Online", });
+        new java.lang.String[] { "Addr", "Path", "Online", "Unregistered", "RegisterTime", "UnregisterTime", "LastOfflineTime", "LastOnlineTime", });
     internal_static_net_arksea_dsf_SvcInstances_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_net_arksea_dsf_SvcInstances_fieldAccessorTable = new

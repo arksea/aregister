@@ -32,6 +32,11 @@ message Instance {
     string addr    = 1;
     string path    = 2;
     bool   online  = 3;
+    bool   unregistered = 6;
+    int64  registerTime = 7;
+    int64  unregisterTime = 8;
+    int64  lastOfflineTime = 9;
+    int64  lastOnlineTime = 10;
 }
 
 message SvcInstances {

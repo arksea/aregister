@@ -31,8 +31,7 @@ public class InstanceInfo {
     }
 
     public boolean isOnline() {
-        long offlineTime = online ? 0 : System.currentTimeMillis() - lastOfflineTime;
-        return online || offlineTime < 180000; //服务连续3分钟心跳拨测都超时才判为离线状态
+        return online;
     }
 
     public boolean isUnregistered() {
