@@ -82,7 +82,7 @@ public class RegisterActor extends AbstractActor {
             serviceManagerActor.tell(new MSG.SendToAll(msg), self());
             sender().tell(true, self());
         } catch (Exception ex) {
-            log.warn("register a service instance failed:{}",msg.toString(), ex);
+            log.warn("Unregister a service instance failed:{}",msg.toString(), ex);
             sender().tell(false, self());
         }
     }

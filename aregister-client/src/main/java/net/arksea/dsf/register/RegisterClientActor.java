@@ -167,7 +167,7 @@ public class RegisterClientActor extends RequestRouter {
             Instance i = op.get();
             ActorSelection register = context().actorSelection(i.path);
             Patterns.ask(register, dsfmsg, timeout).mapTo(classTag(Boolean.class)).onComplete(
-                new TryUntilSucceed(self(), msg, backoff,
+                new TryUntilSucceed(self(), sender(), msg, backoff,
                     () -> "Register service success: "+msg.name+"@"+msg.addr,
                     () -> "Register service failed: "+msg.name+"@"+msg.addr)
                 , context().dispatcher());
@@ -198,7 +198,7 @@ public class RegisterClientActor extends RequestRouter {
             Instance i = op.get();
             ActorSelection register = context().actorSelection(i.path);
             Patterns.ask(register, dsfmsg, timeout).mapTo(classTag(Boolean.class)).onComplete(
-                new TryUntilSucceed(self(), msg, backoff,
+                new TryUntilSucceed(self(), sender(), msg, backoff,
                     () -> "Unregister service success: " + msg.name + "@" + msg.addr,
                     () -> "Unregister service failed: " + msg.name + "@" + msg.addr)
                 , context().dispatcher());
@@ -234,14 +234,18 @@ public class RegisterClientActor extends RequestRouter {
     //-------------------------------------------------------------------------------------------------
     public class TryUntilSucceed extends OnComplete<Boolean> {
         private ActorRef registerClient;
+        private ActorRef requester;
         private Object message;
         private Callable<String> succeedLogInfo;
         private Callable<String> failedLogInfo;
         private final long failedDelay;
+
         public TryUntilSucceed(ActorRef registerClient,
+                               ActorRef requester,
                                Object msg, long failedDelay,
                                Callable<String> succeedLogInfo, Callable<String> failedLogInfo) {
             this.registerClient = registerClient;
+            this.requester = requester;
             this.message = msg;
             this.succeedLogInfo = succeedLogInfo;
             this.failedLogInfo = failedLogInfo;
@@ -254,6 +258,7 @@ public class RegisterClientActor extends RequestRouter {
                 if (success) {
                     log.info(succeedLogInfo.call());
                     registerClient.tell(new RegisterRequestSucceed(), ActorRef.noSender());
+                    requester.tell(true, ActorRef.noSender());
                     return;
                 } else {
                     if (failedDelay >= MAX_RETRY_DELAY) {
