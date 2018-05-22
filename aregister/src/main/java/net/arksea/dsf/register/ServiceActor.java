@@ -176,7 +176,9 @@ public class ServiceActor extends AbstractActor {
         }
     }
     private void handleSubscriberTerminated(SubscriberTerminated msg) {
-        logger.info("{}@{} unsubscribe {} because terminated", msg.subName, msg.subRef.path().address(), serviceName);
+        Address address = msg.subRef.path().address();
+        String addr = address.host().get() + ":" + address.port().get();
+        logger.info("{}@{} unsubscribe {} because terminated", msg.subName, addr, serviceName);
         subscriberMap.remove(msg.subRef);
         context().unwatch(msg.subRef);
     }
