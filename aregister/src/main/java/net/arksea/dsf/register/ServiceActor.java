@@ -148,27 +148,29 @@ public class ServiceActor extends AbstractActor {
     }
     private void subscribeService(String subscriberName, ActorRef subscriber) {
         if (!subscriberMap.containsKey(subscriber)) {
-            logger.info("{} subscribe {} : {}",subscriberName, serviceName, subscriber);
-            context().watchWith(subscriber, new SubscriberTerminated(subscriber));
+            logger.info("{}@{} subscribe {}",subscriberName, subscriber.path().address(), serviceName);
+            context().watchWith(subscriber, new SubscriberTerminated(subscriberName, subscriber));
             subscriberMap.put(subscriber, new SubscriberInfo(subscriberName));
         }
     }
     //-------------------------------------------------------------------------------
     private void handleUnsubService(DSF.UnsubService msg) {
         SubscriberInfo info = subscriberMap.remove(sender());
-        logger.info("{} unsubscribe {} : {}", info.name, serviceName, sender());
+        logger.info("{}@{} unsubscribe {}", info.name, sender().path().address(), serviceName);
     }
     //-------------------------------------------------------------------------------
     class SubscriberTerminated {
-        public final ActorRef subscriber;
-        SubscriberTerminated(ActorRef subscriber) {
-            this.subscriber = subscriber;
+        public final ActorRef subRef;
+        public final String subName;
+        SubscriberTerminated(String subName, ActorRef ref) {
+            this.subName = subName;
+            this.subRef = ref;
         }
     }
     private void handleSubscriberTerminated(SubscriberTerminated msg) {
-        logger.info("Subscriber terminated : {}, client={}", msg.subscriber,msg.subscriber);
-        subscriberMap.remove(msg.subscriber);
-        context().unwatch(msg.subscriber);
+        logger.info("{}@{} unsubscribe {} because terminated", msg.subName, msg.subRef.path().address(), serviceName);
+        subscriberMap.remove(msg.subRef);
+        context().unwatch(msg.subRef);
     }
     //-------------------------------------------------------------------------------
     private static int MAX_HISTORY_COUNT = 3;   //保存历史数据的周期数
@@ -208,7 +210,7 @@ public class ServiceActor extends AbstractActor {
         } else {
             try {
                 list =store.getServiceInstances(serviceName);
-                logger.trace("Load service list from register store succeed", serviceName);
+                logger.trace("Load service list from register store succeed: {}", serviceName);
             } catch (Exception ex) {
                 list = loadFromLocalFile();
             }
@@ -245,7 +247,7 @@ public class ServiceActor extends AbstractActor {
     private List<Instance> loadFromLocalFile() {
         try {
             List<Instance> list = LocalStore.load(serviceName);
-            logger.info("Load service list form local cache file succeed",serviceName);
+            logger.info("Load service list form local cache file succeed: {}",serviceName);
             return list;
         } catch (Exception ex1) {
             logger.warn("Load service list form local cache file failed: {}",serviceName,ex1);
