@@ -9,7 +9,6 @@ import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategyFactory;
-import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -34,16 +33,15 @@ public class Client {
      * 序列化：Protocol Buffer
      * @param serviceName
      * @param strategy
-     * @param register 注册服务客户端，没有指定此参数则读取本地配置文件
      * @param codes
      * @param system
      */
-    public Client(String serviceName, RouteStrategy strategy, ICodes codes, ISwitchCondition condition, ActorSystem system, RegisterClient register) {
+    public Client(String serviceName, RouteStrategy strategy, ICodes codes, ISwitchCondition condition, ActorSystem system, IInstanceSource instanceSource) {
         this.system = system;
         this.codes = codes;
         IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
-        router = system.actorOf(RequestRouter.props(serviceName, register,routeStrategy, condition));
-        Future f = Patterns.ask(router, new RequestRouter.Ready(), 25000); //等待RequestRouter初始化完毕
+        router = system.actorOf(ServiceRequestRouter.props(serviceName, instanceSource, routeStrategy, condition));
+        Future f = Patterns.ask(router, new ServiceRequestRouter.Ready(), 25000); //等待RequestRouter初始化完毕
         try {
             Await.result(f, Duration.create(30, TimeUnit.SECONDS));
         } catch (Exception e) {

@@ -107,7 +107,8 @@ public class ServiceActor extends AbstractActor {
 
     //-------------------------------------------------------------------------------
     private void handleUnregService(DSF.UnregService msg) {
-        instances.remove(msg.getAddr());
+        InstanceInfo info = instances.get(msg.getAddr());
+        info.unregister();
         this.serialId = makeSerialId();
         subscriberMap.keySet().forEach(actor -> {
             actor.tell(msg, self());
@@ -132,12 +133,14 @@ public class ServiceActor extends AbstractActor {
             .setName(serviceName)
             .setSerialId(serialId);
         this.instances.forEach((addr,it) -> {
-            builder.addInstances(
-                DSF.Instance.newBuilder()
-                    .setAddr(addr)
-                    .setPath(it.path)
-                    .setOnline(it.online)
-                    .build());
+            if (!it.isUnregistered()) {
+                builder.addInstances(
+                    DSF.Instance.newBuilder()
+                        .setAddr(addr)
+                        .setPath(it.path)
+                        .setOnline(it.isOnline())
+                        .build());
+            }
         });
         sender().tell(builder.build(), self());
     }
@@ -148,50 +151,33 @@ public class ServiceActor extends AbstractActor {
     }
     private void subscribeService(String subscriberName, ActorRef subscriber) {
         if (!subscriberMap.containsKey(subscriber)) {
-            logger.info("{} subscribe {} : {}",subscriberName, serviceName, subscriber);
-            context().watchWith(subscriber, new SubscriberTerminated(subscriber));
+            Address address = subscriber.path().address();
+            String addr = address.host().get() + ":" + address.port().get();
+            logger.info("{}@{} subscribe {}",subscriberName, addr, serviceName);
+            context().watchWith(subscriber, new SubscriberTerminated(subscriberName, subscriber));
             subscriberMap.put(subscriber, new SubscriberInfo(subscriberName));
         }
     }
     //-------------------------------------------------------------------------------
     private void handleUnsubService(DSF.UnsubService msg) {
         SubscriberInfo info = subscriberMap.remove(sender());
-        logger.info("{} unsubscribe {} : {}", info.name, serviceName, sender());
+        logger.info("{}@{} unsubscribe {}", info.name, sender().path().address(), serviceName);
     }
     //-------------------------------------------------------------------------------
     class SubscriberTerminated {
-        public final ActorRef subscriber;
-        SubscriberTerminated(ActorRef subscriber) {
-            this.subscriber = subscriber;
+        public final ActorRef subRef;
+        public final String subName;
+        SubscriberTerminated(String subName, ActorRef ref) {
+            this.subName = subName;
+            this.subRef = ref;
         }
     }
     private void handleSubscriberTerminated(SubscriberTerminated msg) {
-        logger.info("Subscriber terminated : {}, client={}", msg.subscriber,msg.subscriber);
-        subscriberMap.remove(msg.subscriber);
-        context().unwatch(msg.subscriber);
+        logger.info("{}@{} unsubscribe {} because terminated", msg.subName, msg.subRef.path().address(), serviceName);
+        subscriberMap.remove(msg.subRef);
+        context().unwatch(msg.subRef);
     }
-    //-------------------------------------------------------------------------------
-    private static int MAX_HISTORY_COUNT = 3;   //保存历史数据的周期数
-    class InstanceInfo {
-        public final String name;
-        public final String addr;
-        public final String path;
-        public boolean online;
-        public int lastHistoryIndex;
-        public final ArrayList<Boolean> aliveHistory;
 
-        public InstanceInfo(String name, String addr, String path, boolean online) {
-            this.name = name;
-            this.addr = addr;
-            this.path = path;
-            this.online = online;
-            this.lastHistoryIndex = 0;
-            aliveHistory = new ArrayList<>(MAX_HISTORY_COUNT);
-            for (int i = 0; i< MAX_HISTORY_COUNT; ++i) {
-                aliveHistory.add(online);
-            }
-        }
-    }
     //-------------------------------------------------------------------------------
     class LoadServiceInfo {
     }
@@ -208,7 +194,7 @@ public class ServiceActor extends AbstractActor {
         } else {
             try {
                 list =store.getServiceInstances(serviceName);
-                logger.trace("Load service list from register store succeed", serviceName);
+                logger.trace("Load service list from register store succeed: {}", serviceName);
             } catch (Exception ex) {
                 list = loadFromLocalFile();
             }
@@ -245,7 +231,7 @@ public class ServiceActor extends AbstractActor {
     private List<Instance> loadFromLocalFile() {
         try {
             List<Instance> list = LocalStore.load(serviceName);
-            logger.info("Load service list form local cache file succeed",serviceName);
+            logger.info("Load service list form local cache file succeed: {}",serviceName);
             return list;
         } catch (Exception ex1) {
             logger.warn("Load service list form local cache file failed: {}",serviceName,ex1);
@@ -263,9 +249,36 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     private class CheckServiceAlive {}
     private void handleCheckServiceAlive(CheckServiceAlive msg) {
-        this.instances.forEach((addr,it) -> {
+        removeUnregedSvc();
+        instances.forEach((addr,it) -> {
             checkServiceAlive(it);
         });
+    }
+    private void removeUnregedSvc() {
+        List<String> unregedList = new LinkedList<>();
+        instances.forEach((addr,it) -> {
+            if(it.isUnregistered()) {
+                //移除已注销1小时以上的服务
+                long unregTime = System.currentTimeMillis() - it.getUnregisterTime();
+                if (unregTime > 3600_000L) {
+                    unregedList.add(addr);
+                }
+            } else if (!it.isOnline()){
+                //超过3天拨测失败则认为服务已注销
+                final long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
+                long offlineTime = System.currentTimeMillis() - it.getLastOfflineTime();
+                if (offlineTime > OFFLINE_TIMEOUT) {
+                    unregedList.add(addr);
+                    try {
+                        logger.warn("Service UNREG : {}@{}", serviceName, addr);
+                        store.delServiceInstance(serviceName, addr);
+                    } catch (Exception ex) {
+                        logger.warn("Unregister a service instance failed: {}@{}", serviceName, addr, ex);
+                    }
+                }
+            }
+        });
+        unregedList.forEach(instances::remove);
     }
     private void checkServiceAlive(InstanceInfo instance) {
         logger.trace("Check servcie alive: {}@{} ",instance.name, instance.addr);
@@ -291,25 +304,7 @@ public class ServiceActor extends AbstractActor {
     private void handleServiceAlive(ServiceAlive msg) {
         InstanceInfo info = instances.get(msg.addr);
         if (info != null) {
-            info.aliveHistory.set(info.lastHistoryIndex, msg.online);
-            if (++info.lastHistoryIndex >= MAX_HISTORY_COUNT) {
-                info.lastHistoryIndex = 0;
-            }
-            int offlineCount = 0;
-            for (boolean b : info.aliveHistory) {
-                if (!b) {
-                    ++offlineCount;
-                }
-            }
-            boolean online = msg.online || offlineCount<MAX_HISTORY_COUNT;
-            if (info.online != online) {
-                info.online = online;
-                if (online) {
-                    logger.info("Service ONLINE : {}@{}", info.name, info.addr);
-                } else {
-                    logger.warn("Service OFFLINE : {}@{}", info.name, info.addr);
-                }
-            }
+            info.setOnline(msg.online);
         }
     }
     //------------------------------------------------------------------------------------
@@ -323,7 +318,6 @@ public class ServiceActor extends AbstractActor {
     }
 
     private String makeSerialId() {
-        //todo: 计算实例集合的HashCode或者MD5
         return UUID.randomUUID().toString();
     }
 }

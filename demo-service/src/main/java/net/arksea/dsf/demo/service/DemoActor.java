@@ -47,12 +47,12 @@ public class DemoActor extends AbstractActor {
     public void preStart() throws Exception {
         super.preStart();
         log.info("DemoActor preStart()");
-        if (port == 8772) {
-            context().system().scheduler().scheduleOnce(Duration.create(80, TimeUnit.SECONDS),
-                self(), "offline", context().dispatcher(), self());
-            context().system().scheduler().scheduleOnce(Duration.create(180, TimeUnit.SECONDS),
-                self(), "online", context().dispatcher(), self());
-        }
+//        if (port == 8772) {
+//            context().system().scheduler().scheduleOnce(Duration.create(80, TimeUnit.SECONDS),
+//                self(), "offline", context().dispatcher(), self());
+//            context().system().scheduler().scheduleOnce(Duration.create(180, TimeUnit.SECONDS),
+//                self(), "online", context().dispatcher(), self());
+//        }
     }
 
     @Override
