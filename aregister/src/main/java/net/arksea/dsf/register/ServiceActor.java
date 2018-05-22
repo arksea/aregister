@@ -151,7 +151,9 @@ public class ServiceActor extends AbstractActor {
     }
     private void subscribeService(String subscriberName, ActorRef subscriber) {
         if (!subscriberMap.containsKey(subscriber)) {
-            logger.info("{}@{} subscribe {}",subscriberName, subscriber.path().address(), serviceName);
+            Address address = subscriber.path().address();
+            String addr = address.host().get() + ":" + address.port().get();
+            logger.info("{}@{} subscribe {}",subscriberName, addr, serviceName);
             context().watchWith(subscriber, new SubscriberTerminated(subscriberName, subscriber));
             subscriberMap.put(subscriber, new SubscriberInfo(subscriberName));
         }
@@ -263,11 +265,12 @@ public class ServiceActor extends AbstractActor {
                 }
             } else if (!it.isOnline()){
                 //超过3天拨测失败则认为服务已注销
-                final long OFFLINE_TIMEOUT = 3L * 24L * 3600_1000L;
+                final long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
                 long offlineTime = System.currentTimeMillis() - it.getLastOfflineTime();
                 if (offlineTime > OFFLINE_TIMEOUT) {
                     unregedList.add(addr);
                     try {
+                        logger.warn("Service UNREG : {}@{}", serviceName, addr);
                         store.delServiceInstance(serviceName, addr);
                     } catch (Exception ex) {
                         logger.warn("Unregister a service instance failed: {}@{}", serviceName, addr, ex);

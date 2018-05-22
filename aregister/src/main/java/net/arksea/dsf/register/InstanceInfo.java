@@ -14,6 +14,7 @@ public class InstanceInfo {
     public final long registerTime;
 
     private long lastOfflineTime;
+    private long lastOnlineTime;
     private long unregisterTime;
     private boolean online;
     private boolean unregistered;
@@ -26,6 +27,7 @@ public class InstanceInfo {
         this.online = online;
         this.unregistered = false;
         this.registerTime = System.currentTimeMillis();
+        this.lastOfflineTime = System.currentTimeMillis();
     }
 
     public boolean isOnline() {
@@ -54,11 +56,16 @@ public class InstanceInfo {
         if (this.online != online) {
             this.online = online;
             if (online) {
+                lastOnlineTime = System.currentTimeMillis();
                 logger.info("Service ONLINE : {}@{}", name, addr);
             } else {
                 lastOfflineTime = System.currentTimeMillis();
                 logger.warn("Service OFFLINE : {}@{}", name, addr);
             }
         }
+    }
+
+    public long getLastOnlineTime() {
+        return lastOnlineTime;
     }
 }
