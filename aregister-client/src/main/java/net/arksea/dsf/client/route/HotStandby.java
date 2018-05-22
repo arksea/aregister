@@ -21,6 +21,10 @@ public class HotStandby implements IRouteStrategy {
                 return Optional.of(s);
             }
         }
-        return Optional.empty();
+        if (list.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(sorted.first());
+        }
     }
 }
