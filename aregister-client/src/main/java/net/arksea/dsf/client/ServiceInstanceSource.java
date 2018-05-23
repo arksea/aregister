@@ -23,11 +23,16 @@ public class ServiceInstanceSource extends LocalInstanceSource {
     }
 
     public void subscribe(ActorRef subscriber) {
-        registerClient.subscribeInfo(serviceName, subscriber);
+        registerClient.actorRef.tell(DSF.SubService.newBuilder()
+                            .setService(serviceName)
+                            .setSubscriber(registerClient.clientName)
+                            .build(), subscriber);
     }
 
     public void unsubscribe(ActorRef subscriber) {
-        registerClient.unsubscribeInfo(serviceName, subscriber);
+        registerClient.actorRef.tell(DSF.UnsubService.newBuilder()
+            .setService(serviceName)
+            .build(), subscriber);
     }
 
     public DSF.SvcInstances getSvcInstances() throws Exception {

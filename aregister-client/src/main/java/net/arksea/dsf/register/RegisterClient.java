@@ -34,7 +34,7 @@ public class RegisterClient {
     private static final Logger logger = LogManager.getLogger(RegisterClient.class);
     public static final String REG_CLIENT_SYSTEM_NAME = "DsfRegisterClientSystem";
     public static final String SVC_CLIENT_SYSTEM_NAME = "DsfServiceClientSystem";
-    public final ActorRef registerClient;
+    public final ActorRef actorRef;
     public final String clientName;
     private final ActorSystem system;
     /**
@@ -47,7 +47,7 @@ public class RegisterClient {
         Config config = ConfigFactory.parseResources("default-register-client.conf");
         this.system = ActorSystem.create(REG_CLIENT_SYSTEM_NAME,config.getConfig(REG_CLIENT_SYSTEM_NAME).withFallback(config));
         IInstanceSource instanceSource = new RegisterInstanceSource(serverAddrs, this.system);
-        registerClient = system.actorOf(RegisterClientActor.props(clientName, instanceSource), RegisterClientActor.ACTOR_NAME);
+        actorRef = system.actorOf(RegisterClientActor.props(clientName, instanceSource), RegisterClientActor.ACTOR_NAME);
     }
 
     public Client subscribe(String serviceName) {
@@ -98,36 +98,11 @@ public class RegisterClient {
             .mapTo(classTag(Boolean.class));
     }
 
-    public void registerInfo(String serivceName, String addr, String path) {
-        registerClient.tell(new RegLocalService(serivceName,addr,path), ActorRef.noSender());
-    }
-
-    public void unregisterInfo(String serviceName, String addr, ActorRef requester) {
-        registerClient.tell(new UnregLocalService(serviceName,addr), requester);
-    }
-
-    public Future<Boolean> unregisterInfo(String serviceName, String addr, long timeout) {
-        return Patterns.ask(registerClient, new UnregLocalService(serviceName,addr), timeout).mapTo(classTag(Boolean.class));
-    }
-
     public Future<DSF.SvcInstances> getServiceList(String serviceName, long timeout) {
         DSF.GetSvcInstances get = DSF.GetSvcInstances.newBuilder()
             .setName(serviceName)
             .build();
-        return Patterns.ask(registerClient, get, timeout).mapTo(classTag(DSF.SvcInstances.class));
-    }
-
-    public void subscribeInfo(String serviceName, ActorRef subscriber) {
-        registerClient.tell(DSF.SubService.newBuilder()
-                                    .setService(serviceName)
-                                    .setSubscriber(clientName)
-                                    .build(), subscriber);
-    }
-
-    public void unsubscribeInfo(String serviceName, ActorRef subscriber) {
-        registerClient.tell(DSF.UnsubService.newBuilder()
-            .setService(serviceName)
-            .build(), subscriber);
+        return Patterns.ask(actorRef, get, timeout).mapTo(classTag(DSF.SvcInstances.class));
     }
 
     public Future<Terminated> stop() {
