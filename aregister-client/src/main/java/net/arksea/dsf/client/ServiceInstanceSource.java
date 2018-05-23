@@ -37,7 +37,7 @@ public class ServiceInstanceSource extends LocalInstanceSource {
 
     public DSF.SvcInstances getSvcInstances() throws Exception {
         try {
-            Future<DSF.SvcInstances> future = registerClient.getServiceList(serviceName, 5000);
+            Future<DSF.SvcInstances> future = registerClient.getServiceInstances(serviceName, 5000);
             DSF.SvcInstances result = Await.result(future, Duration.create(5000, "ms"));
             log.info("Load service list form register succeed", serviceName);
             return result;

@@ -63,7 +63,6 @@ public class RegisteredServiceAdaptor extends ServiceAdaptor {
     public Receive createReceive() {
         return createReceiveBuilder()
             .match(DelayRegister.class,     this::handleDelayRegister)
-            .match(Unregister.class,        this::handleUnregister)
             .build();
     }
 
@@ -88,10 +87,5 @@ public class RegisteredServiceAdaptor extends ServiceAdaptor {
     class DelayRegister {}
     private void handleDelayRegister(DelayRegister msg) {
         register.actorRef.tell(new RegLocalService(serviceName,serviceAddr,serviceAddr), ActorRef.noSender());
-    }
-    //------------------------------------------------------------------------------------
-    public static class Unregister {}
-    private void handleUnregister(Unregister msg) {
-        register.actorRef.tell(new UnregLocalService(serviceName,serviceAddr), sender());
     }
 }
