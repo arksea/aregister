@@ -65,6 +65,7 @@ public class ServiceManagerActor extends AbstractActor {
             .match(ClusterEvent.UnreachableMember.class, this::handleUnreachableMember)
             .match(ClusterEvent.MemberRemoved.class,     this::handleMemberRemoved)
             .match(ClusterEvent.ClusterDomainEvent.class,this::handleEvent)
+            .match(DSF.GetServiceList.class,      this::handleGetServiceList)
             .build();
     }
 
@@ -134,4 +135,9 @@ public class ServiceManagerActor extends AbstractActor {
         }
     }
 
+    private void handleGetServiceList(DSF.GetServiceList msg) {
+        log.trace("ServiceManagerActor.handleGetServiceList()");
+        DSF.ServiceList list = DSF.ServiceList.newBuilder().addAllItems(serviceMap.keySet()).build();
+        sender().tell(list, self());
+    }
 }

@@ -60,6 +60,7 @@ public class RegisterActor extends AbstractActor {
             .match(DSF.UnsubService.class,        this::handleUnsubService)
             .match(DSF.Ping.class,                this::handlePing)
             .match(DSF.GetRegisterInstances.class,this::handleGetRegisterInstances)
+            .match(DSF.GetServiceList.class,      this::handleGetServiceList)
             .build();
     }
 
@@ -131,5 +132,10 @@ public class RegisterActor extends AbstractActor {
                     .build());
         }
         sender().tell(builder.build(), self());
+    }
+
+    private void handleGetServiceList(DSF.GetServiceList msg) {
+        log.trace("RegisterActor.handleGetServiceList()");
+        serviceManagerActor.forward(msg, context());
     }
 }

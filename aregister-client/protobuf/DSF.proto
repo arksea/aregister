@@ -4,6 +4,42 @@ package net.arksea.dsf;
 
 option java_package = "net.arksea.dsf";
 option java_outer_classname = "DSF";
+//-----------------------------
+//获取服务列表
+
+message GetServiceList {
+}
+
+message ServiceList {
+    repeated string items = 1;
+}
+//----------------------------
+//获取服务信息
+
+//请求
+message GetService {
+    string name = 1;
+}
+//返回值
+message Service {
+    string name = 1;
+    repeated Instance instances = 2;
+    repeated Subscriber subscribers = 3;
+}
+message Subscriber {
+    string name = 1;
+    int32 count = 2;
+}
+//------------------------------
+message GetInstanceStatus {
+    string name = 1;
+    string addr = 2;
+}
+
+message InstanceStatus {
+    int32 qps = 2;
+    int32 tts = 3;
+}
 
 //注册服务实例
 message RegService {
@@ -23,15 +59,20 @@ message GetSvcInstances {
 }
 
 message SyncSvcInstances {
-    string name = 1;
-    string serialId = 2;
-    string subscriber = 3;
+    string name = 1;       //服务名
+    string serialId = 2;   //实例列表序列号
+    string subscriber = 3; //订阅者名字
 }
 
 message Instance {
     string addr    = 1;
     string path    = 2;
     bool   online  = 3;
+    bool   unregistered = 6;
+    int64  registerTime = 7;
+    int64  unregisterTime = 8;
+    int64  lastOfflineTime = 9;
+    int64  lastOnlineTime = 10;
 }
 
 message SvcInstances {
