@@ -31,14 +31,14 @@ public class RandomHold implements IRouteStrategy {
                     onlines.add(it);
                 }
             });
-            if (onlines.size() > 0) {
+            if (!onlines.isEmpty()) {
                 int index = random.nextInt(onlines.size());
                 current = onlines.get(index);
                 return Optional.of(current);
-            } else if (current != null) {
-                return Optional.of(current);
-            } else {
+            } else if (current == null) {
                 return Optional.empty();
+            } else {
+                return Optional.of(current);
             }
         }
     }

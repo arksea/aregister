@@ -1,4 +1,4 @@
-package net.arksea.ereader.server.filter;
+package net.arksea.dsf.web.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -25,6 +25,12 @@ public class ApiFilter implements Filter {
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse resp, final FilterChain chain) throws IOException, ServletException {
+        final HttpServletRequest req = (HttpServletRequest) request;
+        String reqid = req.getHeader("x-restapi-requestid");
+        if (reqid == null) {
+            reqid = UUID.randomUUID().toString();
+        }
+        req.setAttribute("x-restapi-requestid", reqid);
         HttpServletResponse response = (HttpServletResponse) resp;
         response.setHeader("Access-Control-Allow-Headers","Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
         response.setHeader("Access-Control-Allow-Credentials","true");

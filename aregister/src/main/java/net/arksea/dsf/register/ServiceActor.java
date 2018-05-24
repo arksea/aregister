@@ -218,7 +218,7 @@ public class ServiceActor extends AbstractActor {
                     newInstances.put(it.getAddr(), old);
                 }
             }
-            if (instances.size() > 0) {
+            if (!instances.isEmpty()) {
                 changed = true;
                 for (String addr : instances.keySet()) {
                     logger.info("Service DEL : {}@{}", serviceName, addr);
