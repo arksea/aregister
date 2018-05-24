@@ -14,12 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
-import scala.Function1;
-import scala.runtime.BoxedUnit;
+import net.arksea.restapi.RestResult;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  *
@@ -38,16 +36,24 @@ public class ServiceController {
     @RequestMapping(method = RequestMethod.GET, produces = MEDIA_TYPE)
     public DeferredResult<String> getServiceList(final HttpServletRequest httpRequest) {
         DeferredResult<String> result = new DeferredResult<>();
-        String reqid = (String)httpRequest.getAttribute("x-restapi-requestid");
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         registerClient.getServiceList(10000).onComplete(
             new OnComplete<DSF.ServiceList>() {
                 @Override
                 public void onComplete(Throwable failure, DSF.ServiceList list) throws Throwable {
-                    try {
-                        String json = JsonFormat.printer().print(list);
-                        result.setResult(json);
-                    } catch (InvalidProtocolBufferException e) {
-                        RestUtils.createMsgResult(1, e, reqid);
+                    if (failure == null) {
+                        try {
+                            String json = JsonFormat.printer().print(list);
+                            result.setResult(RestUtils.createJsonResult(0, json, reqid));
+                        } catch (InvalidProtocolBufferException e) {
+                            String err = "format service list failed";
+                            logger.debug(err, failure);
+                            result.setErrorResult(new RestResult(1, err, reqid));
+                        }
+                    } else {
+                        String err = "get service list failed";
+                        logger.debug(err, failure);
+                        result.setErrorResult(new RestResult(1, err, reqid));
                     }
                 }
             }, system.dispatcher());

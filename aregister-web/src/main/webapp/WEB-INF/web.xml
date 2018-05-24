@@ -43,8 +43,6 @@ http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd"
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>ASYNC</dispatcher>
     </filter-mapping>
 
     <filter>
@@ -61,7 +59,6 @@ http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd"
     <filter-mapping>
         <filter-name>apiFilter</filter-name>
         <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
 
     <servlet>

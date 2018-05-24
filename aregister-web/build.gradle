@@ -114,3 +114,12 @@ task startTomcat(type: Exec) {
 }
 
 startTomcat.dependsOn(publishDev)
+
+
+//将更新cache的最大延迟时间改为10分钟（默认为24小时）
+configurations.all {
+    resolutionStrategy {
+        cacheDynamicVersionsFor 1, 'minutes'
+        cacheChangingModulesFor 60, 'seconds'
+    }
+}

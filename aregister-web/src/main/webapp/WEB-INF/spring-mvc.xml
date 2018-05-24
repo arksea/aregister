@@ -32,7 +32,7 @@
     <!-- 容器默认的DefaultServletHandler,用于处理所有静态内容与无RequestMapping处理的URL-->	
     <mvc:default-servlet-handler/>
 	
-     <!--定义无需Controller的url<->view直接映射--> 
+     <!--定义无需Controller的url<->view直接映射-->
     <mvc:view-controller path="/" view-name="redirect:/index.html"/>
 
 </beans>

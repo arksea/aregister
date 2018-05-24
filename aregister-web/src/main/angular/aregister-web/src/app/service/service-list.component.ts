@@ -16,7 +16,7 @@ export class ServiceListComponent {
               private api: ServiceAPI) {
     store.subscribe(() => this.update());
     api.getServiceList()
-       .subscribe(list => store.dispatch(ServiceListActions.updateServiceList(list)));
+       .subscribe(r => store.dispatch(ServiceListActions.updateServiceList(r.result.items)));
     this.update();
   }
 

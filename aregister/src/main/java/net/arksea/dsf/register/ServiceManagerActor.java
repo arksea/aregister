@@ -65,7 +65,7 @@ public class ServiceManagerActor extends AbstractActor {
             .match(ClusterEvent.UnreachableMember.class, this::handleUnreachableMember)
             .match(ClusterEvent.MemberRemoved.class,     this::handleMemberRemoved)
             .match(ClusterEvent.ClusterDomainEvent.class,this::handleEvent)
-            .match(DSF.GetServiceList.class,      this::handleGetServiceList)
+            .match(DSF.GetServiceList.class,             this::handleGetServiceList)
             .build();
     }
 

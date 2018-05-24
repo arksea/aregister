@@ -1,6 +1,8 @@
 package net.arksea.dsf.web.system;
 
 import akka.actor.ActorSystem;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +45,8 @@ public class SystemFactory {
 
     @Bean(name = "restapiSystem")
     public ActorSystem createSystem() {
-        return ActorSystem.create("restapiSystem");
+        Config cfg = ConfigFactory.load();
+        return ActorSystem.create("restapiSystem", cfg);
     }
 
 }

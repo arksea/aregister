@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs';
+import { RestResult,ServiceList } from '../models'
 
 @Injectable()
 export class ServiceAPI {
@@ -13,8 +14,12 @@ export class ServiceAPI {
         this.headers.append('Content-Type', 'application/json; charset=UTF-8');
     }
 
-// return this.http.get(environment.apiUrl + '/api/v1/projects') as Observable<ServiceList>;
-  public getServiceList(): Observable<string[]> {
-    return new BehaviorSubject<string[]>(['ServiceA', 'ServiceB']);
+  public getServiceList(): Observable<RestResult<ServiceList>> {
+    return this.http.get(environment.apiUrl + '/api/v1/services') as Observable<RestResult<ServiceList>>;
+//    return new BehaviorSubject<RestResult<ServiceList>>({
+//      code: 0,
+//      result: { items:['ServiceA', 'ServiceB']},
+//      reqid: '1234'
+//    });
   }
 }

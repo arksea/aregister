@@ -30,7 +30,7 @@ public class ApiFilter implements Filter {
         if (reqid == null) {
             reqid = UUID.randomUUID().toString();
         }
-        req.setAttribute("x-restapi-requestid", reqid);
+        req.setAttribute("restapi-requestid", reqid);
         HttpServletResponse response = (HttpServletResponse) resp;
         response.setHeader("Access-Control-Allow-Headers","Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
         response.setHeader("Access-Control-Allow-Credentials","true");

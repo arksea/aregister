@@ -34,7 +34,7 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes, { enableTracing: true })
   ],
   providers: [
-    {provide: LocationStrategy, useClass: HashLocationStrategy}, //自动在路由路径前添加#号，部署到Tomcat需要做此转换
+    { provide: LocationStrategy, useClass: HashLocationStrategy }, //自动在路由路径前添加#号，部署到Tomcat需要做此转换
     { provide: AppStore, useValue: store },
     ServiceAPI
   ],
