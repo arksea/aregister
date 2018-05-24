@@ -293,6 +293,7 @@ public class ServiceActor extends AbstractActor {
             @Override
             public void onComplete(Throwable failure, Object success) throws Throwable {
                 boolean online = failure == null && success instanceof DSF.Pong;
+                logger.trace("Check servcie alive complete: {}@{} {},{},{}",instance.name, instance.addr, online, failure, success);
                 self.tell(new ServiceAlive(instance.addr, online), ActorRef.noSender());
             }
         }, context().dispatcher());
