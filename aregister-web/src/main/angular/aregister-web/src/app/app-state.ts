@@ -4,8 +4,8 @@ import { SystemEventState, SystemEventReducer } from './system/system-event.redu
 
 
 export interface AppState {
-    services: ServicesState,
-    systemEvent: SystemEventState
+    readonly services: ServicesState,
+    readonly systemEvent: SystemEventState
 }
 
 export const rootReducer: Reducer<AppState> = combineReducers<AppState>({

@@ -20,25 +20,25 @@ export class ServiceAPI {
         this.headers.append('Content-Type', 'application/json; charset=UTF-8');
     }
 
-    public getServiceList(): Observable<RestResult> {
+    public getServiceList(): Observable<RestResult<ServiceList>> {
         //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
+        let method = 'Request service list';
         return this.http.get(environment.apiUrl + '/api/v1/services').pipe(
-            tap((r: RestResult) => this.handleErrorResult(r, this.store)),
-            catchError(r => this.handleCatchedError(r, this.store))
+            tap((r: RestResult<ServiceList>) => this.handleErrorResult(r, method, this.store)),
+            catchError(r => this.handleCatchedError(r, method, this.store))
         );
     }
 
-    private handleCatchedError(error, store: Store<AppState>) {
-        let act = SystemEventActions.newEvent('Request service list failed: '+error.message);
+    private handleCatchedError(error, method: string, store: Store<AppState>) {
+        let act = SystemEventActions.newEvent(method+' failed: '+error.message);
         store.dispatch(act);
         return new BehaviorSubject(error);
     };
 
-    private handleErrorResult(error: RestResult, store: Store<AppState>) {
-        if (error.code != 0) {
-            let act = SystemEventActions.newEvent('Request service list failed: '+error.result);
-            store.dispatch(act);
-        }
+    private handleErrorResult(error: RestResult<ServiceList>, method: string, store: Store<AppState>) {
+        let msg = error.code == 0 ? 'succeed' : 'failed' + error.error;
+        let act = SystemEventActions.newEvent(method+' '+msg);
+        store.dispatch(act);
         return new BehaviorSubject(error);
     }
 }

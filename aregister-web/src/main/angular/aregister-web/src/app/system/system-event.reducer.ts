@@ -2,7 +2,7 @@ import { Action } from 'redux';
 import * as Actions from './system-event.actions';
 
 export interface SystemEventState {
-  current: string;
+  readonly current: string;
 }
 
 const initialState: SystemEventState = {

@@ -2,7 +2,7 @@ import { Action } from 'redux';
 import * as Actions from './service.actions';
 
 export interface ServicesState {
-  items: string[];
+  readonly items: string[];
 }
 
 const initialState: ServicesState = {

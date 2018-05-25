@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
-import net.arksea.restapi.RestResult;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -45,19 +44,18 @@ public class ServiceController {
                         try {
                             String json = JsonFormat.printer().print(list);
                             result.setResult(RestUtils.createJsonResult(0, json, reqid));
-                        } catch (InvalidProtocolBufferException e) {
+                        } catch (InvalidProtocolBufferException ex) {
                             String err = "format service list failed";
-                            logger.debug(err, failure);
-                            result.setErrorResult(new RestResult(1, err, reqid));
+                            logger.debug(err, ex);
+                            result.setErrorResult(RestUtils.createError(1, err, reqid));
                         }
                     } else {
                         String err = "get service list failed";
                         logger.debug(err, failure);
-                        result.setErrorResult(new RestResult(1, err, reqid));
+                        result.setErrorResult(RestUtils.createError(1, err, reqid));
                     }
                 }
             }, system.dispatcher());
         return result;
     }
-
 }

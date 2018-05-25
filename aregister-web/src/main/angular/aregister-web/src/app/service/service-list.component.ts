@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Store } from 'redux';
 import { AppStore } from '../app-store';
@@ -15,10 +15,12 @@ import { RestResult,ServiceList } from '../models'
 export class ServiceListComponent {
   serviceList: string[];
 
-  constructor(@Inject(AppStore) private store: Store<AppState>,
-              private api: ServiceAPI) {
+  constructor(@Inject(AppStore) private store: Store<AppState>, private api: ServiceAPI) {
     store.subscribe(() => this.refresh());
-//    this.onClickRefreshBtn();
+  }
+
+  ngOnInit(): void {
+    this.onClickRefreshBtn();
   }
 
   refresh() {
@@ -28,9 +30,9 @@ export class ServiceListComponent {
 
   onClickRefreshBtn() {
     this.api.getServiceList().subscribe(
-      (r: RestResult) => {
+      (r: RestResult<ServiceList>) => {
         if (r.code == 0) {
-          let act = ServiceListActions.updateServiceList((r.result as ServiceList).items);
+          let act = ServiceListActions.updateServiceList(r.result.items);
           this.store.dispatch(act);
         }
       }

@@ -9,7 +9,7 @@ import * as ServiceListActions from './system-event.actions';
   templateUrl: './status-bar.component.html'
 })
 export class SystemStatusBarComponent {
-  eventMessage: string = 'hello world!';
+  eventMessage: string = 'app started';
 
   constructor(@Inject(AppStore) private store: Store<AppState>) {
     store.subscribe(() => this.refresh());
