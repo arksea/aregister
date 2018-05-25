@@ -1,6 +1,6 @@
-export interface RestResult<T> {
+export interface RestResult {
   code: number;
-  result: T;
+  result: object;
   reqid: string;
 };
 

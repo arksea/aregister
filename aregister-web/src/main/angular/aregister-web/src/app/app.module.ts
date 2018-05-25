@@ -6,6 +6,7 @@ import { createStore, Store, StoreEnhancer } from 'redux';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { AppComponent } from './app.component';
 import { ServiceListComponent } from './service/service-list.component';
+import { SystemStatusBarComponent } from './system/status-bar.component';
 
 import { AppStore } from './app-store';
 import { AppState, rootReducer } from './app-state';
@@ -26,7 +27,8 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    ServiceListComponent
+    ServiceListComponent,
+    SystemStatusBarComponent
   ],
   imports: [
     BrowserModule,
