@@ -5,7 +5,9 @@ import { HttpClientModule }     from '@angular/common/http';
 import { createStore, Store, StoreEnhancer } from 'redux';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { AppComponent } from './app.component';
+
 import { ServiceListComponent } from './service/service-list.component';
+import { ServiceComponent } from './service/service.component';
 import { SystemStatusBarComponent } from './system/status-bar.component';
 
 import { AppStore } from './app-store';
@@ -28,6 +30,7 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     ServiceListComponent,
+    ServiceComponent,
     SystemStatusBarComponent
   ],
   imports: [

@@ -4,7 +4,7 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs';
 import { map, catchError,tap } from 'rxjs/operators';
-import { RestResult,ServiceList } from '../models'
+import { RestResult,ServiceList,Service } from '../models'
 
 import { Store } from 'redux';
 import { AppStore } from '../app-store';
@@ -29,13 +29,22 @@ export class ServiceAPI {
         );
     }
 
+    public getService(name: string): Observable<RestResult<Service>> {
+        //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
+        let method = 'Request service runtime';
+        return this.http.get(environment.apiUrl + '/api/v1/services/'+name+'/runtime').pipe(
+            tap((r: RestResult<Service>) => this.handleErrorResult(r, method, this.store)),
+            catchError(r => this.handleCatchedError(r, method, this.store))
+        );
+    }
+
     private handleCatchedError(error, method: string, store: Store<AppState>) {
         let act = SystemEventActions.newEvent(method+' failed: '+error.message);
         store.dispatch(act);
         return new BehaviorSubject(error);
     };
 
-    private handleErrorResult(error: RestResult<ServiceList>, method: string, store: Store<AppState>) {
+    private handleErrorResult(error, method: string, store: Store<AppState>) {
         let msg = error.code == 0 ? 'succeed' : 'failed' + error.error;
         let act = SystemEventActions.newEvent(method+' '+msg);
         store.dispatch(act);

@@ -66,6 +66,7 @@ public class ServiceManagerActor extends AbstractActor {
             .match(ClusterEvent.MemberRemoved.class,     this::handleMemberRemoved)
             .match(ClusterEvent.ClusterDomainEvent.class,this::handleEvent)
             .match(DSF.GetServiceList.class,             this::handleGetServiceList)
+            .match(DSF.GetService.class,                 this::handleGetService)
             .build();
     }
 
@@ -106,6 +107,11 @@ public class ServiceManagerActor extends AbstractActor {
 
     private void handleGetSvcInstances(DSF.GetSvcInstances msg) {
         log.trace("ServiceManagerActor.handleGetSvcInstances({})", msg.getName());
+        forwardToService(msg.getName(), msg);
+    }
+
+    private void handleGetService(DSF.GetService msg) {
+        log.trace("ServiceManagerActor.handleGetService({})", msg.getName());
         forwardToService(msg.getName(), msg);
     }
 

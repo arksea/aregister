@@ -92,6 +92,7 @@ public class ServiceActor extends AbstractActor {
             .match(LoadServiceInfo.class,       this::handleLoadServiceInfo)
             .match(CheckServiceAlive.class,     this::handleCheckServiceAlive)
             .match(ServiceAlive.class,          this::handleServiceAlive)
+            .match(DSF.GetService.class,        this::handleGetService)
             .build();
     }
 
@@ -133,21 +134,32 @@ public class ServiceActor extends AbstractActor {
             .setName(serviceName)
             .setSerialId(serialId);
         this.instances.forEach((addr,it) -> {
-            builder.addInstances(
-                DSF.Instance.newBuilder()
-                    .setAddr(addr)
-                    .setPath(it.path)
-                    .setOnline(it.isOnline())
-                    .setUnregistered(it.isUnregistered())
-                    .setRegisterTime(it.registerTime)
-                    .setUnregisterTime(it.getUnregisterTime())
-                    .setLastOfflineTime(it.getLastOfflineTime())
-                    .setLastOnlineTime(it.getLastOnlineTime())
-                    .build());
+            builder.addInstances(buildInstance(it));
         });
         sender().tell(builder.build(), self());
     }
-
+    //-------------------------------------------------------------------------------
+    private void handleGetService(DSF.GetService msg) {
+        logger.trace("Service.handleGetService({}),instances.size={}", msg.getName(),instances.size());
+        DSF.Service.Builder builder = DSF.Service.newBuilder()
+            .setName(serviceName);
+        this.instances.forEach((addr,it) -> {
+            builder.addInstances(buildInstance(it));
+        });
+        sender().tell(builder.build(), self());
+    }
+    private DSF.Instance buildInstance(InstanceInfo it) {
+        return DSF.Instance.newBuilder()
+            .setAddr(it.addr)
+            .setPath(it.path)
+            .setOnline(it.isOnline())
+            .setUnregistered(it.isUnregistered())
+            .setRegisterTime(it.registerTime)
+            .setUnregisterTime(it.getUnregisterTime())
+            .setLastOfflineTime(it.getLastOfflineTime())
+            .setLastOnlineTime(it.getLastOnlineTime())
+            .build();
+    }
     //-------------------------------------------------------------------------------
     private void handleSubService(DSF.SubService msg) {
         subscribeService(msg.getSubscriber(), sender());

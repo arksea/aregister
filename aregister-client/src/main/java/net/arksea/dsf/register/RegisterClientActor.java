@@ -91,6 +91,7 @@ public class RegisterClientActor extends RequestRouter {
             .match(RegisterRequestSucceed.class,  this::handleRegisterRequestSucceed)
             .match(RegisterRequestFailed.class,   this::handleRegisterRequestFailed)
             .match(DSF.GetServiceList.class,      this::handleGetServiceList)
+            .match(DSF.GetService.class,          this::handleGetService)
             .build();
     }
     //-------------------------------------------------------------------------------------------------
@@ -219,6 +220,11 @@ public class RegisterClientActor extends RequestRouter {
     //-------------------------------------------------------------------------------------------------
     private void handleGetServiceList(DSF.GetServiceList msg) {
         log.trace("RegisterClientActor.handleGetServiceList()");
+        tellRegister(msg, sender());
+    }
+    //-------------------------------------------------------------------------------------------------
+    private void handleGetService(DSF.GetService msg) {
+        log.trace("RegisterClientActor.handleGetService()");
         tellRegister(msg, sender());
     }
     //-------------------------------------------------------------------------------------------------

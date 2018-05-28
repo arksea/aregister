@@ -13,29 +13,30 @@ import { RestResult,ServiceList } from '../models'
   templateUrl: './service-list.component.html'
 })
 export class ServiceListComponent {
-  serviceList: string[];
+    serviceList: string[];
 
-  constructor(@Inject(AppStore) private store: Store<AppState>, private api: ServiceAPI) {
-    store.subscribe(() => this.refresh());
-  }
+    constructor(@Inject(AppStore) private store: Store<AppState>, private api: ServiceAPI) {
+        store.subscribe(() => this.refresh());
+    }
 
-  ngOnInit(): void {
-    this.onClickRefreshBtn();
-  }
+    ngOnInit(): void {
+        this.onClickRefreshBtn();
+    }
 
-  refresh() {
-    const state: AppState = this.store.getState() as AppState;
-    this.serviceList = state.services.items;
-  }
+    refresh() {
+        const state: AppState = this.store.getState() as AppState;
+        this.serviceList = state.services.serviceList;
+    }
 
-  onClickRefreshBtn() {
-    this.api.getServiceList().subscribe(
-      (r: RestResult<ServiceList>) => {
-        if (r.code == 0) {
-          let act = ServiceListActions.updateServiceList(r.result.items);
-          this.store.dispatch(act);
-        }
-      }
-    );
-  }
+    onClickRefreshBtn() {
+        this.api.getServiceList().subscribe(
+            (r: RestResult<ServiceList>) => {
+                if (r.code == 0) {
+                    let act = ServiceListActions.updateServiceList(r.result.items);
+                    this.store.dispatch(act);
+                }
+            }
+        );
+    }
 }
+
