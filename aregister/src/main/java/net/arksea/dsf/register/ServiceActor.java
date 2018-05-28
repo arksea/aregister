@@ -283,7 +283,7 @@ public class ServiceActor extends AbstractActor {
             } else if (!it.isOnline()){
                 //超过3天拨测失败则认为服务已注销
                 final long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
-                long offlineTime = System.currentTimeMillis() - it.getLastOfflineTime();
+                long offlineTime = it.getOfflineTime();
                 if (offlineTime > OFFLINE_TIMEOUT) {
                     unregedList.add(addr);
                     try {

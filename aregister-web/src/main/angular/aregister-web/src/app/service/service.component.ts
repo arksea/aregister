@@ -41,4 +41,15 @@ export class ServiceComponent {
             );
         }
     }
+
+    //格式化时间展示
+    formatTime(time: number): string {
+         if (time > 0) {
+           let date: Date = new Date();
+           date.setTime(time);
+           return date.toLocaleString();
+         } else {
+           return '';
+         }
+    }
 }
