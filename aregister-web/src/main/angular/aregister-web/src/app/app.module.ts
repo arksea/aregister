@@ -2,16 +2,20 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule }     from '@angular/common/http';
-import { createStore, Store, StoreEnhancer } from 'redux';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { AppComponent } from './app.component';
 
+import { ClarityModule } from "clarity-angular";
+
+import { createStore, Store, StoreEnhancer } from 'redux';
+import { AppStore } from './app-store';
+import { AppState, rootReducer } from './app-state';
+
+import { AppComponent } from './app.component';
 import { ServiceListComponent } from './service/service-list.component';
 import { ServiceComponent } from './service/service.component';
 import { SystemStatusBarComponent } from './system/status-bar.component';
 
-import { AppStore } from './app-store';
-import { AppState, rootReducer } from './app-state';
+
 
 import { ServiceAPI } from './service/service.restapi';
 
@@ -35,6 +39,7 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
+    ClarityModule,
     HttpClientModule,
     RouterModule.forRoot(appRoutes, { enableTracing: true })
   ],

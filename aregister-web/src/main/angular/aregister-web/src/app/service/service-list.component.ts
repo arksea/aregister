@@ -4,9 +4,9 @@ import { Store } from 'redux';
 import { AppStore } from '../app-store';
 import { AppState } from '../app-state';
 import { ServiceAPI } from './service.restapi';
-import * as ServiceListActions from './service.actions';
+import * as ServiceActions from './service.actions';
 import * as SystemEventActions from '../system/system-event.actions';
-import { RestResult,ServiceList } from '../models'
+import { RestResult,ServiceList,Service } from '../models'
 
 @Component({
   selector: 'service-list',
@@ -32,11 +32,23 @@ export class ServiceListComponent {
         this.api.getServiceList().subscribe(
             (r: RestResult<ServiceList>) => {
                 if (r.code == 0) {
-                    let act = ServiceListActions.updateServiceList(r.result.items);
+                    let act = ServiceActions.updateServiceList(r.result.items);
                     this.store.dispatch(act);
                 }
             }
         );
+    }
+
+    onClickOneService(name: string) {
+        const state: AppState = this.store.getState() as AppState;
+            this.api.getService(name).subscribe(
+                (r: RestResult<Service>) => {
+                    if (r.code == 0) {
+                        let act = ServiceActions.updateService(r.result);
+                        this.store.dispatch(act);
+                    }
+                }
+            );
     }
 }
 

@@ -1,9 +1,4 @@
-<button (click)="onClickRefreshBtn()">刷新</button>
-<table id="serviceListTable" class="table table-striped table-bordered table-condensed">
-  <thead><tr><th>名称</th></tr></thead>
-  <tbody>
-  <tr *ngFor="let s of serviceList">
-    <td>{{s}}</td>
-  </tr>
-  </tbody>
-</table>
+<button class="btn btn-link" (click)="onClickRefreshBtn()">刷新</button>
+<ul class="nav-list" *ngFor="let s of serviceList">
+  <li><a  (click)="onClickOneService(s)" class="nav-link">{{s}}</a></li>
+</ul>

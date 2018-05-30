@@ -13,32 +13,26 @@ import { RestResult,Service,Instance } from '../models'
   templateUrl: './service.component.html'
 })
 export class ServiceComponent {
-    service: Service;
+    service: Service = {
+        name: '',
+        instances: [],
+        subscribers: []
+    } as Service;
 
     constructor(@Inject(AppStore) private store: Store<AppState>, private api: ServiceAPI) {
         store.subscribe(() => this.refresh());
     }
 
     ngOnInit(): void {
-        this.onClickRefreshBtn();
     }
 
     refresh() {
         const state: AppState = this.store.getState() as AppState;
-        this.service = state.services.serviceMap[state.services.currentService];
-    }
-
-    onClickRefreshBtn() {
-        const state: AppState = this.store.getState() as AppState;
         if (state.services.currentService) {
-            this.api.getService(state.services.currentService).subscribe(
-                (r: RestResult<Service>) => {
-                    if (r.code == 0) {
-                        let act = ServiceActions.updateService(r.result);
-                        this.store.dispatch(act);
-                    }
-                }
-            );
+            let svc = state.services.serviceMap[state.services.currentService];
+            if (svc) {
+                this.service = svc;
+            }
         }
     }
 
