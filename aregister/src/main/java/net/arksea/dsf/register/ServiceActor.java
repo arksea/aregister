@@ -146,6 +146,7 @@ public class ServiceActor extends AbstractActor {
         this.instances.forEach((addr,it) -> {
             builder.addInstances(buildInstance(it));
         });
+        fillSubscriber(builder);
         sender().tell(builder.build(), self());
     }
     private DSF.Instance buildInstance(InstanceInfo it) {
@@ -159,6 +160,21 @@ public class ServiceActor extends AbstractActor {
             .setLastOfflineTime(it.getLastOfflineTime())
             .setLastOnlineTime(it.getLastOnlineTime())
             .build();
+    }
+    private void fillSubscriber(DSF.Service.Builder svc) {
+        Map<String, Integer> counter = new HashMap<>();
+        subscriberMap.forEach((ref, info) -> {
+            Integer c = counter.get(info.name);
+            if (c == null) {
+                c = 1;
+            } else {
+                c = c+1;
+            }
+            counter.put(info.name, c);
+        });
+        counter.forEach((name, count) -> {
+            svc.addSubscribers(DSF.Subscriber.newBuilder().setName(name).setCount(count).build());
+        });
     }
     //-------------------------------------------------------------------------------
     private void handleSubService(DSF.SubService msg) {
