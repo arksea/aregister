@@ -16,7 +16,6 @@ public class InstanceQuality {
     private long requestCount;
     private long respondTime;
     private long succeedCount;
-    private long timeoutCount;
     private  int lastHistoryIndex;
     private final String serviceName;
 
@@ -24,7 +23,6 @@ public class InstanceQuality {
         long requestCount;
         long respondTime;
         long succeedCount;
-        long timeoutCount;
     }
 
     public InstanceQuality(String serviceName) {
@@ -35,17 +33,15 @@ public class InstanceQuality {
         }
     }
 
-    public void request() {
+    public void failed(long time) {
         ++requestCount;
-    }
-
-    public void succeed(long time) {
-        ++succeedCount;
         this.respondTime += time;
     }
 
-    public void timeout(long time) {
-        ++timeoutCount;
+    public void succeed(long time) {
+        //请求与响应的计数放在一起，是为了防止请求时间比较长的情况下，两次计数被分到两个周期中
+        ++succeedCount;
+        ++requestCount;
         this.respondTime += time;
     }
 
@@ -61,9 +57,8 @@ public class InstanceQuality {
         count.requestCount = this.requestCount;
         count.respondTime  = this.respondTime;
         count.succeedCount = this.succeedCount;
-        count.timeoutCount = this.timeoutCount;
-        log.trace("Quality Stat: service={},requestCount1M={},timeoutRate1M={},timeoutRate5M={}",
-            serviceName, getRequestCount(1), getTimeoutRate(1), getTimeoutRate(5));
+        log.trace("Quality Stat: service={},requestCount1M={},succeedRate1M={},succeedRate5M={}",
+            serviceName, getRequestCount(1), getSucceedRate(1), getSucceedRate(5));
     }
 
     /**
@@ -102,18 +97,6 @@ public class InstanceQuality {
             return 0L;
         } else {
             return n / m;
-        }
-    }
-
-    public float getTimeoutRate(int step) {
-        int s = Math.min(MAX_HISTORY_COUNT -1, step);
-        Count cOld = getStepsBefore(s);
-        long n = this.timeoutCount - cOld.timeoutCount;
-        long m = this.requestCount - cOld.requestCount;
-        if (m == 0) {
-            return 0.0f;
-        } else {
-            return 1.0f*n / m;
         }
     }
 
