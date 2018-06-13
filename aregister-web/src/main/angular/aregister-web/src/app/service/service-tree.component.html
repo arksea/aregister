@@ -1,0 +1,20 @@
+<!--<button class="btn btn-link" (click)="onClickRefreshBtn()">刷新</button>-->
+<!--<ul class="nav-list" *ngFor="let s of serviceList">-->
+  <!--<li><a  (click)="onClickOneService(s)" class="nav-link">{{s}}</a></li>-->
+<!--</ul>-->
+
+<clr-tree-node *ngFor="let namespace of serviceTree">
+  <!--<clr-icon [attr.shape]="directory.icon"></clr-icon>-->
+    {{namespace.namespace}}
+    <ng-template [(clrIfExpanded)]="namespace.expended">
+        <clr-tree-node *ngFor="let serviceList of namespace.serviceList">
+            {{serviceList.name}}
+            <ng-template [(clrIfExpanded)]="serviceList.expended">
+              <clr-tree-node *ngFor="let version of serviceList.versions">
+                {{version.version}}
+              </clr-tree-node>
+            </ng-template>
+        </clr-tree-node>
+    </ng-template>
+</clr-tree-node>
+

@@ -30,3 +30,20 @@ export interface Subscriber {
   name: string;
   count: number;
 };
+
+export interface ServiceVersion {
+  version: string;
+  regname: string;
+};
+
+export interface ServiceSeries {
+  name: string;
+  expended: boolean;
+  versions: ServiceVersion[];
+};
+
+export interface ServiceNamespace {
+  namespace: string;
+  expended: boolean;
+  serviceList: ServiceSeries[];
+};

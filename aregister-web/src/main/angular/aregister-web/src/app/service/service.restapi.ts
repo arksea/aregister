@@ -4,7 +4,7 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs';
 import { map, catchError,tap } from 'rxjs/operators';
-import { RestResult,ServiceList,Service } from '../models'
+import { RestResult,ServiceList,Service, ServiceVersion, ServiceSeries, ServiceNamespace } from '../models'
 
 import { Store } from 'redux';
 import { AppStore } from '../app-store';
@@ -23,8 +23,17 @@ export class ServiceAPI {
     public getServiceList(): Observable<RestResult<ServiceList>> {
         //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
         let method = 'Request service list';
-        return this.http.get(environment.apiUrl + '/api/v1/services').pipe(
+        return this.http.get(environment.apiUrl + '/api/v1/services/list').pipe(
             tap((r: RestResult<ServiceList>) => this.handleErrorResult(r, method, this.store)),
+            catchError(r => this.handleCatchedError(r, method, this.store))
+        );
+    }
+
+    public getServiceTree(): Observable<RestResult<ServiceNamespace[]>> {
+        //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
+        let method = 'Request service tree';
+        return this.http.get(environment.apiUrl + '/api/v1/services/tree').pipe(
+            tap((r: RestResult<ServiceNamespace[]>) => this.handleErrorResult(r, method, this.store)),
             catchError(r => this.handleCatchedError(r, method, this.store))
         );
     }
@@ -32,7 +41,7 @@ export class ServiceAPI {
     public getService(name: string): Observable<RestResult<Service>> {
         //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
         let method = 'Request service runtime';
-        return this.http.get(environment.apiUrl + '/api/v1/services/'+name+'/runtime').pipe(
+        return this.http.get(environment.apiUrl + '/api/v1/services/instances/'+name).pipe(
             tap((r: RestResult<Service>) => this.handleErrorResult(r, method, this.store)),
             catchError(r => this.handleCatchedError(r, method, this.store))
         );

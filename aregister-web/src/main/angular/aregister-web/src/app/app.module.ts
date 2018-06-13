@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule }     from '@angular/common/http';
@@ -11,7 +12,7 @@ import { AppStore } from './app-store';
 import { AppState, rootReducer } from './app-state';
 
 import { AppComponent } from './app.component';
-import { ServiceListComponent } from './service/service-list.component';
+import { ServiceTreeComponent } from './service/service-tree.component';
 import { ServiceComponent } from './service/service.component';
 import { SystemStatusBarComponent } from './system/status-bar.component';
 
@@ -27,18 +28,19 @@ export const store: Store<AppState> = createStore(rootReducer, devtools);
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'services', pathMatch: 'full' },
-  { path: 'services', component: ServiceListComponent }
+  { path: 'services', component: ServiceTreeComponent }
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
-    ServiceListComponent,
+    ServiceTreeComponent,
     ServiceComponent,
     SystemStatusBarComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     ClarityModule,
     HttpClientModule,
     RouterModule.forRoot(appRoutes, { enableTracing: true })

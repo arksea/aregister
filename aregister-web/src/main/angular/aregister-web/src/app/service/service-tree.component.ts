@@ -6,14 +6,14 @@ import { AppState } from '../app-state';
 import { ServiceAPI } from './service.restapi';
 import * as ServiceActions from './service.actions';
 import * as SystemEventActions from '../system/system-event.actions';
-import { RestResult,ServiceList,Service } from '../models'
+import { RestResult,ServiceNamespace,Service } from '../models'
 
 @Component({
-  selector: 'service-list',
-  templateUrl: './service-list.component.html'
+  selector: 'service-tree',
+  templateUrl: './service-tree.component.html'
 })
-export class ServiceListComponent {
-    serviceList: string[];
+export class ServiceTreeComponent {
+    serviceTree =  [];
 
     constructor(@Inject(AppStore) private store: Store<AppState>, private api: ServiceAPI) {
         store.subscribe(() => this.refresh());
@@ -25,30 +25,30 @@ export class ServiceListComponent {
 
     refresh() {
         const state: AppState = this.store.getState() as AppState;
-        this.serviceList = state.services.serviceList;
+        this.serviceTree = state.services.serviceTree;
     }
 
     onClickRefreshBtn() {
-        this.api.getServiceList().subscribe(
-            (r: RestResult<ServiceList>) => {
+        this.api.getServiceTree().subscribe(
+            (r: RestResult<ServiceNamespace[]>) => {
                 if (r.code == 0) {
-                    let act = ServiceActions.updateServiceList(r.result.items);
+                    let act = ServiceActions.updateServiceTree(r.result);
                     this.store.dispatch(act);
                 }
             }
         );
     }
 
-    onClickOneService(name: string) {
-        const state: AppState = this.store.getState() as AppState;
-            this.api.getService(name).subscribe(
-                (r: RestResult<Service>) => {
-                    if (r.code == 0) {
-                        let act = ServiceActions.updateService(r.result);
-                        this.store.dispatch(act);
-                    }
-                }
-            );
-    }
+//    onClickOneService(name: string) {
+//        const state: AppState = this.store.getState() as AppState;
+//            this.api.getService(name).subscribe(
+//                (r: RestResult<Service>) => {
+//                    if (r.code == 0) {
+//                        let act = ServiceActions.updateService(r.result);
+//                        this.store.dispatch(act);
+//                    }
+//                }
+//            );
+//    }
 }
 

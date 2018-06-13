@@ -1,14 +1,14 @@
 import { Action, ActionCreator } from 'redux';
-import { Service } from '../models';
+import { Service, ServiceNamespace } from '../models';
 
-export const UPDATE_SERVICE_LIST = '[Service] Update list';
-export interface UpdateServiceListAction extends Action {
-  serviceList: string[];
+export const UPDATE_SERVICE_TREE = '[Service] Update tree';
+export interface UpdateServiceTreeAction extends Action {
+  serviceTree: ServiceNamespace[];
 }
-export const updateServiceList: ActionCreator<UpdateServiceListAction> =
-  (list) => ({
-    type: UPDATE_SERVICE_LIST,
-    serviceList: list
+export const updateServiceTree: ActionCreator<UpdateServiceTreeAction> =
+  (tree) => ({
+    type: UPDATE_SERVICE_TREE,
+    serviceTree: tree
   });
 
 
