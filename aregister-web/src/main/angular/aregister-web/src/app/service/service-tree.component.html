@@ -5,13 +5,28 @@
 
 <clr-tree-node *ngFor="let namespace of serviceTree">
   <!--<clr-icon [attr.shape]="directory.icon"></clr-icon>-->
+    <clr-icon shape="folder"></clr-icon>
     {{namespace.namespace}}
-    <ng-template [(clrIfExpanded)]="namespace.expended">
+    <ng-template [(clrIfExpanded)]="namespace.expanded">
         <clr-tree-node *ngFor="let serviceList of namespace.serviceList">
+            <clr-icon shape="grid-view"></clr-icon>
             {{serviceList.name}}
-            <ng-template [(clrIfExpanded)]="serviceList.expended">
+            <ng-template [(clrIfExpanded)]="serviceList.expanded">
               <clr-tree-node *ngFor="let version of serviceList.versions">
-                {{version.version}}
+                <!--<clr-icon shape="line-chart"></clr-icon>-->
+                <!--<a routerLink="/services/{{version.regname}}"-->
+                  <!--class="clr-treenode-link"-->
+                  <!--routerLinkActive="active"-->
+                <!--<a  (click)="onClickOneService(version.regname)">{{version.version}}</a>-->
+
+                <button
+                  (click)="onClickOneService(version)"
+                  class="clr-treenode-link"
+                  [class.active]="version.active">
+                  <clr-icon shape="switch"></clr-icon>
+                  {{version.version}}
+                </button>
+
               </clr-tree-node>
             </ng-template>
         </clr-tree-node>

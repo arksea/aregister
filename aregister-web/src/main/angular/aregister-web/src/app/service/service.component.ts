@@ -1,4 +1,5 @@
 import { Component, Inject, OnInit, Input } from '@angular/core';
+import { Router, ActivatedRoute, ParamMap,NavigationEnd  } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Store } from 'redux';
 import { AppStore } from '../app-store';
@@ -19,7 +20,8 @@ export class ServiceComponent {
         subscribers: []
     } as Service;
 
-    constructor(@Inject(AppStore) private store: Store<AppState>, private api: ServiceAPI) {
+    constructor(@Inject(AppStore) private store: Store<AppState>,
+                private api: ServiceAPI) {
         store.subscribe(() => this.refresh());
     }
 
@@ -28,8 +30,8 @@ export class ServiceComponent {
 
     refresh() {
         const state: AppState = this.store.getState() as AppState;
-        if (state.services.currentService) {
-            let svc = state.services.serviceMap[state.services.currentService];
+        if (state.services.selectedVersion) {
+            let svc = state.services.serviceMap[state.services.selectedVersion.regname];
             if (svc) {
                 this.service = svc;
             }

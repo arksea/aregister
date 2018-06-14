@@ -148,7 +148,7 @@ public class ServiceController {
         return namespaceList;
     }
 
-    @RequestMapping(path = "instances/{name}", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    @RequestMapping(path = "{name}/runtime", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public DeferredResult<String> getService(
                 @PathVariable("name") final String servieName,
                 final HttpServletRequest httpRequest) {

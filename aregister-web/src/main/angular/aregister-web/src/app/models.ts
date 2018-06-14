@@ -34,16 +34,17 @@ export interface Subscriber {
 export interface ServiceVersion {
   version: string;
   regname: string;
+  active: boolean;
 };
 
 export interface ServiceSeries {
   name: string;
-  expended: boolean;
+  expanded: boolean;
   versions: ServiceVersion[];
 };
 
 export interface ServiceNamespace {
   namespace: string;
-  expended: boolean;
+  expanded: boolean;
   serviceList: ServiceSeries[];
 };

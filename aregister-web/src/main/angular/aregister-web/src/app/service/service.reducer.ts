@@ -1,16 +1,16 @@
 import { Action } from 'redux';
 import * as Actions from './service.actions';
-import { Service,ServiceNamespace } from '../models';
+import { Service,ServiceNamespace,ServiceVersion } from '../models';
 
 export interface ServicesState {
   readonly serviceTree: ServiceNamespace[];
-  readonly currentService: string;
+  readonly selectedVersion: ServiceVersion;
   readonly serviceMap: Map<string, Service>;
 }
 
 const initialState: ServicesState = {
   serviceTree: [],
-  currentService: 'net.arksea.dsf.DemoService-1.0',
+  selectedVersion: null,
   serviceMap: new Map<string, Service>()
 };
 
@@ -21,12 +21,20 @@ export const ServicesReducer = function(state: ServicesState = initialState, act
             return Object.assign({}, state, {
                 serviceTree : tree
             });
+        case Actions.SELECT_SERVICE_TREE_NODE:
+            const svc: ServiceVersion = (<Actions.SelectServiceTreeNodeAction>action).serviceVersion;
+            if (state.selectedVersion != null) {
+                state.selectedVersion.active = false;
+            }
+            svc.active = true;
+            return Object.assign({}, state, {
+                selectedVersion: svc
+            });
         case Actions.UPDATE_SERVICE:
             const service: Service =  (<Actions.UpdateServiceAction>action).service;
             const map: Map<string,Service> = Object.assign({}, state.serviceMap, {});
             map[service.name] = service;
             return Object.assign({}, state, {
-                currentService: service.name,
                 serviceMap: map
             });
         default:

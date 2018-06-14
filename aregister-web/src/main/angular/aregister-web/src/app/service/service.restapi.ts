@@ -41,7 +41,7 @@ export class ServiceAPI {
     public getService(name: string): Observable<RestResult<Service>> {
         //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
         let method = 'Request service runtime';
-        return this.http.get(environment.apiUrl + '/api/v1/services/instances/'+name).pipe(
+        return this.http.get(environment.apiUrl + '/api/v1/services/'+name+'/runtime').pipe(
             tap((r: RestResult<Service>) => this.handleErrorResult(r, method, this.store)),
             catchError(r => this.handleCatchedError(r, method, this.store))
         );

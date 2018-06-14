@@ -28,7 +28,8 @@ export const store: Store<AppState> = createStore(rootReducer, devtools);
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'services', pathMatch: 'full' },
-  { path: 'services', component: ServiceTreeComponent }
+  { path: 'services', component: ServiceTreeComponent },
+  { path: 'services/:regname', component: ServiceComponent }
 ];
 
 @NgModule({
@@ -41,6 +42,7 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    RouterModule.forRoot(appRoutes,{ enableTracing: true }),
     ClarityModule,
     HttpClientModule,
     RouterModule.forRoot(appRoutes, { enableTracing: true })
