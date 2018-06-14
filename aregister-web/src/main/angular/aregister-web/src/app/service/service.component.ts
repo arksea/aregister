@@ -21,17 +21,33 @@ export class ServiceComponent {
     } as Service;
 
     constructor(@Inject(AppStore) private store: Store<AppState>,
-                private api: ServiceAPI) {
+                private api: ServiceAPI,
+                private router: Router,
+                private route: ActivatedRoute) {
         store.subscribe(() => this.refresh());
     }
 
     ngOnInit(): void {
+        const state: AppState = this.store.getState() as AppState;
+        let regname = this.route.snapshot.paramMap.get('regname')
+        if (regname && this.service.name == '') {
+            const state: AppState = this.store.getState() as AppState;
+            this.api.getService(regname).subscribe(
+                (r: RestResult<Service>) => {
+                    if (r.code == 0) {
+                        let act = ServiceActions.updateService(r.result);
+                        this.store.dispatch(act);
+                    }
+                }
+            );
+        }
     }
 
     refresh() {
         const state: AppState = this.store.getState() as AppState;
-        if (state.services.selectedVersion) {
-            let svc = state.services.serviceMap[state.services.selectedVersion.regname];
+        let regname = this.route.snapshot.paramMap.get('regname')
+        if (regname) {
+            let svc = state.services.serviceMap[regname];
             if (svc) {
                 this.service = svc;
             }

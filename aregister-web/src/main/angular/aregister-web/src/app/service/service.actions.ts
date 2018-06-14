@@ -11,16 +11,6 @@ export const updateServiceTree: ActionCreator<UpdateServiceTreeAction> =
     serviceTree: tree
   });
 
-export const SELECT_SERVICE_TREE_NODE = '[ServiceTree] Select service';
-export interface SelectServiceTreeNodeAction extends Action {
-  serviceVersion: ServiceVersion;
-}
-export const selectServiceTreeNodeAction: ActionCreator<SelectServiceTreeNodeAction> =
-  (svc) => ({
-    type: SELECT_SERVICE_TREE_NODE,
-    serviceVersion: svc
-  });
-
 export const UPDATE_SERVICE = '[Service] Update service';
 export interface UpdateServiceAction extends Action {
   service: Service;

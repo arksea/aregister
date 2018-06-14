@@ -27,8 +27,7 @@ const devtools: StoreEnhancer<AppState> =
 export const store: Store<AppState> = createStore(rootReducer, devtools);
 
 const appRoutes: Routes = [
-  { path: '', redirectTo: 'services', pathMatch: 'full' },
-  { path: 'services', component: ServiceTreeComponent },
+  { path: '', redirectTo: 'services/', pathMatch: 'full' },
   { path: 'services/:regname', component: ServiceComponent }
 ];
 

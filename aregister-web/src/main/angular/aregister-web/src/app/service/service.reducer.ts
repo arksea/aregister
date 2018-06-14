@@ -4,13 +4,11 @@ import { Service,ServiceNamespace,ServiceVersion } from '../models';
 
 export interface ServicesState {
   readonly serviceTree: ServiceNamespace[];
-  readonly selectedVersion: ServiceVersion;
   readonly serviceMap: Map<string, Service>;
 }
 
 const initialState: ServicesState = {
   serviceTree: [],
-  selectedVersion: null,
   serviceMap: new Map<string, Service>()
 };
 
@@ -20,15 +18,6 @@ export const ServicesReducer = function(state: ServicesState = initialState, act
             const tree: ServiceNamespace[] = (<Actions.UpdateServiceTreeAction>action).serviceTree;
             return Object.assign({}, state, {
                 serviceTree : tree
-            });
-        case Actions.SELECT_SERVICE_TREE_NODE:
-            const svc: ServiceVersion = (<Actions.SelectServiceTreeNodeAction>action).serviceVersion;
-            if (state.selectedVersion != null) {
-                state.selectedVersion.active = false;
-            }
-            svc.active = true;
-            return Object.assign({}, state, {
-                selectedVersion: svc
             });
         case Actions.UPDATE_SERVICE:
             const service: Service =  (<Actions.UpdateServiceAction>action).service;

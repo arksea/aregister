@@ -34,7 +34,6 @@ export interface Subscriber {
 export interface ServiceVersion {
   version: string;
   regname: string;
-  active: boolean;
 };
 
 export interface ServiceSeries {

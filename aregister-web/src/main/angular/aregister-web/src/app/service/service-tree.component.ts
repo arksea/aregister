@@ -45,8 +45,6 @@ export class ServiceTreeComponent {
 
     onClickOneService(svc: ServiceVersion) {
         const state: AppState = this.store.getState() as AppState;
-        let act = ServiceActions.selectServiceTreeNodeAction(svc);
-        this.store.dispatch(act);
         this.api.getService(svc.regname).subscribe(
             (r: RestResult<Service>) => {
                 if (r.code == 0) {
@@ -55,7 +53,6 @@ export class ServiceTreeComponent {
                 }
             }
         );
-
     }
 }
 
