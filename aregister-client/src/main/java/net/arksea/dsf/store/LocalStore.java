@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.LinkedList;

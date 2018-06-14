@@ -70,7 +70,7 @@ public class RegisterActor extends AbstractActor {
         try {
             store.addServiceInstance(msg.getName(), new Instance(msg.getAddr(), msg.getPath()));
             MSG.SendToAll sendToAll = new MSG.SendToAll(msg);
-            new MSG.SendToAll(sendToAll);
+            forwardToServiceManager(sendToAll);
             sender().tell(true, self());
         } catch (Exception ex) {
             log.warn("register a service instance failed:{}",msg.toString(), ex);
@@ -83,7 +83,7 @@ public class RegisterActor extends AbstractActor {
         try {
             store.delServiceInstance(msg.getName(), msg.getAddr());
             MSG.SendToAll sendToAll = new MSG.SendToAll(msg);
-            new MSG.SendToAll(sendToAll);
+            forwardToServiceManager(sendToAll);
             sender().tell(true, self());
         } catch (Exception ex) {
             log.warn("Unregister a service instance failed:{}",msg.toString(), ex);
