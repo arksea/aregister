@@ -69,7 +69,8 @@ public class RegisterActor extends AbstractActor {
         log.trace("RegisterActor.handleRegService({},{},{})", msg.getName(), msg.getAddr(), msg.getPath());
         try {
             store.addServiceInstance(msg.getName(), new Instance(msg.getAddr(), msg.getPath()));
-            serviceManagerActor.tell(new MSG.SendToAll(msg), self());
+            MSG.SendToAll sendToAll = new MSG.SendToAll(msg);
+            forwardToServiceManager(sendToAll);
             sender().tell(true, self());
         } catch (Exception ex) {
             log.warn("register a service instance failed:{}",msg.toString(), ex);
@@ -81,7 +82,8 @@ public class RegisterActor extends AbstractActor {
         log.trace("RegisterActor.handleUnregService({},{})", msg.getName(), msg.getAddr());
         try {
             store.delServiceInstance(msg.getName(), msg.getAddr());
-            serviceManagerActor.tell(new MSG.SendToAll(msg), self());
+            MSG.SendToAll sendToAll = new MSG.SendToAll(msg);
+            forwardToServiceManager(sendToAll);
             sender().tell(true, self());
         } catch (Exception ex) {
             log.warn("Unregister a service instance failed:{}",msg.toString(), ex);
@@ -91,27 +93,27 @@ public class RegisterActor extends AbstractActor {
 
     private void handleGetSvcInstances(DSF.GetSvcInstances msg) {
         log.trace("RegisterActor.handleGetSvcInstances({})", msg.getName());
-        serviceManagerActor.forward(msg, context());
+        forwardToServiceManager(msg);
     }
 
     private void handleGetService(DSF.GetService msg) {
         log.trace("RegisterActor.handleGetService({})", msg.getName());
-        serviceManagerActor.forward(msg, context());
+        forwardToServiceManager(msg);
     }
 
     private void handleSyncSvcInstances(DSF.SyncSvcInstances msg) {
         log.trace("RegisterActor.handleSyncSvcInstances({},{})", msg.getName(), msg.getSerialId());
-        serviceManagerActor.forward(msg, context());
+        forwardToServiceManager(msg);
     }
 
     private void handleSubService(DSF.SubService msg) {
         log.trace("RegisterActor.handleSubService({},{})", msg.getService(),msg.getSubscriber());
-        serviceManagerActor.forward(msg, context());
+        forwardToServiceManager(msg);
     }
 
     private void handleUnsubService(DSF.UnsubService msg) {
         log.trace("RegisterActor.handleUnsubService({})", msg.getService());
-        serviceManagerActor.forward(msg, context());
+        forwardToServiceManager(msg);
     }
 
     private void handlePing(DSF.Ping msg) {
@@ -142,6 +144,10 @@ public class RegisterActor extends AbstractActor {
 
     private void handleGetServiceList(DSF.GetServiceList msg) {
         log.trace("RegisterActor.handleGetServiceList()");
+        forwardToServiceManager(msg);
+    }
+
+    private void forwardToServiceManager(Object msg) {
         serviceManagerActor.forward(msg, context());
     }
 }
