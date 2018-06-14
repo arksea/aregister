@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,5 +49,11 @@ public final class LocalStore {
             }
         }
         return list;
+    }
+
+    public static boolean serviceExists(String serviceName) throws IOException {
+        String fileName = "./config/" + serviceName + ".svc";
+        File file = new File(fileName);
+        return file.exists();
     }
 }

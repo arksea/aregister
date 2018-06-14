@@ -10,4 +10,6 @@ public interface IRegisterStore {
     List<Instance> getServiceInstances(String name);
     boolean addServiceInstance(String name, Instance instance);
     boolean delServiceInstance(String name, String addr);
+    boolean serviceExists(String name);
+    boolean delService(String name);
 }

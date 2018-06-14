@@ -70,4 +70,12 @@ public class RedisRegister implements IRegisterStore {
             return jedis.hdel(key, addr) == 1;
         }
     }
+
+    @Override
+    public boolean serviceExists(String name) {
+        try(Jedis jedis = jedisPool.getResource()) {
+            String key = "dsf:"+name+":inst";
+            return jedis.exists(key);
+        }
+    }
 }

@@ -232,6 +232,7 @@ public class ServiceActor extends AbstractActor {
                 list = loadFromLocalFile();
             }
         }
+
         if (list != null) {
             boolean changed = false;
             logger.trace("Load service info, instance size = {}", list.size());

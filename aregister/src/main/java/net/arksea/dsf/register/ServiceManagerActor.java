@@ -7,11 +7,13 @@ import akka.cluster.Member;
 import akka.japi.Creator;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.store.IRegisterStore;
+import net.arksea.dsf.store.LocalStore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.collection.Iterator;
 import scala.collection.SortedSet;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,12 +89,31 @@ public class ServiceManagerActor extends AbstractActor {
     }
 
     private void forwardToService(String name, Object msg) {
-        ActorRef actor = serviceMap.computeIfAbsent(name, k -> {
-            Props props = ServiceActor.props(name, register);
-            String actorName = ServiceActor.ACTOR_NAME_PRE + name;
-            return context().actorOf(props, actorName);
-        });
-        actor.forward(msg, context());
+        //条件判断的目的是为了尽量防止客户端无意或有意的使用大量不存在的服务名发起请求，
+        //造成注册服务器记录并启动大量无效的服务管理Actor
+        if (serviceMap.containsKey(name)
+                || msg instanceof DSF.RegService
+                || serviceExists(name)) {
+            ActorRef actor = serviceMap.computeIfAbsent(name, k -> {
+                Props props = ServiceActor.props(name, register);
+                String actorName = ServiceActor.ACTOR_NAME_PRE + name;
+                return context().actorOf(props, actorName);
+            });
+            actor.forward(msg, context());
+        }
+    }
+
+    private boolean serviceExists(String name) {
+        if (register == null) {
+            try {
+                return LocalStore.serviceExists(name);
+            } catch (IOException ex) {
+                log.warn("local store error", ex);
+                return false;
+            }
+        } else {
+            return register.serviceExists(name);
+        }
     }
 
     private void handleRegService(DSF.RegService msg) {
