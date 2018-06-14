@@ -30,7 +30,6 @@ public class ServiceRequestRouter extends RequestRouter {
     @Override
     public Receive createReceive() {
         return createReceiveBuilder()
-//            .match(ForwardRawMessage.class, this::handleForwardRawMessage)
             .match(DSF.ServiceRequest.class, this::handleServiceRequest)
             .match(DSF.ServiceResponse.class,this::handleServiceResponse)
             .match(DSF.RegService.class,     this::handleRegService)
@@ -47,15 +46,17 @@ public class ServiceRequestRouter extends RequestRouter {
         final ActorRef requester = sender();
         if (op.isPresent()) {
             Instance instance = op.get();
-            if (!msg.getOneway()) {
-                onRequest(instance);
-            }
-            log.trace("service instance: {}", instance.path);
-            ActorSelection service = context().actorSelection(instance.path);
-            service.tell(msg,self());
-            if (!msg.getOneway()) {
-                RequestState state = new RequestState(requester, startTime, msg, instance);
-                requests.put(msg.getRequestId(), state);
+            try {
+                log.trace("service instance: {}", instance.path);
+                ActorSelection service = context().actorSelection(instance.path);
+                service.tell(msg, self());
+                if (!msg.getOneway()) {
+                    RequestState state = new RequestState(requester, startTime, msg, instance);
+                    requests.put(msg.getRequestId(), state);
+                }
+            } catch (Exception ex) {
+                onRequestFailed(instance, System.currentTimeMillis() - startTime);
+                throw ex;
             }
         } else {
             requester.tell(new NoUseableService(serviceName), self());
@@ -71,7 +72,7 @@ public class ServiceRequestRouter extends RequestRouter {
             state.requester.forward(msg, context());
             long time = System.currentTimeMillis() - state.startTime;
             if (time > getReuqestTimeout()) {
-                onRequestTimeout(state.instance, time);
+                onRequestFailed(state.instance, time);
             } else {
                 onRequestSucceed(state.instance, time);
             }
@@ -99,7 +100,7 @@ public class ServiceRequestRouter extends RequestRouter {
             if (now - e.getValue().startTime > getReuqestTimeout()) {
                 timeoutRequests.add(e.getKey());
                 Instance i = e.getValue().instance;
-                onRequestTimeout(i, getReuqestTimeout());
+                onRequestFailed(i, getReuqestTimeout());
             }
         }
         timeoutRequests.forEach(requests::remove);

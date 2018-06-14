@@ -86,6 +86,6 @@ public class RegisteredServiceAdaptor extends ServiceAdaptor {
 
     class DelayRegister {}
     private void handleDelayRegister(DelayRegister msg) {
-        register.actorRef.tell(new RegLocalService(serviceName,serviceAddr,serviceAddr), ActorRef.noSender());
+        register.actorRef.tell(new RegLocalService(serviceName,serviceAddr,servicePath), ActorRef.noSender());
     }
 }

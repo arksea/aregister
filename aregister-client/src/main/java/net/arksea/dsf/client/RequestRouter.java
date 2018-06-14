@@ -134,14 +134,11 @@ public class RequestRouter extends AbstractActor {
     protected void checkTimeoutRequest() {
     }
 
-    protected void onRequest(Instance i) {
-        qualityMap.get(i.addr).request();
-    }
     protected void onRequestSucceed(Instance i, long timeMills) {
         qualityMap.get(i.addr).succeed(timeMills);
     }
-    protected void onRequestTimeout(Instance i, long timeMills) {
-        qualityMap.get(i.addr).timeout(timeMills);
+    protected void onRequestFailed(Instance i, long timeMills) {
+        qualityMap.get(i.addr).failed(timeMills);
     }
     protected void onAddInstance(Instance i) {
         InstanceQuality q = qualityMap.get(i.addr);
@@ -199,18 +196,17 @@ public class RequestRouter extends AbstractActor {
         ActorRef self = self();
         InstanceQuality q = qualityMap.get(instance.addr);
         long start = System.currentTimeMillis();
-        q.request();
         long PING_TIMEOUT = 3000;
         Patterns.ask(service, ping, PING_TIMEOUT).onComplete(new OnComplete<Object>() {
             @Override
             public void onComplete(Throwable failure, Object success) throws Throwable {
-                long time = System.currentTimeMillis() - start;
-                if (failure == null && success instanceof DSF.Pong) {
-                    q.succeed(time);
-                    self.tell(new ServiceAlive(instance.addr, InstanceStatus.UP), ActorRef.noSender());
-                } else if (time > PING_TIMEOUT){
-                    q.timeout(PING_TIMEOUT);
-                }
+            long time = System.currentTimeMillis() - start;
+            if (failure == null && success instanceof DSF.Pong && time < PING_TIMEOUT) {
+                q.succeed(time);
+                self.tell(new ServiceAlive(instance.addr, InstanceStatus.UP), ActorRef.noSender());
+            } else {
+                q.failed(time);
+            }
             }
         }, context().dispatcher());
     }

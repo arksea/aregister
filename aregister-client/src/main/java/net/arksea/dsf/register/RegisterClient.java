@@ -124,11 +124,16 @@ public class RegisterClient {
         return Patterns.ask(actorRef, get, timeout).mapTo(classTag(DSF.SvcInstances.class));
     }
 
-
     public Future<DSF.ServiceList> getServiceList(long timeout) {
         return Patterns.ask(actorRef, DSF.GetServiceList.getDefaultInstance(), timeout)
             .mapTo(classTag(DSF.ServiceList.class));
     }
+
+    public Future<DSF.Service> getService(String serviceName, long timeout) {
+        DSF.GetService get = DSF.GetService.newBuilder().setName(serviceName).build();
+        return Patterns.ask(actorRef, get, timeout).mapTo(classTag(DSF.Service.class));
+    }
+
     /**
      * 停止注册服务客户端ActorySystem，通常无需调用，因为系统创建时默认指定daemonic=on，会随进程退出自动退出；
      * 除非你需要在进程生命周期内停止注册服务客户端系统

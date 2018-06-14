@@ -1,0 +1,26 @@
+<button class="btn btn-link" (click)="onClickRefreshBtn()">
+    <clr-icon shape="cloud-traffic"></clr-icon>
+    更新服务列表
+</button>
+<clr-tree-node *ngFor="let namespace of serviceTree">
+    <clr-icon shape="folder"></clr-icon>
+    {{namespace.namespace}}
+    <ng-template [(clrIfExpanded)]="namespace.expanded">
+        <clr-tree-node *ngFor="let serviceList of namespace.serviceList">
+            <clr-icon shape="grid-view"></clr-icon>
+            {{serviceList.name}}
+            <ng-template [(clrIfExpanded)]="serviceList.expanded">
+                <clr-tree-node *ngFor="let version of serviceList.versions">
+                    <clr-icon shape="line-chart"></clr-icon>
+                    <a routerLink="/services/{{version.regname}}"
+                       class="clr-treenode-link"
+                       (click)="onClickOneService(version)"
+                       routerLinkActive="active">
+                        {{version.version}}
+                    </a>
+                </clr-tree-node>
+            </ng-template>
+        </clr-tree-node>
+    </ng-template>
+</clr-tree-node>
+

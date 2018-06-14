@@ -92,6 +92,7 @@ public class ServiceActor extends AbstractActor {
             .match(LoadServiceInfo.class,       this::handleLoadServiceInfo)
             .match(CheckServiceAlive.class,     this::handleCheckServiceAlive)
             .match(ServiceAlive.class,          this::handleServiceAlive)
+            .match(DSF.GetService.class,        this::handleGetService)
             .build();
     }
 
@@ -133,21 +134,48 @@ public class ServiceActor extends AbstractActor {
             .setName(serviceName)
             .setSerialId(serialId);
         this.instances.forEach((addr,it) -> {
-            builder.addInstances(
-                DSF.Instance.newBuilder()
-                    .setAddr(addr)
-                    .setPath(it.path)
-                    .setOnline(it.isOnline())
-                    .setUnregistered(it.isUnregistered())
-                    .setRegisterTime(it.registerTime)
-                    .setUnregisterTime(it.getUnregisterTime())
-                    .setLastOfflineTime(it.getLastOfflineTime())
-                    .setLastOnlineTime(it.getLastOnlineTime())
-                    .build());
+            builder.addInstances(buildInstance(it));
         });
         sender().tell(builder.build(), self());
     }
-
+    //-------------------------------------------------------------------------------
+    private void handleGetService(DSF.GetService msg) {
+        logger.trace("Service.handleGetService({}),instances.size={}", msg.getName(),instances.size());
+        DSF.Service.Builder builder = DSF.Service.newBuilder()
+            .setName(serviceName);
+        this.instances.forEach((addr,it) -> {
+            builder.addInstances(buildInstance(it));
+        });
+        fillSubscriber(builder);
+        sender().tell(builder.build(), self());
+    }
+    private DSF.Instance buildInstance(InstanceInfo it) {
+        return DSF.Instance.newBuilder()
+            .setAddr(it.addr)
+            .setPath(it.path)
+            .setOnline(it.isOnline())
+            .setUnregistered(it.isUnregistered())
+            .setRegisterTime(it.registerTime)
+            .setUnregisterTime(it.getUnregisterTime())
+            .setLastOfflineTime(it.getLastOfflineTime())
+            .setLastOnlineTime(it.getLastOnlineTime())
+            .build();
+    }
+    private void fillSubscriber(DSF.Service.Builder svc) {
+        Map<String, Integer> counter = new HashMap<>();
+        subscriberMap.forEach((ref, info) -> {
+            Integer c = counter.get(info.name);
+            if (c == null) {
+                c = 1;
+            } else {
+                c = c+1;
+            }
+            counter.put(info.name, c);
+        });
+        counter.forEach((name, count) -> {
+            svc.addSubscribers(DSF.Subscriber.newBuilder().setName(name).setCount(count).build());
+        });
+    }
     //-------------------------------------------------------------------------------
     private void handleSubService(DSF.SubService msg) {
         subscribeService(msg.getSubscriber(), sender());
@@ -218,7 +246,7 @@ public class ServiceActor extends AbstractActor {
                     newInstances.put(it.getAddr(), old);
                 }
             }
-            if (instances.size() > 0) {
+            if (!instances.isEmpty()) {
                 changed = true;
                 for (String addr : instances.keySet()) {
                     logger.info("Service DEL : {}@{}", serviceName, addr);
@@ -271,7 +299,7 @@ public class ServiceActor extends AbstractActor {
             } else if (!it.isOnline()){
                 //超过3天拨测失败则认为服务已注销
                 final long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
-                long offlineTime = System.currentTimeMillis() - it.getLastOfflineTime();
+                long offlineTime = it.getOfflineTime();
                 if (offlineTime > OFFLINE_TIMEOUT) {
                     unregedList.add(addr);
                     try {
@@ -293,6 +321,7 @@ public class ServiceActor extends AbstractActor {
             @Override
             public void onComplete(Throwable failure, Object success) throws Throwable {
                 boolean online = failure == null && success instanceof DSF.Pong;
+                logger.trace("Check servcie alive complete: {}@{} {},{},{}",instance.name, instance.addr, online, failure, success);
                 self.tell(new ServiceAlive(instance.addr, online), ActorRef.noSender());
             }
         }, context().dispatcher());
