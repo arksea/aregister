@@ -24,8 +24,8 @@ export class ServiceAPI {
         //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
         let method = 'Request service list';
         return this.http.get(environment.apiUrl + '/api/v1/services/list').pipe(
-            tap((r: RestResult<ServiceList>) => this.handleErrorResult(r, method, this.store)),
-            catchError(r => this.handleCatchedError(r, method, this.store))
+            tap((r: RestResult<ServiceList>) => this.handleErrorResult(r, method, '', this.store)),
+            catchError(r => this.handleCatchedError(r, method, '', this.store))
         );
     }
 
@@ -33,8 +33,8 @@ export class ServiceAPI {
         //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
         let method = 'Request service tree';
         return this.http.get(environment.apiUrl + '/api/v1/services/tree').pipe(
-            tap((r: RestResult<ServiceNamespace[]>) => this.handleErrorResult(r, method, this.store)),
-            catchError(r => this.handleCatchedError(r, method, this.store))
+            tap((r: RestResult<ServiceNamespace[]>) => this.handleErrorResult(r, method, '', this.store)),
+            catchError(r => this.handleCatchedError(r, method, '', this.store))
         );
     }
 
@@ -42,20 +42,20 @@ export class ServiceAPI {
         //先调用tab，后调用catchError，是为了防止tab继续处理catchError的返回值
         let method = 'Request service runtime';
         return this.http.get(environment.apiUrl + '/api/v1/services/'+name+'/runtime').pipe(
-            tap((r: RestResult<Service>) => this.handleErrorResult(r, method, this.store)),
-            catchError(r => this.handleCatchedError(r, method, this.store))
+            tap((r: RestResult<Service>) => this.handleErrorResult(r, method, name, this.store)),
+            catchError(r => this.handleCatchedError(r, method, name, this.store))
         );
     }
 
-    private handleCatchedError(error, method: string, store: Store<AppState>) {
-        let act = SystemEventActions.newEvent(method+' failed: '+error.message);
+    private handleCatchedError(error, method: string, args: string, store: Store<AppState>) {
+        let act = SystemEventActions.newEvent(method+' failed: '+ error.message + ', args=' + args);
         store.dispatch(act);
         return new BehaviorSubject(error);
     };
 
-    private handleErrorResult(error, method: string, store: Store<AppState>) {
+    private handleErrorResult(error, method: string, args: string, store: Store<AppState>) {
         let msg = error.code == 0 ? 'succeed' : 'failed' + error.error;
-        let act = SystemEventActions.newEvent(method+' '+msg);
+        let act = SystemEventActions.newEvent(method+' '+msg+' : '+args);
         store.dispatch(act);
         return new BehaviorSubject(error);
     }

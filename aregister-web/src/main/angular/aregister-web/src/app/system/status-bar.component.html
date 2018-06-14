@@ -1,12 +1,7 @@
-<div class="alert alert-info">
-  <div class="alert-items">
-    <div class="alert-item static">
-      <div class="alert-text">
-        {{eventMessage}}
-      </div>
+<clr-alert [clrAlertType]="'alert-info'">
+    <div class="alert-item">
+        <div class="alert-text">
+            {{eventMessage}}
+        </div>
     </div>
-  </div>
-  <button type="button" class="close" aria-label="Close">
-    <clr-icon aria-hidden="true" shape="close"></clr-icon>
-  </button>
-</div>
+</clr-alert>
