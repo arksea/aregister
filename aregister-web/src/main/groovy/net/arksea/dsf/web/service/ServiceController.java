@@ -2,14 +2,11 @@ package net.arksea.dsf.web.service;
 
 import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
-import akka.japi.tuple.Tuple3;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.register.RegisterClient;
 import net.arksea.restapi.RestUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  *
@@ -32,7 +28,7 @@ import java.util.*;
 public class ServiceController {
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
     private Logger logger = LogManager.getLogger(ServiceController.class);
-    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     private RegisterClient registerClient;
     @Resource(name = "restapiSystem")
@@ -77,8 +73,7 @@ public class ServiceController {
                 public void onComplete(Throwable failure, DSF.ServiceList list) throws Throwable {
                     if (failure == null) {
                         try {
-                            List<ServiceNamespace> tree = parseServcieList(list);
-                            String json = objectMapper.writeValueAsString(tree);
+                            String json = ServiceView.renderServiceTree(list);
                             result.setResult(RestUtils.createJsonResult(0, json, reqid));
                         } catch (Exception ex) {
                             String err = "format service tree failed";
@@ -93,59 +88,6 @@ public class ServiceController {
                 }
             }, system.dispatcher());
         return result;
-    }
-
-    private static Tuple3<String,String,String> parseServiceName(String fullname) {
-        String[] strs = StringUtils.split(fullname, '.');
-        int n = strs.length;
-        String namespace = "";
-        int m = n - 1;
-        if (n > 1) {
-            for (int i = 0; i<m; ++i) {
-                if (i > 0) {
-                    namespace += ".";
-                }
-                namespace += strs[i];
-            }
-        }
-        String last = strs[m];
-        String[] list = StringUtils.split(last, "-", 2);
-        String name = list[0];
-        String ver = "";
-        if (list.length > 1) {
-            ver = list[1];
-        }
-        return Tuple3.apply(namespace,name,ver);
-    }
-
-    private List<ServiceNamespace> parseServcieList(DSF.ServiceList list) {
-        Map<String, Map<String,List<ServiceVersion>>> namespaceMap = new TreeMap<>();
-        Iterator<String> it = list.getItemsList().iterator();
-        while(it.hasNext()) {
-            String svc = it.next();
-            Tuple3<String,String,String> t = parseServiceName(svc);
-            Map<String, List<ServiceVersion>> namespace = namespaceMap.computeIfAbsent(t.t1(), k -> new TreeMap<>());
-            List<ServiceVersion> series = namespace.computeIfAbsent(t.t2(), k -> new LinkedList());
-            ServiceVersion version = new ServiceVersion();
-            version.setVersion(t.t3());
-            version.setRegname(svc);
-            series.add(version);
-        }
-        List<ServiceNamespace> namespaceList = new LinkedList<>();
-        namespaceMap.forEach((k,v) -> {
-            ServiceNamespace n = new ServiceNamespace();
-            n.setNamespace(k);
-            List<ServiceSeries> serviceList = new LinkedList<>();
-            v.forEach((k2, v2) -> {
-                ServiceSeries ss = new ServiceSeries();
-                ss.setName(k2);
-                ss.setVersions(v2);
-                serviceList.add(ss);
-            });
-            n.setServiceList(serviceList);
-            namespaceList.add(n);
-        });
-        return namespaceList;
     }
 
     @RequestMapping(path = "{name}/runtime", method = RequestMethod.GET, produces = MEDIA_TYPE)
