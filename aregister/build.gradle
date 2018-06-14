@@ -64,7 +64,7 @@ pmd {
         'java-migrating',
         'java-sunsecure',
         'java-unnecessary',
-        'java-unusedcode'
+        //'java-unusedcode'
     ]
 }
 

@@ -26,13 +26,15 @@ public class InstanceInfo {
         this.path = path;
         this.online = online;
         this.unregistered = false;
-        this.registerTime = System.currentTimeMillis();
-        this.lastOfflineTime = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        this.registerTime = now;
+        if (online) {
+            this.lastOnlineTime = now;
+        }
     }
 
     public boolean isOnline() {
-        long offlineTime = online ? 0 : System.currentTimeMillis() - lastOfflineTime;
-        return online || offlineTime < 180000; //服务连续3分钟心跳拨测都超时才判为离线状态
+        return online;
     }
 
     public boolean isUnregistered() {
@@ -47,15 +49,23 @@ public class InstanceInfo {
     public long getLastOfflineTime() {
         return lastOfflineTime;
     }
-
+    //服务已离线时间
+    public long getOfflineTime() {
+        long now = System.currentTimeMillis();
+        if (lastOfflineTime > 0) {
+            return now - lastOfflineTime;
+        } else {
+            return now - registerTime;
+        }
+    }
     public long getUnregisterTime() {
         return unregisterTime;
     }
 
-    public void setOnline(boolean online) {
-        if (this.online != online) {
-            this.online = online;
-            if (online) {
+    public void setOnline(boolean _online) {
+        if (this.online != _online) {
+            this.online = _online;
+            if (_online) {
                 lastOnlineTime = System.currentTimeMillis();
                 logger.info("Service ONLINE : {}@{}", name, addr);
             } else {

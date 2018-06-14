@@ -43,7 +43,7 @@ pmd {
         'java-basic',
         'java-braces',
         'java-clone',
-        'java-design',
+        //'java-design',
         'java-empty',
         'java-finalizers',
         'java-imports',

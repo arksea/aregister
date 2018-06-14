@@ -90,6 +90,8 @@ public class RegisterClientActor extends RequestRouter {
             .match(UpdateSubscribe.class,     this::handleUpdateSubscribe)
             .match(RegisterRequestSucceed.class,  this::handleRegisterRequestSucceed)
             .match(RegisterRequestFailed.class,   this::handleRegisterRequestFailed)
+            .match(DSF.GetServiceList.class,      this::handleGetServiceList)
+            .match(DSF.GetService.class,          this::handleGetService)
             .build();
     }
     //-------------------------------------------------------------------------------------------------
@@ -214,6 +216,16 @@ public class RegisterClientActor extends RequestRouter {
         ServiceInfo info = serviceInfoMap.computeIfAbsent(msg.getName(), k -> new ServiceInfo());
         info.instances.remove(msg.getAddr());
         info.clientSet.forEach(c -> c.tell(msg, self()));
+    }
+    //-------------------------------------------------------------------------------------------------
+    private void handleGetServiceList(DSF.GetServiceList msg) {
+        log.trace("RegisterClientActor.handleGetServiceList()");
+        tellRegister(msg, sender());
+    }
+    //-------------------------------------------------------------------------------------------------
+    private void handleGetService(DSF.GetService msg) {
+        log.trace("RegisterClientActor.handleGetService()");
+        tellRegister(msg, sender());
     }
     //-------------------------------------------------------------------------------------------------
     class ServiceInfo {

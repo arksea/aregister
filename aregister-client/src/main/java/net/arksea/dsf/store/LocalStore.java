@@ -49,4 +49,10 @@ public final class LocalStore {
         }
         return list;
     }
+
+    public static boolean serviceExists(String serviceName) throws IOException {
+        String fileName = "./config/" + serviceName + ".svc";
+        File file = new File(fileName);
+        return file.exists();
+    }
 }

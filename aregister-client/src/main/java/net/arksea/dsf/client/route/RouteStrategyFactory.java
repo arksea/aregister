@@ -15,6 +15,8 @@ public final class RouteStrategyFactory {
                 return new HotStandby();
             case RANDOM_ROUND:
                 return new RandomRound();
+            case RANDOM_HOLD:
+                return new RandomHold();
             default:
                 return new Roundrobin();
         }

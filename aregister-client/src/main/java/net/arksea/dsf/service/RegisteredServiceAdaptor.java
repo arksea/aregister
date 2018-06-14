@@ -4,9 +4,12 @@ import akka.actor.ActorRef;
 import akka.actor.Address;
 import akka.actor.Props;
 import akka.japi.Creator;
+import akka.pattern.Patterns;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
+import net.arksea.dsf.register.RegLocalService;
 import net.arksea.dsf.register.RegisterClient;
+import net.arksea.dsf.register.UnregLocalService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -14,6 +17,8 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
+
+import static akka.japi.Util.classTag;
 
 /**
  *
@@ -58,7 +63,6 @@ public class RegisteredServiceAdaptor extends ServiceAdaptor {
     public Receive createReceive() {
         return createReceiveBuilder()
             .match(DelayRegister.class,     this::handleDelayRegister)
-            .match(Unregister.class,        this::handleUnregister)
             .build();
     }
 
@@ -71,7 +75,8 @@ public class RegisteredServiceAdaptor extends ServiceAdaptor {
     @Override
     public void postStop() throws Exception {
         try {
-            Future f = register.unregisterInfo(serviceName, serviceAddr, 10000);
+            Future f = Patterns.ask(register.actorRef, new UnregLocalService(serviceName,serviceAddr), 10000)
+                .mapTo(classTag(Boolean.class));
             Await.result(f, Duration.create(10, TimeUnit.SECONDS));
         } catch (Exception ex) {
             logger.warn("Unregister service timeout: {}@{}", serviceName, serviceAddr, ex);
@@ -81,11 +86,6 @@ public class RegisteredServiceAdaptor extends ServiceAdaptor {
 
     class DelayRegister {}
     private void handleDelayRegister(DelayRegister msg) {
-        register.registerInfo(serviceName, serviceAddr, servicePath);
-    }
-    //------------------------------------------------------------------------------------
-    public static class Unregister {}
-    private void handleUnregister(Unregister msg) {
-        register.unregisterInfo(serviceName, serviceAddr, sender());
+        register.actorRef.tell(new RegLocalService(serviceName,serviceAddr,servicePath), ActorRef.noSender());
     }
 }
