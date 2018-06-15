@@ -5,13 +5,12 @@ skinparam BoxPadding 20
 
 participant User
 
-box "aregister-client" #white
+
 participant RegisterClient
 participant Client
 participant RequestRouter
 participant InstanceSource
 participant RegisterClientActor
-end box
 
 box "Actor Register Server" #white
 collections RegisterActor
