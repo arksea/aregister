@@ -1,0 +1,55 @@
+@startuml
+skinparam ParticipantPadding 20
+skinparam BoxPadding 20
+
+participant User
+
+
+participant RegisterClient
+
+participant RegisteredServiceAdaptor
+participant RegisterClientActor
+
+
+box "Actor Register Server" #white
+collections RegisterActor
+participant ServiceManagerActor
+collections ServiceActor
+end box
+
+User -\ RegisterClient: register
+activate RegisterClient
+create RegisteredServiceAdaptor
+RegisterClient -> RegisteredServiceAdaptor: actorOf
+deactivate RegisterClient
+RegisteredServiceAdaptor -\\ RegisterClientActor: RegLocalService
+activate RegisterClientActor
+RegisterClientActor ->>x RegisterActor : ask(RegService)
+deactivate RegisterClientActor
+RegisterClientActor -//o RegisterClientActor: failed
+RegisterClientActor o-// RegisterClientActor: RegisterRequestFailed
+note left: 用小圆简化Future回调的表示
+RegisterClientActor o-// RegisterClientActor: RegLocalService
+activate RegisterClientActor
+RegisterClientActor ->> RegisterActor : ask(RegService)
+deactivate RegisterClientActor
+activate RegisterActor
+
+RegisterActor -\\ ServiceManagerActor : RegService
+activate ServiceManagerActor
+create ServiceActor
+ServiceManagerActor -> ServiceActor: actorOf
+ServiceManagerActor -\\ ServiceActor : RegService
+deactivate ServiceManagerActor
+activate ServiceActor
+ServiceActor -> ServiceActor: addInstance
+activate ServiceActor
+deactivate ServiceActor
+deactivate ServiceActor
+
+RegisterClientActor o//- RegisterActor : true
+deactivate RegisterActor
+RegisterClientActor o-// RegisterClientActor: RegisterRequestSucceed
+
+
+@enduml

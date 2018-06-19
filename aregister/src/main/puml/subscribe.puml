@@ -1,0 +1,88 @@
+@startuml
+
+skinparam ParticipantPadding 20
+skinparam BoxPadding 20
+
+participant User
+
+
+participant RegisterClient
+participant Client
+participant RequestRouter
+participant InstanceSource
+participant RegisterClientActor
+
+box "Actor Register Server" #white
+collections RegisterActor
+participant ServiceManagerActor
+collections ServiceActor
+end box
+User -> RegisterClient: subscribe
+|||
+activate RegisterClient
+
+create InstanceSource
+RegisterClient -> InstanceSource: new
+create Client
+RegisterClient -> Client: new
+activate Client
+create RequestRouter
+Client -\\ RequestRouter: actorOf
+
+
+RequestRouter -/ RequestRouter: preStart
+activate RequestRouter
+
+RequestRouter -\ InstanceSource: subscribe
+InstanceSource -\\ RegisterClientActor: SubService
+RegisterClientActor -\\ RegisterActor: SubService
+RegisterActor -\\ ServiceManagerActor: SubService
+ServiceManagerActor -\\ ServiceActor: SubService
+activate ServiceActor
+ServiceActor -/ ServiceActor: subscribeService
+activate ServiceActor
+deactivate ServiceActor
+deactivate ServiceActor
+
+RequestRouter -> InstanceSource: getSvcInstances
+activate InstanceSource
+
+
+InstanceSource ->> RegisterClientActor: ask(GetSvcInstances)
+activate RegisterClientActor
+RegisterClientActor -\\ RegisterActor: GetSvcInstances
+deactivate RegisterClientActor
+InstanceSource -> InstanceSource: await
+activate InstanceSource
+
+RegisterActor -\\ ServiceManagerActor: GetSvcInstances
+ServiceManagerActor -\\ ServiceActor: GetSvcInstances
+activate ServiceActor
+RegisterClientActor  //-  ServiceActor  : SvcInstances
+deactivate ServiceActor
+activate RegisterClientActor
+InstanceSource //- RegisterClientActor :   SvcInstances
+deactivate RegisterClientActor
+
+
+
+RequestRouter  <-- InstanceSource: SvcInstances
+deactivate InstanceSource
+deactivate InstanceSource
+
+RequestRouter -/ RequestRouter: initInstances
+activate RequestRouter
+deactivate RequestRouter
+deactivate RequestRouter
+Client ->> RequestRouter: ask(Ready)
+activate RequestRouter
+Client -> Client: await
+activate Client
+RequestRouter -\\ Client: true
+deactivate RequestRouter
+deactivate Client
+Client --> RegisterClient
+deactivate Client
+RegisterClient --> User
+deactivate RegisterClient
+@enduml
