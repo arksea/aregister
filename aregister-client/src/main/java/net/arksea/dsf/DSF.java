@@ -3480,1190 +3480,6 @@ public final class DSF {
 
   }
 
-  public interface GetInstanceStatusOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.GetInstanceStatus)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string name = 1;</code>
-     */
-    java.lang.String getName();
-    /**
-     * <code>string name = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getNameBytes();
-
-    /**
-     * <code>string addr = 2;</code>
-     */
-    java.lang.String getAddr();
-    /**
-     * <code>string addr = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getAddrBytes();
-  }
-  /**
-   * <pre>
-   *------------------------------
-   * </pre>
-   *
-   * Protobuf type {@code net.arksea.dsf.GetInstanceStatus}
-   */
-  public  static final class GetInstanceStatus extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:net.arksea.dsf.GetInstanceStatus)
-      GetInstanceStatusOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use GetInstanceStatus.newBuilder() to construct.
-    private GetInstanceStatus(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private GetInstanceStatus() {
-      name_ = "";
-      addr_ = "";
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private GetInstanceStatus(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              name_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              addr_ = s;
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetInstanceStatus_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetInstanceStatus_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              net.arksea.dsf.DSF.GetInstanceStatus.class, net.arksea.dsf.DSF.GetInstanceStatus.Builder.class);
-    }
-
-    public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
-    /**
-     * <code>string name = 1;</code>
-     */
-    public java.lang.String getName() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        name_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string name = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getNameBytes() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        name_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int ADDR_FIELD_NUMBER = 2;
-    private volatile java.lang.Object addr_;
-    /**
-     * <code>string addr = 2;</code>
-     */
-    public java.lang.String getAddr() {
-      java.lang.Object ref = addr_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        addr_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string addr = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getAddrBytes() {
-      java.lang.Object ref = addr_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        addr_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
-      }
-      if (!getAddrBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, addr_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
-      }
-      if (!getAddrBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, addr_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof net.arksea.dsf.DSF.GetInstanceStatus)) {
-        return super.equals(obj);
-      }
-      net.arksea.dsf.DSF.GetInstanceStatus other = (net.arksea.dsf.DSF.GetInstanceStatus) obj;
-
-      boolean result = true;
-      result = result && getName()
-          .equals(other.getName());
-      result = result && getAddr()
-          .equals(other.getAddr());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + NAME_FIELD_NUMBER;
-      hash = (53 * hash) + getName().hashCode();
-      hash = (37 * hash) + ADDR_FIELD_NUMBER;
-      hash = (53 * hash) + getAddr().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static net.arksea.dsf.DSF.GetInstanceStatus parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(net.arksea.dsf.DSF.GetInstanceStatus prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * <pre>
-     *------------------------------
-     * </pre>
-     *
-     * Protobuf type {@code net.arksea.dsf.GetInstanceStatus}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.GetInstanceStatus)
-        net.arksea.dsf.DSF.GetInstanceStatusOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetInstanceStatus_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetInstanceStatus_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                net.arksea.dsf.DSF.GetInstanceStatus.class, net.arksea.dsf.DSF.GetInstanceStatus.Builder.class);
-      }
-
-      // Construct using net.arksea.dsf.DSF.GetInstanceStatus.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      public Builder clear() {
-        super.clear();
-        name_ = "";
-
-        addr_ = "";
-
-        return this;
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetInstanceStatus_descriptor;
-      }
-
-      public net.arksea.dsf.DSF.GetInstanceStatus getDefaultInstanceForType() {
-        return net.arksea.dsf.DSF.GetInstanceStatus.getDefaultInstance();
-      }
-
-      public net.arksea.dsf.DSF.GetInstanceStatus build() {
-        net.arksea.dsf.DSF.GetInstanceStatus result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public net.arksea.dsf.DSF.GetInstanceStatus buildPartial() {
-        net.arksea.dsf.DSF.GetInstanceStatus result = new net.arksea.dsf.DSF.GetInstanceStatus(this);
-        result.name_ = name_;
-        result.addr_ = addr_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder clone() {
-        return (Builder) super.clone();
-      }
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.setField(field, value);
-      }
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
-      }
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
-      }
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
-      }
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
-      }
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof net.arksea.dsf.DSF.GetInstanceStatus) {
-          return mergeFrom((net.arksea.dsf.DSF.GetInstanceStatus)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(net.arksea.dsf.DSF.GetInstanceStatus other) {
-        if (other == net.arksea.dsf.DSF.GetInstanceStatus.getDefaultInstance()) return this;
-        if (!other.getName().isEmpty()) {
-          name_ = other.name_;
-          onChanged();
-        }
-        if (!other.getAddr().isEmpty()) {
-          addr_ = other.addr_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        net.arksea.dsf.DSF.GetInstanceStatus parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (net.arksea.dsf.DSF.GetInstanceStatus) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private java.lang.Object name_ = "";
-      /**
-       * <code>string name = 1;</code>
-       */
-      public java.lang.String getName() {
-        java.lang.Object ref = name_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          name_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        java.lang.Object ref = name_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public Builder setName(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        name_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public Builder clearName() {
-        
-        name_ = getDefaultInstance().getName();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        name_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object addr_ = "";
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public java.lang.String getAddr() {
-        java.lang.Object ref = addr_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          addr_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getAddrBytes() {
-        java.lang.Object ref = addr_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          addr_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public Builder setAddr(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        addr_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public Builder clearAddr() {
-        
-        addr_ = getDefaultInstance().getAddr();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public Builder setAddrBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        addr_ = value;
-        onChanged();
-        return this;
-      }
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
-      }
-
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.GetInstanceStatus)
-    }
-
-    // @@protoc_insertion_point(class_scope:net.arksea.dsf.GetInstanceStatus)
-    private static final net.arksea.dsf.DSF.GetInstanceStatus DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.GetInstanceStatus();
-    }
-
-    public static net.arksea.dsf.DSF.GetInstanceStatus getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<GetInstanceStatus>
-        PARSER = new com.google.protobuf.AbstractParser<GetInstanceStatus>() {
-      public GetInstanceStatus parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetInstanceStatus(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<GetInstanceStatus> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<GetInstanceStatus> getParserForType() {
-      return PARSER;
-    }
-
-    public net.arksea.dsf.DSF.GetInstanceStatus getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface InstanceStatusOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.InstanceStatus)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>int32 qps = 2;</code>
-     */
-    int getQps();
-
-    /**
-     * <code>int32 tts = 3;</code>
-     */
-    int getTts();
-  }
-  /**
-   * Protobuf type {@code net.arksea.dsf.InstanceStatus}
-   */
-  public  static final class InstanceStatus extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:net.arksea.dsf.InstanceStatus)
-      InstanceStatusOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use InstanceStatus.newBuilder() to construct.
-    private InstanceStatus(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private InstanceStatus() {
-      qps_ = 0;
-      tts_ = 0;
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private InstanceStatus(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 16: {
-
-              qps_ = input.readInt32();
-              break;
-            }
-            case 24: {
-
-              tts_ = input.readInt32();
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_InstanceStatus_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_InstanceStatus_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              net.arksea.dsf.DSF.InstanceStatus.class, net.arksea.dsf.DSF.InstanceStatus.Builder.class);
-    }
-
-    public static final int QPS_FIELD_NUMBER = 2;
-    private int qps_;
-    /**
-     * <code>int32 qps = 2;</code>
-     */
-    public int getQps() {
-      return qps_;
-    }
-
-    public static final int TTS_FIELD_NUMBER = 3;
-    private int tts_;
-    /**
-     * <code>int32 tts = 3;</code>
-     */
-    public int getTts() {
-      return tts_;
-    }
-
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (qps_ != 0) {
-        output.writeInt32(2, qps_);
-      }
-      if (tts_ != 0) {
-        output.writeInt32(3, tts_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (qps_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, qps_);
-      }
-      if (tts_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, tts_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof net.arksea.dsf.DSF.InstanceStatus)) {
-        return super.equals(obj);
-      }
-      net.arksea.dsf.DSF.InstanceStatus other = (net.arksea.dsf.DSF.InstanceStatus) obj;
-
-      boolean result = true;
-      result = result && (getQps()
-          == other.getQps());
-      result = result && (getTts()
-          == other.getTts());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + QPS_FIELD_NUMBER;
-      hash = (53 * hash) + getQps();
-      hash = (37 * hash) + TTS_FIELD_NUMBER;
-      hash = (53 * hash) + getTts();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static net.arksea.dsf.DSF.InstanceStatus parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(net.arksea.dsf.DSF.InstanceStatus prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code net.arksea.dsf.InstanceStatus}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.InstanceStatus)
-        net.arksea.dsf.DSF.InstanceStatusOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_InstanceStatus_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_InstanceStatus_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                net.arksea.dsf.DSF.InstanceStatus.class, net.arksea.dsf.DSF.InstanceStatus.Builder.class);
-      }
-
-      // Construct using net.arksea.dsf.DSF.InstanceStatus.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      public Builder clear() {
-        super.clear();
-        qps_ = 0;
-
-        tts_ = 0;
-
-        return this;
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_InstanceStatus_descriptor;
-      }
-
-      public net.arksea.dsf.DSF.InstanceStatus getDefaultInstanceForType() {
-        return net.arksea.dsf.DSF.InstanceStatus.getDefaultInstance();
-      }
-
-      public net.arksea.dsf.DSF.InstanceStatus build() {
-        net.arksea.dsf.DSF.InstanceStatus result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public net.arksea.dsf.DSF.InstanceStatus buildPartial() {
-        net.arksea.dsf.DSF.InstanceStatus result = new net.arksea.dsf.DSF.InstanceStatus(this);
-        result.qps_ = qps_;
-        result.tts_ = tts_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder clone() {
-        return (Builder) super.clone();
-      }
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.setField(field, value);
-      }
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
-      }
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
-      }
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
-      }
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
-      }
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof net.arksea.dsf.DSF.InstanceStatus) {
-          return mergeFrom((net.arksea.dsf.DSF.InstanceStatus)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(net.arksea.dsf.DSF.InstanceStatus other) {
-        if (other == net.arksea.dsf.DSF.InstanceStatus.getDefaultInstance()) return this;
-        if (other.getQps() != 0) {
-          setQps(other.getQps());
-        }
-        if (other.getTts() != 0) {
-          setTts(other.getTts());
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        net.arksea.dsf.DSF.InstanceStatus parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (net.arksea.dsf.DSF.InstanceStatus) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private int qps_ ;
-      /**
-       * <code>int32 qps = 2;</code>
-       */
-      public int getQps() {
-        return qps_;
-      }
-      /**
-       * <code>int32 qps = 2;</code>
-       */
-      public Builder setQps(int value) {
-        
-        qps_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 qps = 2;</code>
-       */
-      public Builder clearQps() {
-        
-        qps_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int tts_ ;
-      /**
-       * <code>int32 tts = 3;</code>
-       */
-      public int getTts() {
-        return tts_;
-      }
-      /**
-       * <code>int32 tts = 3;</code>
-       */
-      public Builder setTts(int value) {
-        
-        tts_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 tts = 3;</code>
-       */
-      public Builder clearTts() {
-        
-        tts_ = 0;
-        onChanged();
-        return this;
-      }
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
-      }
-
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.InstanceStatus)
-    }
-
-    // @@protoc_insertion_point(class_scope:net.arksea.dsf.InstanceStatus)
-    private static final net.arksea.dsf.DSF.InstanceStatus DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.InstanceStatus();
-    }
-
-    public static net.arksea.dsf.DSF.InstanceStatus getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<InstanceStatus>
-        PARSER = new com.google.protobuf.AbstractParser<InstanceStatus>() {
-      public InstanceStatus parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new InstanceStatus(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<InstanceStatus> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<InstanceStatus> getParserForType() {
-      return PARSER;
-    }
-
-    public net.arksea.dsf.DSF.InstanceStatus getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   public interface RegServiceOrBuilder extends
       // @@protoc_insertion_point(interface_extends:net.arksea.dsf.RegService)
       com.google.protobuf.MessageOrBuilder {
@@ -4700,6 +3516,7 @@ public final class DSF {
   }
   /**
    * <pre>
+   *------------------------------
    *注册服务实例
    * </pre>
    *
@@ -5067,6 +3884,7 @@ public final class DSF {
     }
     /**
      * <pre>
+     *------------------------------
      *注册服务实例
      * </pre>
      *
@@ -10900,6 +9718,10 @@ public final class DSF {
         getTypeNameBytes();
   }
   /**
+   * <pre>
+   *------------------------------------------------
+   * </pre>
+   *
    * Protobuf type {@code net.arksea.dsf.ServiceRequest}
    */
   public  static final class ServiceRequest extends
@@ -11298,6 +10120,10 @@ public final class DSF {
       return builder;
     }
     /**
+     * <pre>
+     *------------------------------------------------
+     * </pre>
+     *
      * Protobuf type {@code net.arksea.dsf.ServiceRequest}
      */
     public static final class Builder extends
@@ -12560,11 +11386,2041 @@ public final class DSF {
 
   }
 
+  public interface RequestCountOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.RequestCount)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int64 requestCount = 1;</code>
+     */
+    long getRequestCount();
+
+    /**
+     * <code>int64 succeedCount = 2;</code>
+     */
+    long getSucceedCount();
+
+    /**
+     * <code>int64 respondTime = 3;</code>
+     */
+    long getRespondTime();
+  }
+  /**
+   * <pre>
+   *------------------------------------------------
+   *服务实例请求计数历史数据
+   * </pre>
+   *
+   * Protobuf type {@code net.arksea.dsf.RequestCount}
+   */
+  public  static final class RequestCount extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.RequestCount)
+      RequestCountOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use RequestCount.newBuilder() to construct.
+    private RequestCount(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private RequestCount() {
+      requestCount_ = 0L;
+      succeedCount_ = 0L;
+      respondTime_ = 0L;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private RequestCount(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+
+              requestCount_ = input.readInt64();
+              break;
+            }
+            case 16: {
+
+              succeedCount_ = input.readInt64();
+              break;
+            }
+            case 24: {
+
+              respondTime_ = input.readInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCount_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCount_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.RequestCount.class, net.arksea.dsf.DSF.RequestCount.Builder.class);
+    }
+
+    public static final int REQUESTCOUNT_FIELD_NUMBER = 1;
+    private long requestCount_;
+    /**
+     * <code>int64 requestCount = 1;</code>
+     */
+    public long getRequestCount() {
+      return requestCount_;
+    }
+
+    public static final int SUCCEEDCOUNT_FIELD_NUMBER = 2;
+    private long succeedCount_;
+    /**
+     * <code>int64 succeedCount = 2;</code>
+     */
+    public long getSucceedCount() {
+      return succeedCount_;
+    }
+
+    public static final int RESPONDTIME_FIELD_NUMBER = 3;
+    private long respondTime_;
+    /**
+     * <code>int64 respondTime = 3;</code>
+     */
+    public long getRespondTime() {
+      return respondTime_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (requestCount_ != 0L) {
+        output.writeInt64(1, requestCount_);
+      }
+      if (succeedCount_ != 0L) {
+        output.writeInt64(2, succeedCount_);
+      }
+      if (respondTime_ != 0L) {
+        output.writeInt64(3, respondTime_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (requestCount_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, requestCount_);
+      }
+      if (succeedCount_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, succeedCount_);
+      }
+      if (respondTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, respondTime_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.RequestCount)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.RequestCount other = (net.arksea.dsf.DSF.RequestCount) obj;
+
+      boolean result = true;
+      result = result && (getRequestCount()
+          == other.getRequestCount());
+      result = result && (getSucceedCount()
+          == other.getSucceedCount());
+      result = result && (getRespondTime()
+          == other.getRespondTime());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + REQUESTCOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getRequestCount());
+      hash = (37 * hash) + SUCCEEDCOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getSucceedCount());
+      hash = (37 * hash) + RESPONDTIME_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getRespondTime());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.RequestCount parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.RequestCount prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     *------------------------------------------------
+     *服务实例请求计数历史数据
+     * </pre>
+     *
+     * Protobuf type {@code net.arksea.dsf.RequestCount}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.RequestCount)
+        net.arksea.dsf.DSF.RequestCountOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCount_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCount_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.RequestCount.class, net.arksea.dsf.DSF.RequestCount.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.RequestCount.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        requestCount_ = 0L;
+
+        succeedCount_ = 0L;
+
+        respondTime_ = 0L;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCount_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.RequestCount getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.RequestCount.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.RequestCount build() {
+        net.arksea.dsf.DSF.RequestCount result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.RequestCount buildPartial() {
+        net.arksea.dsf.DSF.RequestCount result = new net.arksea.dsf.DSF.RequestCount(this);
+        result.requestCount_ = requestCount_;
+        result.succeedCount_ = succeedCount_;
+        result.respondTime_ = respondTime_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.RequestCount) {
+          return mergeFrom((net.arksea.dsf.DSF.RequestCount)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.RequestCount other) {
+        if (other == net.arksea.dsf.DSF.RequestCount.getDefaultInstance()) return this;
+        if (other.getRequestCount() != 0L) {
+          setRequestCount(other.getRequestCount());
+        }
+        if (other.getSucceedCount() != 0L) {
+          setSucceedCount(other.getSucceedCount());
+        }
+        if (other.getRespondTime() != 0L) {
+          setRespondTime(other.getRespondTime());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.RequestCount parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.RequestCount) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private long requestCount_ ;
+      /**
+       * <code>int64 requestCount = 1;</code>
+       */
+      public long getRequestCount() {
+        return requestCount_;
+      }
+      /**
+       * <code>int64 requestCount = 1;</code>
+       */
+      public Builder setRequestCount(long value) {
+        
+        requestCount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 requestCount = 1;</code>
+       */
+      public Builder clearRequestCount() {
+        
+        requestCount_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long succeedCount_ ;
+      /**
+       * <code>int64 succeedCount = 2;</code>
+       */
+      public long getSucceedCount() {
+        return succeedCount_;
+      }
+      /**
+       * <code>int64 succeedCount = 2;</code>
+       */
+      public Builder setSucceedCount(long value) {
+        
+        succeedCount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 succeedCount = 2;</code>
+       */
+      public Builder clearSucceedCount() {
+        
+        succeedCount_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long respondTime_ ;
+      /**
+       * <code>int64 respondTime = 3;</code>
+       */
+      public long getRespondTime() {
+        return respondTime_;
+      }
+      /**
+       * <code>int64 respondTime = 3;</code>
+       */
+      public Builder setRespondTime(long value) {
+        
+        respondTime_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 respondTime = 3;</code>
+       */
+      public Builder clearRespondTime() {
+        
+        respondTime_ = 0L;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.RequestCount)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.RequestCount)
+    private static final net.arksea.dsf.DSF.RequestCount DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.RequestCount();
+    }
+
+    public static net.arksea.dsf.DSF.RequestCount getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<RequestCount>
+        PARSER = new com.google.protobuf.AbstractParser<RequestCount>() {
+      public RequestCount parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RequestCount(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<RequestCount> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<RequestCount> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.RequestCount getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface RequestCountHistoryOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.RequestCountHistory)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    java.util.List<net.arksea.dsf.DSF.RequestCount> 
+        getItemsList();
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    net.arksea.dsf.DSF.RequestCount getItems(int index);
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    int getItemsCount();
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    java.util.List<? extends net.arksea.dsf.DSF.RequestCountOrBuilder> 
+        getItemsOrBuilderList();
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    net.arksea.dsf.DSF.RequestCountOrBuilder getItemsOrBuilder(
+        int index);
+  }
+  /**
+   * <pre>
+   *服务实例请求计数历史数据，每分钟一条
+   * </pre>
+   *
+   * Protobuf type {@code net.arksea.dsf.RequestCountHistory}
+   */
+  public  static final class RequestCountHistory extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.RequestCountHistory)
+      RequestCountHistoryOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use RequestCountHistory.newBuilder() to construct.
+    private RequestCountHistory(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private RequestCountHistory() {
+      items_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private RequestCountHistory(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                items_ = new java.util.ArrayList<net.arksea.dsf.DSF.RequestCount>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              items_.add(
+                  input.readMessage(net.arksea.dsf.DSF.RequestCount.parser(), extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          items_ = java.util.Collections.unmodifiableList(items_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCountHistory_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCountHistory_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.RequestCountHistory.class, net.arksea.dsf.DSF.RequestCountHistory.Builder.class);
+    }
+
+    public static final int ITEMS_FIELD_NUMBER = 1;
+    private java.util.List<net.arksea.dsf.DSF.RequestCount> items_;
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    public java.util.List<net.arksea.dsf.DSF.RequestCount> getItemsList() {
+      return items_;
+    }
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    public java.util.List<? extends net.arksea.dsf.DSF.RequestCountOrBuilder> 
+        getItemsOrBuilderList() {
+      return items_;
+    }
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    public int getItemsCount() {
+      return items_.size();
+    }
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    public net.arksea.dsf.DSF.RequestCount getItems(int index) {
+      return items_.get(index);
+    }
+    /**
+     * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+     */
+    public net.arksea.dsf.DSF.RequestCountOrBuilder getItemsOrBuilder(
+        int index) {
+      return items_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < items_.size(); i++) {
+        output.writeMessage(1, items_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < items_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, items_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.RequestCountHistory)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.RequestCountHistory other = (net.arksea.dsf.DSF.RequestCountHistory) obj;
+
+      boolean result = true;
+      result = result && getItemsList()
+          .equals(other.getItemsList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getItemsCount() > 0) {
+        hash = (37 * hash) + ITEMS_FIELD_NUMBER;
+        hash = (53 * hash) + getItemsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.RequestCountHistory parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.RequestCountHistory prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     *服务实例请求计数历史数据，每分钟一条
+     * </pre>
+     *
+     * Protobuf type {@code net.arksea.dsf.RequestCountHistory}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.RequestCountHistory)
+        net.arksea.dsf.DSF.RequestCountHistoryOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCountHistory_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCountHistory_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.RequestCountHistory.class, net.arksea.dsf.DSF.RequestCountHistory.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.RequestCountHistory.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getItemsFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (itemsBuilder_ == null) {
+          items_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          itemsBuilder_.clear();
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_RequestCountHistory_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.RequestCountHistory getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.RequestCountHistory.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.RequestCountHistory build() {
+        net.arksea.dsf.DSF.RequestCountHistory result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.RequestCountHistory buildPartial() {
+        net.arksea.dsf.DSF.RequestCountHistory result = new net.arksea.dsf.DSF.RequestCountHistory(this);
+        int from_bitField0_ = bitField0_;
+        if (itemsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            items_ = java.util.Collections.unmodifiableList(items_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.items_ = items_;
+        } else {
+          result.items_ = itemsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.RequestCountHistory) {
+          return mergeFrom((net.arksea.dsf.DSF.RequestCountHistory)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.RequestCountHistory other) {
+        if (other == net.arksea.dsf.DSF.RequestCountHistory.getDefaultInstance()) return this;
+        if (itemsBuilder_ == null) {
+          if (!other.items_.isEmpty()) {
+            if (items_.isEmpty()) {
+              items_ = other.items_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureItemsIsMutable();
+              items_.addAll(other.items_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.items_.isEmpty()) {
+            if (itemsBuilder_.isEmpty()) {
+              itemsBuilder_.dispose();
+              itemsBuilder_ = null;
+              items_ = other.items_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              itemsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getItemsFieldBuilder() : null;
+            } else {
+              itemsBuilder_.addAllMessages(other.items_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.RequestCountHistory parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.RequestCountHistory) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<net.arksea.dsf.DSF.RequestCount> items_ =
+        java.util.Collections.emptyList();
+      private void ensureItemsIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          items_ = new java.util.ArrayList<net.arksea.dsf.DSF.RequestCount>(items_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          net.arksea.dsf.DSF.RequestCount, net.arksea.dsf.DSF.RequestCount.Builder, net.arksea.dsf.DSF.RequestCountOrBuilder> itemsBuilder_;
+
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public java.util.List<net.arksea.dsf.DSF.RequestCount> getItemsList() {
+        if (itemsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(items_);
+        } else {
+          return itemsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public int getItemsCount() {
+        if (itemsBuilder_ == null) {
+          return items_.size();
+        } else {
+          return itemsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public net.arksea.dsf.DSF.RequestCount getItems(int index) {
+        if (itemsBuilder_ == null) {
+          return items_.get(index);
+        } else {
+          return itemsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder setItems(
+          int index, net.arksea.dsf.DSF.RequestCount value) {
+        if (itemsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureItemsIsMutable();
+          items_.set(index, value);
+          onChanged();
+        } else {
+          itemsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder setItems(
+          int index, net.arksea.dsf.DSF.RequestCount.Builder builderForValue) {
+        if (itemsBuilder_ == null) {
+          ensureItemsIsMutable();
+          items_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          itemsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder addItems(net.arksea.dsf.DSF.RequestCount value) {
+        if (itemsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureItemsIsMutable();
+          items_.add(value);
+          onChanged();
+        } else {
+          itemsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder addItems(
+          int index, net.arksea.dsf.DSF.RequestCount value) {
+        if (itemsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureItemsIsMutable();
+          items_.add(index, value);
+          onChanged();
+        } else {
+          itemsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder addItems(
+          net.arksea.dsf.DSF.RequestCount.Builder builderForValue) {
+        if (itemsBuilder_ == null) {
+          ensureItemsIsMutable();
+          items_.add(builderForValue.build());
+          onChanged();
+        } else {
+          itemsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder addItems(
+          int index, net.arksea.dsf.DSF.RequestCount.Builder builderForValue) {
+        if (itemsBuilder_ == null) {
+          ensureItemsIsMutable();
+          items_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          itemsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder addAllItems(
+          java.lang.Iterable<? extends net.arksea.dsf.DSF.RequestCount> values) {
+        if (itemsBuilder_ == null) {
+          ensureItemsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, items_);
+          onChanged();
+        } else {
+          itemsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder clearItems() {
+        if (itemsBuilder_ == null) {
+          items_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          itemsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public Builder removeItems(int index) {
+        if (itemsBuilder_ == null) {
+          ensureItemsIsMutable();
+          items_.remove(index);
+          onChanged();
+        } else {
+          itemsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public net.arksea.dsf.DSF.RequestCount.Builder getItemsBuilder(
+          int index) {
+        return getItemsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public net.arksea.dsf.DSF.RequestCountOrBuilder getItemsOrBuilder(
+          int index) {
+        if (itemsBuilder_ == null) {
+          return items_.get(index);  } else {
+          return itemsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public java.util.List<? extends net.arksea.dsf.DSF.RequestCountOrBuilder> 
+           getItemsOrBuilderList() {
+        if (itemsBuilder_ != null) {
+          return itemsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(items_);
+        }
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public net.arksea.dsf.DSF.RequestCount.Builder addItemsBuilder() {
+        return getItemsFieldBuilder().addBuilder(
+            net.arksea.dsf.DSF.RequestCount.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public net.arksea.dsf.DSF.RequestCount.Builder addItemsBuilder(
+          int index) {
+        return getItemsFieldBuilder().addBuilder(
+            index, net.arksea.dsf.DSF.RequestCount.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .net.arksea.dsf.RequestCount items = 1;</code>
+       */
+      public java.util.List<net.arksea.dsf.DSF.RequestCount.Builder> 
+           getItemsBuilderList() {
+        return getItemsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          net.arksea.dsf.DSF.RequestCount, net.arksea.dsf.DSF.RequestCount.Builder, net.arksea.dsf.DSF.RequestCountOrBuilder> 
+          getItemsFieldBuilder() {
+        if (itemsBuilder_ == null) {
+          itemsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              net.arksea.dsf.DSF.RequestCount, net.arksea.dsf.DSF.RequestCount.Builder, net.arksea.dsf.DSF.RequestCountOrBuilder>(
+                  items_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          items_ = null;
+        }
+        return itemsBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.RequestCountHistory)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.RequestCountHistory)
+    private static final net.arksea.dsf.DSF.RequestCountHistory DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.RequestCountHistory();
+    }
+
+    public static net.arksea.dsf.DSF.RequestCountHistory getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<RequestCountHistory>
+        PARSER = new com.google.protobuf.AbstractParser<RequestCountHistory>() {
+      public RequestCountHistory parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RequestCountHistory(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<RequestCountHistory> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<RequestCountHistory> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.RequestCountHistory getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface GetRequestCountHistoryOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.GetRequestCountHistory)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string name = 1;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>string name = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    /**
+     * <code>string addr = 2;</code>
+     */
+    java.lang.String getAddr();
+    /**
+     * <code>string addr = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getAddrBytes();
+  }
+  /**
+   * <pre>
+   *获取服务实例请求计数历史数据
+   * </pre>
+   *
+   * Protobuf type {@code net.arksea.dsf.GetRequestCountHistory}
+   */
+  public  static final class GetRequestCountHistory extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.GetRequestCountHistory)
+      GetRequestCountHistoryOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use GetRequestCountHistory.newBuilder() to construct.
+    private GetRequestCountHistory(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private GetRequestCountHistory() {
+      name_ = "";
+      addr_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private GetRequestCountHistory(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              name_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              addr_ = s;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetRequestCountHistory_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetRequestCountHistory_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.GetRequestCountHistory.class, net.arksea.dsf.DSF.GetRequestCountHistory.Builder.class);
+    }
+
+    public static final int NAME_FIELD_NUMBER = 1;
+    private volatile java.lang.Object name_;
+    /**
+     * <code>string name = 1;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string name = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ADDR_FIELD_NUMBER = 2;
+    private volatile java.lang.Object addr_;
+    /**
+     * <code>string addr = 2;</code>
+     */
+    public java.lang.String getAddr() {
+      java.lang.Object ref = addr_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        addr_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string addr = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAddrBytes() {
+      java.lang.Object ref = addr_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        addr_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+      }
+      if (!getAddrBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, addr_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+      }
+      if (!getAddrBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, addr_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.GetRequestCountHistory)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.GetRequestCountHistory other = (net.arksea.dsf.DSF.GetRequestCountHistory) obj;
+
+      boolean result = true;
+      result = result && getName()
+          .equals(other.getName());
+      result = result && getAddr()
+          .equals(other.getAddr());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + ADDR_FIELD_NUMBER;
+      hash = (53 * hash) + getAddr().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.GetRequestCountHistory parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.GetRequestCountHistory prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     *获取服务实例请求计数历史数据
+     * </pre>
+     *
+     * Protobuf type {@code net.arksea.dsf.GetRequestCountHistory}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.GetRequestCountHistory)
+        net.arksea.dsf.DSF.GetRequestCountHistoryOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetRequestCountHistory_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetRequestCountHistory_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.GetRequestCountHistory.class, net.arksea.dsf.DSF.GetRequestCountHistory.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.GetRequestCountHistory.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+
+        addr_ = "";
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_GetRequestCountHistory_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.GetRequestCountHistory getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.GetRequestCountHistory.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.GetRequestCountHistory build() {
+        net.arksea.dsf.DSF.GetRequestCountHistory result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.GetRequestCountHistory buildPartial() {
+        net.arksea.dsf.DSF.GetRequestCountHistory result = new net.arksea.dsf.DSF.GetRequestCountHistory(this);
+        result.name_ = name_;
+        result.addr_ = addr_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.GetRequestCountHistory) {
+          return mergeFrom((net.arksea.dsf.DSF.GetRequestCountHistory)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.GetRequestCountHistory other) {
+        if (other == net.arksea.dsf.DSF.GetRequestCountHistory.getDefaultInstance()) return this;
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (!other.getAddr().isEmpty()) {
+          addr_ = other.addr_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.GetRequestCountHistory parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.GetRequestCountHistory) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object name_ = "";
+      /**
+       * <code>string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string name = 1;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       */
+      public Builder clearName() {
+        
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object addr_ = "";
+      /**
+       * <code>string addr = 2;</code>
+       */
+      public java.lang.String getAddr() {
+        java.lang.Object ref = addr_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          addr_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string addr = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAddrBytes() {
+        java.lang.Object ref = addr_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          addr_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string addr = 2;</code>
+       */
+      public Builder setAddr(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        addr_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string addr = 2;</code>
+       */
+      public Builder clearAddr() {
+        
+        addr_ = getDefaultInstance().getAddr();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string addr = 2;</code>
+       */
+      public Builder setAddrBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        addr_ = value;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.GetRequestCountHistory)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.GetRequestCountHistory)
+    private static final net.arksea.dsf.DSF.GetRequestCountHistory DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.GetRequestCountHistory();
+    }
+
+    public static net.arksea.dsf.DSF.GetRequestCountHistory getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<GetRequestCountHistory>
+        PARSER = new com.google.protobuf.AbstractParser<GetRequestCountHistory>() {
+      public GetRequestCountHistory parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new GetRequestCountHistory(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<GetRequestCountHistory> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<GetRequestCountHistory> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.GetRequestCountHistory getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface GetRegisterInstancesOrBuilder extends
       // @@protoc_insertion_point(interface_extends:net.arksea.dsf.GetRegisterInstances)
       com.google.protobuf.MessageOrBuilder {
   }
   /**
+   * <pre>
+   *------------------------------------------------
+   *获取注册服务节点列表
+   * </pre>
+   *
    * Protobuf type {@code net.arksea.dsf.GetRegisterInstances}
    */
   public  static final class GetRegisterInstances extends
@@ -12774,6 +13630,11 @@ public final class DSF {
       return builder;
     }
     /**
+     * <pre>
+     *------------------------------------------------
+     *获取注册服务节点列表
+     * </pre>
+     *
      * Protobuf type {@code net.arksea.dsf.GetRegisterInstances}
      */
     public static final class Builder extends
@@ -13747,16 +14608,6 @@ public final class DSF {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_net_arksea_dsf_Subscriber_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_net_arksea_dsf_GetInstanceStatus_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_net_arksea_dsf_GetInstanceStatus_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_net_arksea_dsf_InstanceStatus_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_net_arksea_dsf_InstanceStatus_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_net_arksea_dsf_RegService_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -13807,6 +14658,21 @@ public final class DSF {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_net_arksea_dsf_ServiceResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_RequestCount_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_RequestCount_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_RequestCountHistory_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_RequestCountHistory_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_GetRequestCountHistory_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_GetRequestCountHistory_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_net_arksea_dsf_GetRegisterInstances_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -13836,33 +14702,36 @@ public final class DSF {
       "me\030\001 \001(\t\022+\n\tinstances\030\002 \003(\0132\030.net.arksea" +
       ".dsf.Instance\022/\n\013subscribers\030\003 \003(\0132\032.net" +
       ".arksea.dsf.Subscriber\")\n\nSubscriber\022\014\n\004" +
-      "name\030\001 \001(\t\022\r\n\005count\030\002 \001(\005\"/\n\021GetInstance" +
-      "Status\022\014\n\004name\030\001 \001(\t\022\014\n\004addr\030\002 \001(\t\"*\n\016In" +
-      "stanceStatus\022\013\n\003qps\030\002 \001(\005\022\013\n\003tts\030\003 \001(\005\"6" +
-      "\n\nRegService\022\014\n\004name\030\001 \001(\t\022\014\n\004addr\030\002 \001(\t" +
-      "\022\014\n\004path\030\003 \001(\t\"*\n\014UnregService\022\014\n\004name\030\001" +
-      " \001(\t\022\014\n\004addr\030\002 \001(\t\"\037\n\017GetSvcInstances\022\014\n" +
-      "\004name\030\001 \001(\t\"F\n\020SyncSvcInstances\022\014\n\004name\030" +
-      "\001 \001(\t\022\020\n\010serialId\030\002 \001(\t\022\022\n\nsubscriber\030\003 " +
-      "\001(\t\"\253\001\n\010Instance\022\014\n\004addr\030\001 \001(\t\022\014\n\004path\030\002" +
-      " \001(\t\022\016\n\006online\030\003 \001(\010\022\024\n\014unregistered\030\006 \001" +
-      "(\010\022\024\n\014registerTime\030\007 \001(\003\022\026\n\016unregisterTi" +
-      "me\030\010 \001(\003\022\027\n\017lastOfflineTime\030\t \001(\003\022\026\n\016las" +
-      "tOnlineTime\030\n \001(\003\"[\n\014SvcInstances\022\014\n\004nam" +
-      "e\030\001 \001(\t\022\020\n\010serialId\030\002 \001(\t\022+\n\tinstances\030\003" +
-      " \003(\0132\030.net.arksea.dsf.Instance\"1\n\nSubSer" +
-      "vice\022\017\n\007service\030\001 \001(\t\022\022\n\nsubscriber\030\002 \001(" +
-      "\t\"\037\n\014UnsubService\022\017\n\007service\030\001 \001(\t\"\210\001\n\016S" +
-      "erviceRequest\022\021\n\trequestId\030\001 \001(\t\022\016\n\006onew" +
-      "ay\030\002 \001(\010\022\017\n\007payload\030\003 \001(\014\0220\n\tserialize\030\004" +
-      " \001(\0162\035.net.arksea.dsf.EnumSerialize\022\020\n\010t" +
-      "ypeName\030\005 \001(\t\"y\n\017ServiceResponse\022\021\n\trequ" +
-      "estId\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014\0220\n\tserializ" +
-      "e\030\003 \001(\0162\035.net.arksea.dsf.EnumSerialize\022\020" +
-      "\n\010typeName\030\004 \001(\t\"\026\n\024GetRegisterInstances" +
-      "\"\006\n\004Ping\"\006\n\004Pong*/\n\rEnumSerialize\022\t\n\005BYT" +
-      "ES\020\000\022\010\n\004JAVA\020\001\022\t\n\005PROTO\020\002B\025\n\016net.arksea." +
-      "dsfB\003DSFb\006proto3"
+      "name\030\001 \001(\t\022\r\n\005count\030\002 \001(\005\"6\n\nRegService\022" +
+      "\014\n\004name\030\001 \001(\t\022\014\n\004addr\030\002 \001(\t\022\014\n\004path\030\003 \001(" +
+      "\t\"*\n\014UnregService\022\014\n\004name\030\001 \001(\t\022\014\n\004addr\030" +
+      "\002 \001(\t\"\037\n\017GetSvcInstances\022\014\n\004name\030\001 \001(\t\"F" +
+      "\n\020SyncSvcInstances\022\014\n\004name\030\001 \001(\t\022\020\n\010seri" +
+      "alId\030\002 \001(\t\022\022\n\nsubscriber\030\003 \001(\t\"\253\001\n\010Insta" +
+      "nce\022\014\n\004addr\030\001 \001(\t\022\014\n\004path\030\002 \001(\t\022\016\n\006onlin" +
+      "e\030\003 \001(\010\022\024\n\014unregistered\030\006 \001(\010\022\024\n\014registe" +
+      "rTime\030\007 \001(\003\022\026\n\016unregisterTime\030\010 \001(\003\022\027\n\017l" +
+      "astOfflineTime\030\t \001(\003\022\026\n\016lastOnlineTime\030\n" +
+      " \001(\003\"[\n\014SvcInstances\022\014\n\004name\030\001 \001(\t\022\020\n\010se" +
+      "rialId\030\002 \001(\t\022+\n\tinstances\030\003 \003(\0132\030.net.ar" +
+      "ksea.dsf.Instance\"1\n\nSubService\022\017\n\007servi" +
+      "ce\030\001 \001(\t\022\022\n\nsubscriber\030\002 \001(\t\"\037\n\014UnsubSer" +
+      "vice\022\017\n\007service\030\001 \001(\t\"\210\001\n\016ServiceRequest" +
+      "\022\021\n\trequestId\030\001 \001(\t\022\016\n\006oneway\030\002 \001(\010\022\017\n\007p" +
+      "ayload\030\003 \001(\014\0220\n\tserialize\030\004 \001(\0162\035.net.ar" +
+      "ksea.dsf.EnumSerialize\022\020\n\010typeName\030\005 \001(\t" +
+      "\"y\n\017ServiceResponse\022\021\n\trequestId\030\001 \001(\t\022\017" +
+      "\n\007payload\030\002 \001(\014\0220\n\tserialize\030\003 \001(\0162\035.net" +
+      ".arksea.dsf.EnumSerialize\022\020\n\010typeName\030\004 " +
+      "\001(\t\"O\n\014RequestCount\022\024\n\014requestCount\030\001 \001(" +
+      "\003\022\024\n\014succeedCount\030\002 \001(\003\022\023\n\013respondTime\030\003" +
+      " \001(\003\"B\n\023RequestCountHistory\022+\n\005items\030\001 \003" +
+      "(\0132\034.net.arksea.dsf.RequestCount\"4\n\026GetR" +
+      "equestCountHistory\022\014\n\004name\030\001 \001(\t\022\014\n\004addr" +
+      "\030\002 \001(\t\"\026\n\024GetRegisterInstances\"\006\n\004Ping\"\006" +
+      "\n\004Pong*/\n\rEnumSerialize\022\t\n\005BYTES\020\000\022\010\n\004JA" +
+      "VA\020\001\022\t\n\005PROTO\020\002B\025\n\016net.arksea.dsfB\003DSFb\006" +
+      "proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -13906,92 +14775,98 @@ public final class DSF {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_Subscriber_descriptor,
         new java.lang.String[] { "Name", "Count", });
-    internal_static_net_arksea_dsf_GetInstanceStatus_descriptor =
-      getDescriptor().getMessageTypes().get(5);
-    internal_static_net_arksea_dsf_GetInstanceStatus_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_net_arksea_dsf_GetInstanceStatus_descriptor,
-        new java.lang.String[] { "Name", "Addr", });
-    internal_static_net_arksea_dsf_InstanceStatus_descriptor =
-      getDescriptor().getMessageTypes().get(6);
-    internal_static_net_arksea_dsf_InstanceStatus_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_net_arksea_dsf_InstanceStatus_descriptor,
-        new java.lang.String[] { "Qps", "Tts", });
     internal_static_net_arksea_dsf_RegService_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_net_arksea_dsf_RegService_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_RegService_descriptor,
         new java.lang.String[] { "Name", "Addr", "Path", });
     internal_static_net_arksea_dsf_UnregService_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_net_arksea_dsf_UnregService_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_UnregService_descriptor,
         new java.lang.String[] { "Name", "Addr", });
     internal_static_net_arksea_dsf_GetSvcInstances_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_net_arksea_dsf_GetSvcInstances_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_GetSvcInstances_descriptor,
         new java.lang.String[] { "Name", });
     internal_static_net_arksea_dsf_SyncSvcInstances_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_net_arksea_dsf_SyncSvcInstances_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_SyncSvcInstances_descriptor,
         new java.lang.String[] { "Name", "SerialId", "Subscriber", });
     internal_static_net_arksea_dsf_Instance_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_net_arksea_dsf_Instance_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_Instance_descriptor,
         new java.lang.String[] { "Addr", "Path", "Online", "Unregistered", "RegisterTime", "UnregisterTime", "LastOfflineTime", "LastOnlineTime", });
     internal_static_net_arksea_dsf_SvcInstances_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_net_arksea_dsf_SvcInstances_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_SvcInstances_descriptor,
         new java.lang.String[] { "Name", "SerialId", "Instances", });
     internal_static_net_arksea_dsf_SubService_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_net_arksea_dsf_SubService_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_SubService_descriptor,
         new java.lang.String[] { "Service", "Subscriber", });
     internal_static_net_arksea_dsf_UnsubService_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_net_arksea_dsf_UnsubService_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_UnsubService_descriptor,
         new java.lang.String[] { "Service", });
     internal_static_net_arksea_dsf_ServiceRequest_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_net_arksea_dsf_ServiceRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_ServiceRequest_descriptor,
         new java.lang.String[] { "RequestId", "Oneway", "Payload", "Serialize", "TypeName", });
     internal_static_net_arksea_dsf_ServiceResponse_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_net_arksea_dsf_ServiceResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_ServiceResponse_descriptor,
         new java.lang.String[] { "RequestId", "Payload", "Serialize", "TypeName", });
-    internal_static_net_arksea_dsf_GetRegisterInstances_descriptor =
+    internal_static_net_arksea_dsf_RequestCount_descriptor =
+      getDescriptor().getMessageTypes().get(15);
+    internal_static_net_arksea_dsf_RequestCount_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_RequestCount_descriptor,
+        new java.lang.String[] { "RequestCount", "SucceedCount", "RespondTime", });
+    internal_static_net_arksea_dsf_RequestCountHistory_descriptor =
+      getDescriptor().getMessageTypes().get(16);
+    internal_static_net_arksea_dsf_RequestCountHistory_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_RequestCountHistory_descriptor,
+        new java.lang.String[] { "Items", });
+    internal_static_net_arksea_dsf_GetRequestCountHistory_descriptor =
       getDescriptor().getMessageTypes().get(17);
+    internal_static_net_arksea_dsf_GetRequestCountHistory_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_GetRequestCountHistory_descriptor,
+        new java.lang.String[] { "Name", "Addr", });
+    internal_static_net_arksea_dsf_GetRegisterInstances_descriptor =
+      getDescriptor().getMessageTypes().get(18);
     internal_static_net_arksea_dsf_GetRegisterInstances_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_GetRegisterInstances_descriptor,
         new java.lang.String[] { });
     internal_static_net_arksea_dsf_Ping_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_net_arksea_dsf_Ping_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_Ping_descriptor,
         new java.lang.String[] { });
     internal_static_net_arksea_dsf_Pong_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_net_arksea_dsf_Pong_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_Pong_descriptor,

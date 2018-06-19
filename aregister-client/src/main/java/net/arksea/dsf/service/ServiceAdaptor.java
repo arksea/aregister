@@ -17,6 +17,7 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static akka.japi.Util.classTag;
@@ -69,7 +70,7 @@ public class ServiceAdaptor extends AbstractActor {
     @Override
     public void preStart() {
         logger.debug("ServiceAdaptor preStart: {}", serviceName);
-        context().system().scheduler().scheduleOnce(Duration.create(3, TimeUnit.SECONDS),
+        context().system().scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS),
             self(),new DelayRegister(),context().dispatcher(),self());
         saveStatDataTimer = context().system().scheduler().schedule(
             Duration.create(60, TimeUnit.SECONDS),
@@ -105,7 +106,8 @@ public class ServiceAdaptor extends AbstractActor {
             .match(ServiceFailed.class,     this::handleServiceFailed)
             .match(DSF.Ping.class,          this::handlePing)
             .match(SaveStatData.class,      this::handleSaveStatData)
-            .match(ServiceAdaptor.DelayRegister.class,     this::handleDelayRegister);
+            .match(ServiceAdaptor.DelayRegister.class, this::handleDelayRegister)
+            .match(DSF.GetRequestCountHistory.class,   this::handleGetRequestCountHistory);
     }
     //------------------------------------------------------------------------------------
     private void handleServiceRequest(DSF.ServiceRequest msg) {
@@ -143,5 +145,18 @@ public class ServiceAdaptor extends AbstractActor {
     class DelayRegister {}
     private void handleDelayRegister(DelayRegister msg) {
         register.actorRef.tell(new RegLocalService(serviceName,serviceAddr,servicePath), ActorRef.noSender());
+    }
+    //------------------------------------------------------------------------------------
+    private void handleGetRequestCountHistory(DSF.GetRequestCountHistory msg) {
+        List<InstanceQuality.Count> counts = quality.getCountHistory();
+        DSF.RequestCountHistory.Builder hisBuilder = DSF.RequestCountHistory.newBuilder();
+        for (InstanceQuality.Count c: counts) {
+            DSF.RequestCount.Builder cb = DSF.RequestCount.newBuilder();
+            cb.setRequestCount(c.requestCount);
+            cb.setSucceedCount(c.succeedCount);
+            cb.setRespondTime(c.respondTime);
+            hisBuilder.addItems(cb.build());
+        }
+        sender().tell(hisBuilder.build(), self());
     }
 }

@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -19,17 +21,23 @@ public class InstanceQuality {
     private  int lastHistoryIndex;
     private final String serviceName;
 
-    class Count {
-        long requestCount;
-        long respondTime;
-        long succeedCount;
+    public class Count {
+        public final long requestCount;
+        public final long respondTime;
+        public final long succeedCount;
+
+        public Count(long requestCount, long succeedCount, long respondTime) {
+            this.requestCount = requestCount;
+            this.respondTime = respondTime;
+            this.succeedCount = succeedCount;
+        }
     }
 
     public InstanceQuality(String serviceName) {
         this.serviceName = serviceName;
         historyStat = new ArrayList<>(MAX_HISTORY_COUNT);
         for (int i = 0; i< MAX_HISTORY_COUNT; ++i) {
-            historyStat.add(new Count());
+            historyStat.add(new Count(0,0,0));
         }
     }
 
@@ -53,10 +61,8 @@ public class InstanceQuality {
         if (lastHistoryIndex >= MAX_HISTORY_COUNT) {
             lastHistoryIndex = 0;
         }
-        Count count = historyStat.get(lastHistoryIndex);
-        count.requestCount = this.requestCount;
-        count.respondTime  = this.respondTime;
-        count.succeedCount = this.succeedCount;
+        Count count = new Count(this.requestCount, this.succeedCount, this.respondTime);
+        historyStat.set(lastHistoryIndex, count);
         log.trace("Quality Stat: service={},requestCount1M={},succeedRate1M={},succeedRate5M={}",
             serviceName, getRequestCount(1), getSucceedRate(1), getSucceedRate(5));
     }
@@ -111,12 +117,34 @@ public class InstanceQuality {
      * @param step
      * @return
      */
-    private Count getStepsBefore(int step) {
-        int index = lastHistoryIndex - step;
-        if (index < 0) {
-            index += MAX_HISTORY_COUNT;
+    public Count getStepsBefore(int step) {
+        if (step > 0) {
+            int index = lastHistoryIndex - step;
+            if (index < 0) {
+                index += MAX_HISTORY_COUNT;
+            }
+            return historyStat.get(index);
+        } else {
+            return new Count(this.requestCount, this.succeedCount, this.respondTime);
         }
-        return historyStat.get(index);
+    }
+
+    public int getMaxHistoryCount() {
+        return MAX_HISTORY_COUNT;
+    }
+
+    public List<Count> getCountHistory() {
+        int i1 = lastHistoryIndex + 1;
+        if (i1 >= MAX_HISTORY_COUNT) {
+            i1 = 0;
+        }
+        int i2 = historyStat.size();
+        List<Count> his = new LinkedList<>();
+        his.addAll(historyStat.subList(i1, i2));
+        his.addAll(historyStat.subList(0,i1));
+        Count current = new Count(this.requestCount, this.succeedCount, this.respondTime);
+        his.add(current);
+        return his;
     }
 
 }

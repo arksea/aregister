@@ -1,7 +1,10 @@
 package net.arksea.dsf.web.service;
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
+import akka.pattern.Patterns;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import net.arksea.dsf.DSF;
@@ -10,14 +13,13 @@ import net.arksea.restapi.RestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import static akka.japi.Util.classTag;
 
 /**
  *
@@ -32,7 +34,10 @@ public class ServiceController {
     @Autowired
     private RegisterClient registerClient;
     @Resource(name = "restapiSystem")
-    private ActorSystem system;
+    private ActorSystem restapiSys;
+
+    @Resource(name = "serviceClientSystem")
+    private ActorSystem svcClientSys;
 
     private JsonFormat.Printer printer =  JsonFormat.printer().includingDefaultValueFields();
 
@@ -59,7 +64,7 @@ public class ServiceController {
                         result.setErrorResult(RestUtils.createError(1, err, reqid));
                     }
                 }
-            }, system.dispatcher());
+            }, restapiSys.dispatcher());
         return result;
     }
 
@@ -86,7 +91,7 @@ public class ServiceController {
                         result.setErrorResult(RestUtils.createError(1, err, reqid));
                     }
                 }
-            }, system.dispatcher());
+            }, restapiSys.dispatcher());
         return result;
     }
 
@@ -115,7 +120,42 @@ public class ServiceController {
                         result.setErrorResult(RestUtils.createError(1, err, reqid));
                     }
                 }
-            }, system.dispatcher());
+            }, restapiSys.dispatcher());
         return result;
     }
+
+    @RequestMapping(path = "{name}/runtime/request", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public DeferredResult<String> getServiceRequestCount(
+        @RequestParam("path") final String servicePath,
+        final HttpServletRequest httpRequest) {
+        DeferredResult<String> result = new DeferredResult<>();
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+
+        DSF.GetRequestCountHistory msg = DSF.GetRequestCountHistory.getDefaultInstance();
+        ActorSelection service = svcClientSys.actorSelection(servicePath);
+        Patterns.ask(service, msg, 10000)
+            .mapTo(classTag(DSF.RequestCountHistory.class))
+            .onComplete(
+            new OnComplete<DSF.RequestCountHistory>() {
+                @Override
+                public void onComplete(Throwable failure, DSF.RequestCountHistory his) throws Throwable {
+                    if (failure == null) {
+                        try {
+                            String json = printer.print(his);
+                            result.setResult(RestUtils.createJsonResult(0, json, reqid));
+                        } catch (InvalidProtocolBufferException ex) {
+                            String err = "format request count failed: "+servicePath;
+                            logger.debug(err, ex);
+                            result.setErrorResult(RestUtils.createError(1, err, reqid));
+                        }
+                    } else {
+                        String err = "get request count failed: "+servicePath;
+                        logger.debug(err, failure);
+                        result.setErrorResult(RestUtils.createError(1, err, reqid));
+                    }
+                }
+            }, restapiSys.dispatcher());
+        return result;
+    }
+
 }

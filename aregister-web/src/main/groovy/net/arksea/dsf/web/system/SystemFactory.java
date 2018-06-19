@@ -49,4 +49,11 @@ public class SystemFactory {
         return ActorSystem.create("restapiSystem", cfg);
     }
 
+    @Bean(name = "serviceClientSystem")
+    public ActorSystem createServiceClientSystem() {
+        Config config = ConfigFactory.parseResources("default-service-client.conf");
+        return ActorSystem.create(RegisterClient.SVC_CLIENT_SYSTEM_NAME,
+            config.getConfig(RegisterClient.SVC_CLIENT_SYSTEM_NAME).withFallback(config));
+    }
+
 }
