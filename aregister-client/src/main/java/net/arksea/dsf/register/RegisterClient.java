@@ -11,7 +11,7 @@ import net.arksea.dsf.client.*;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
-import net.arksea.dsf.service.RegisteredServiceAdaptor;
+import net.arksea.dsf.service.ServiceAdaptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -99,7 +99,7 @@ public class RegisterClient {
      * @param serviceSystem 创建服务的ActorSystem
      */
     public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem) {
-        serviceSystem.actorOf(RegisteredServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
     }
 
     /**
@@ -108,7 +108,7 @@ public class RegisterClient {
     public void register(String serviceName, int bindPort, ActorRef service, ActorSystem serviceSystem) throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         final String bindHost = addr.getHostAddress();
-        serviceSystem.actorOf(RegisteredServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
     }
 
     /**
