@@ -1,0 +1,35 @@
+@startuml
+skinparam ParticipantPadding 20
+skinparam BoxPadding 20
+
+participant User
+participant Client
+participant RequestRouter
+
+User -> Client: request
+activate Client
+Client ->> RequestRouter: ask(ServiceRequest)
+activate RequestRouter
+User <-- Client: Future
+deactivate Client
+RequestRouter -> RequestRouter : getInstance
+RequestRouter -\\ ServiceAdaptor: DSF.ServiceRequest
+deactivate RequestRouter
+activate ServiceAdaptor
+ServiceAdaptor -\\ UserServiceActor: ServiceRequest
+deactivate ServiceAdaptor
+activate UserServiceActor
+UserServiceActor -// ServiceAdaptor: ServiceResponse
+deactivate UserServiceActor
+activate ServiceAdaptor
+ServiceAdaptor -// RequestRouter: DSF.ServiceResponse
+deactivate ServiceAdaptor
+activate RequestRouter
+RequestRouter -//o Client: DSF.ServiceResponse
+RequestRouter -> RequestRouter: onRequestSucceed
+
+Client o-> Client: map(decodeResponse)
+deactivate RequestRouter
+Client o--> User: result
+
+@enduml

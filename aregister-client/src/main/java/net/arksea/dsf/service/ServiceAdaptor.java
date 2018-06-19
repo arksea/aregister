@@ -66,13 +66,8 @@ public class ServiceAdaptor extends AbstractActor {
     //------------------------------------------------------------------------------------
     private void handleServiceResponse(ServiceResponse msg) {
         logger.trace("handleServiceResponse({})", msg.request.reqid);
-        if (msg.result instanceof Message) {
-            DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
-            msg.request.sender.forward(r, context());
-        } else {
-            DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
-            msg.request.sender.forward(r, context());
-        }
+        DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
+        msg.request.sender.forward(r, context());
     }
 
     //------------------------------------------------------------------------------------
