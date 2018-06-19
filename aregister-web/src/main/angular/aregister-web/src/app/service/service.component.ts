@@ -7,7 +7,7 @@ import { AppState } from '../app-state';
 import { ServiceAPI } from './service.restapi';
 import * as ServiceActions from './service.actions';
 import * as SystemEventActions from '../system/system-event.actions';
-import { RestResult,Service,Instance } from '../models'
+import { RestResult,Service,Instance,RequestCountHistory } from '../models'
 
 @Component({
   selector: 'service',
@@ -31,15 +31,7 @@ export class ServiceComponent {
         const state: AppState = this.store.getState() as AppState;
         let regname = this.route.snapshot.paramMap.get('regname')
         if (regname && this.service.name == '') {
-            const state: AppState = this.store.getState() as AppState;
-            this.api.getService(regname).subscribe(
-                (r: RestResult<Service>) => {
-                    if (r.code == 0) {
-                        let act = ServiceActions.updateService(r.result);
-                        this.store.dispatch(act);
-                    }
-                }
-            );
+            this.api.onUpdateService(regname);
         }
     }
 

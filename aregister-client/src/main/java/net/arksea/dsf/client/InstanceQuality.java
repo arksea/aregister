@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -144,6 +145,7 @@ public class InstanceQuality {
         his.addAll(historyStat.subList(0,i1));
         Count current = new Count(this.requestCount, this.succeedCount, this.respondTime);
         his.add(current);
+        Collections.reverse(his);
         return his;
     }
 

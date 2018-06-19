@@ -44,15 +44,7 @@ export class ServiceTreeComponent {
     }
 
     onClickOneService(svc: ServiceVersion) {
-        const state: AppState = this.store.getState() as AppState;
-        this.api.getService(svc.regname).subscribe(
-            (r: RestResult<Service>) => {
-                if (r.code == 0) {
-                    let act = ServiceActions.updateService(r.result);
-                    this.store.dispatch(act);
-                }
-            }
-        );
+        this.api.onUpdateService(svc.regname);
     }
 }
 

@@ -124,7 +124,7 @@ public class ServiceController {
         return result;
     }
 
-    @RequestMapping(path = "{name}/runtime/request", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    @RequestMapping(path = "request", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public DeferredResult<String> getServiceRequestCount(
         @RequestParam("path") final String servicePath,
         final HttpServletRequest httpRequest) {
