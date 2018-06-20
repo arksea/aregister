@@ -10603,6 +10603,11 @@ public final class DSF {
      */
     com.google.protobuf.ByteString
         getTypeNameBytes();
+
+    /**
+     * <code>bool succeed = 5;</code>
+     */
+    boolean getSucceed();
   }
   /**
    * Protobuf type {@code net.arksea.dsf.ServiceResponse}
@@ -10621,6 +10626,7 @@ public final class DSF {
       payload_ = com.google.protobuf.ByteString.EMPTY;
       serialize_ = 0;
       typeName_ = "";
+      succeed_ = false;
     }
 
     @java.lang.Override
@@ -10675,6 +10681,11 @@ public final class DSF {
               java.lang.String s = input.readStringRequireUtf8();
 
               typeName_ = s;
+              break;
+            }
+            case 40: {
+
+              succeed_ = input.readBool();
               break;
             }
           }
@@ -10794,6 +10805,15 @@ public final class DSF {
       }
     }
 
+    public static final int SUCCEED_FIELD_NUMBER = 5;
+    private boolean succeed_;
+    /**
+     * <code>bool succeed = 5;</code>
+     */
+    public boolean getSucceed() {
+      return succeed_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -10818,6 +10838,9 @@ public final class DSF {
       if (!getTypeNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, typeName_);
       }
+      if (succeed_ != false) {
+        output.writeBool(5, succeed_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -10839,6 +10862,10 @@ public final class DSF {
       }
       if (!getTypeNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, typeName_);
+      }
+      if (succeed_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, succeed_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -10863,6 +10890,8 @@ public final class DSF {
       result = result && serialize_ == other.serialize_;
       result = result && getTypeName()
           .equals(other.getTypeName());
+      result = result && (getSucceed()
+          == other.getSucceed());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -10882,6 +10911,9 @@ public final class DSF {
       hash = (53 * hash) + serialize_;
       hash = (37 * hash) + TYPENAME_FIELD_NUMBER;
       hash = (53 * hash) + getTypeName().hashCode();
+      hash = (37 * hash) + SUCCEED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getSucceed());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -11019,6 +11051,8 @@ public final class DSF {
 
         typeName_ = "";
 
+        succeed_ = false;
+
         return this;
       }
 
@@ -11045,6 +11079,7 @@ public final class DSF {
         result.payload_ = payload_;
         result.serialize_ = serialize_;
         result.typeName_ = typeName_;
+        result.succeed_ = succeed_;
         onBuilt();
         return result;
       }
@@ -11099,6 +11134,9 @@ public final class DSF {
         if (!other.getTypeName().isEmpty()) {
           typeName_ = other.typeName_;
           onChanged();
+        }
+        if (other.getSucceed() != false) {
+          setSucceed(other.getSucceed());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -11334,6 +11372,32 @@ public final class DSF {
   checkByteStringIsUtf8(value);
         
         typeName_ = value;
+        onChanged();
+        return this;
+      }
+
+      private boolean succeed_ ;
+      /**
+       * <code>bool succeed = 5;</code>
+       */
+      public boolean getSucceed() {
+        return succeed_;
+      }
+      /**
+       * <code>bool succeed = 5;</code>
+       */
+      public Builder setSucceed(boolean value) {
+        
+        succeed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool succeed = 5;</code>
+       */
+      public Builder clearSucceed() {
+        
+        succeed_ = false;
         onChanged();
         return this;
       }
@@ -12744,26 +12808,6 @@ public final class DSF {
   public interface GetRequestCountHistoryOrBuilder extends
       // @@protoc_insertion_point(interface_extends:net.arksea.dsf.GetRequestCountHistory)
       com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string name = 1;</code>
-     */
-    java.lang.String getName();
-    /**
-     * <code>string name = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getNameBytes();
-
-    /**
-     * <code>string addr = 2;</code>
-     */
-    java.lang.String getAddr();
-    /**
-     * <code>string addr = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getAddrBytes();
   }
   /**
    * <pre>
@@ -12782,8 +12826,6 @@ public final class DSF {
       super(builder);
     }
     private GetRequestCountHistory() {
-      name_ = "";
-      addr_ = "";
     }
 
     @java.lang.Override
@@ -12799,7 +12841,6 @@ public final class DSF {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -12815,18 +12856,6 @@ public final class DSF {
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
-              break;
-            }
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              name_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              addr_ = s;
               break;
             }
           }
@@ -12853,74 +12882,6 @@ public final class DSF {
               net.arksea.dsf.DSF.GetRequestCountHistory.class, net.arksea.dsf.DSF.GetRequestCountHistory.Builder.class);
     }
 
-    public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
-    /**
-     * <code>string name = 1;</code>
-     */
-    public java.lang.String getName() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        name_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string name = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getNameBytes() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        name_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int ADDR_FIELD_NUMBER = 2;
-    private volatile java.lang.Object addr_;
-    /**
-     * <code>string addr = 2;</code>
-     */
-    public java.lang.String getAddr() {
-      java.lang.Object ref = addr_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        addr_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string addr = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getAddrBytes() {
-      java.lang.Object ref = addr_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        addr_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -12933,12 +12894,6 @@ public final class DSF {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getNameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
-      }
-      if (!getAddrBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, addr_);
-      }
       unknownFields.writeTo(output);
     }
 
@@ -12947,12 +12902,6 @@ public final class DSF {
       if (size != -1) return size;
 
       size = 0;
-      if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
-      }
-      if (!getAddrBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, addr_);
-      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -12969,10 +12918,6 @@ public final class DSF {
       net.arksea.dsf.DSF.GetRequestCountHistory other = (net.arksea.dsf.DSF.GetRequestCountHistory) obj;
 
       boolean result = true;
-      result = result && getName()
-          .equals(other.getName());
-      result = result && getAddr()
-          .equals(other.getAddr());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -12984,10 +12929,6 @@ public final class DSF {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + NAME_FIELD_NUMBER;
-      hash = (53 * hash) + getName().hashCode();
-      hash = (37 * hash) + ADDR_FIELD_NUMBER;
-      hash = (53 * hash) + getAddr().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -13121,10 +13062,6 @@ public final class DSF {
       }
       public Builder clear() {
         super.clear();
-        name_ = "";
-
-        addr_ = "";
-
         return this;
       }
 
@@ -13147,8 +13084,6 @@ public final class DSF {
 
       public net.arksea.dsf.DSF.GetRequestCountHistory buildPartial() {
         net.arksea.dsf.DSF.GetRequestCountHistory result = new net.arksea.dsf.DSF.GetRequestCountHistory(this);
-        result.name_ = name_;
-        result.addr_ = addr_;
         onBuilt();
         return result;
       }
@@ -13190,14 +13125,6 @@ public final class DSF {
 
       public Builder mergeFrom(net.arksea.dsf.DSF.GetRequestCountHistory other) {
         if (other == net.arksea.dsf.DSF.GetRequestCountHistory.getDefaultInstance()) return this;
-        if (!other.getName().isEmpty()) {
-          name_ = other.name_;
-          onChanged();
-        }
-        if (!other.getAddr().isEmpty()) {
-          addr_ = other.addr_;
-          onChanged();
-        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -13222,144 +13149,6 @@ public final class DSF {
             mergeFrom(parsedMessage);
           }
         }
-        return this;
-      }
-
-      private java.lang.Object name_ = "";
-      /**
-       * <code>string name = 1;</code>
-       */
-      public java.lang.String getName() {
-        java.lang.Object ref = name_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          name_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        java.lang.Object ref = name_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public Builder setName(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        name_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public Builder clearName() {
-        
-        name_ = getDefaultInstance().getName();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        name_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object addr_ = "";
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public java.lang.String getAddr() {
-        java.lang.Object ref = addr_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          addr_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getAddrBytes() {
-        java.lang.Object ref = addr_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          addr_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public Builder setAddr(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        addr_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public Builder clearAddr() {
-        
-        addr_ = getDefaultInstance().getAddr();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string addr = 2;</code>
-       */
-      public Builder setAddrBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        addr_ = value;
-        onChanged();
         return this;
       }
       public final Builder setUnknownFields(
@@ -14720,18 +14509,17 @@ public final class DSF {
       "\022\021\n\trequestId\030\001 \001(\t\022\016\n\006oneway\030\002 \001(\010\022\017\n\007p" +
       "ayload\030\003 \001(\014\0220\n\tserialize\030\004 \001(\0162\035.net.ar" +
       "ksea.dsf.EnumSerialize\022\020\n\010typeName\030\005 \001(\t" +
-      "\"y\n\017ServiceResponse\022\021\n\trequestId\030\001 \001(\t\022\017" +
-      "\n\007payload\030\002 \001(\014\0220\n\tserialize\030\003 \001(\0162\035.net" +
-      ".arksea.dsf.EnumSerialize\022\020\n\010typeName\030\004 " +
-      "\001(\t\"O\n\014RequestCount\022\024\n\014requestCount\030\001 \001(" +
-      "\003\022\024\n\014succeedCount\030\002 \001(\003\022\023\n\013respondTime\030\003" +
-      " \001(\003\"B\n\023RequestCountHistory\022+\n\005items\030\001 \003" +
-      "(\0132\034.net.arksea.dsf.RequestCount\"4\n\026GetR" +
-      "equestCountHistory\022\014\n\004name\030\001 \001(\t\022\014\n\004addr" +
-      "\030\002 \001(\t\"\026\n\024GetRegisterInstances\"\006\n\004Ping\"\006" +
-      "\n\004Pong*/\n\rEnumSerialize\022\t\n\005BYTES\020\000\022\010\n\004JA" +
-      "VA\020\001\022\t\n\005PROTO\020\002B\025\n\016net.arksea.dsfB\003DSFb\006" +
-      "proto3"
+      "\"\212\001\n\017ServiceResponse\022\021\n\trequestId\030\001 \001(\t\022" +
+      "\017\n\007payload\030\002 \001(\014\0220\n\tserialize\030\003 \001(\0162\035.ne" +
+      "t.arksea.dsf.EnumSerialize\022\020\n\010typeName\030\004" +
+      " \001(\t\022\017\n\007succeed\030\005 \001(\010\"O\n\014RequestCount\022\024\n" +
+      "\014requestCount\030\001 \001(\003\022\024\n\014succeedCount\030\002 \001(" +
+      "\003\022\023\n\013respondTime\030\003 \001(\003\"B\n\023RequestCountHi" +
+      "story\022+\n\005items\030\001 \003(\0132\034.net.arksea.dsf.Re" +
+      "questCount\"\030\n\026GetRequestCountHistory\"\026\n\024" +
+      "GetRegisterInstances\"\006\n\004Ping\"\006\n\004Pong*/\n\r" +
+      "EnumSerialize\022\t\n\005BYTES\020\000\022\010\n\004JAVA\020\001\022\t\n\005PR" +
+      "OTO\020\002B\025\n\016net.arksea.dsfB\003DSFb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -14834,7 +14622,7 @@ public final class DSF {
     internal_static_net_arksea_dsf_ServiceResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_ServiceResponse_descriptor,
-        new java.lang.String[] { "RequestId", "Payload", "Serialize", "TypeName", });
+        new java.lang.String[] { "RequestId", "Payload", "Serialize", "TypeName", "Succeed", });
     internal_static_net_arksea_dsf_RequestCount_descriptor =
       getDescriptor().getMessageTypes().get(15);
     internal_static_net_arksea_dsf_RequestCount_fieldAccessorTable = new
@@ -14852,7 +14640,7 @@ public final class DSF {
     internal_static_net_arksea_dsf_GetRequestCountHistory_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_GetRequestCountHistory_descriptor,
-        new java.lang.String[] { "Name", "Addr", });
+        new java.lang.String[] { });
     internal_static_net_arksea_dsf_GetRegisterInstances_descriptor =
       getDescriptor().getMessageTypes().get(18);
     internal_static_net_arksea_dsf_GetRegisterInstances_fieldAccessorTable = new

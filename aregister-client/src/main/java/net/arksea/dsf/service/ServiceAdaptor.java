@@ -103,7 +103,6 @@ public class ServiceAdaptor extends AbstractActor {
         return receiveBuilder()
             .match(DSF.ServiceRequest.class,this::handleServiceRequest)
             .match(ServiceResponse.class,   this::handleServiceResponse)
-            .match(ServiceFailed.class,     this::handleServiceFailed)
             .match(DSF.Ping.class,          this::handlePing)
             .match(SaveStatData.class,      this::handleSaveStatData)
             .match(ServiceAdaptor.DelayRegister.class, this::handleDelayRegister)
@@ -121,14 +120,11 @@ public class ServiceAdaptor extends AbstractActor {
     //------------------------------------------------------------------------------------
     private void handleServiceResponse(ServiceResponse msg) {
         logger.trace("handleServiceResponse({})", msg.request.reqid);
-        quality.succeed(System.currentTimeMillis() - msg.request.requestTime);
-        DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
-        msg.request.sender.forward(r, context());
-    }
-    //------------------------------------------------------------------------------------
-    private void handleServiceFailed(ServiceFailed msg) {
-        logger.trace("handleServiceFailed({})", msg.request.reqid);
-        quality.failed(System.currentTimeMillis() - msg.request.requestTime);
+        if (msg.succeed) {
+            quality.succeed(System.currentTimeMillis() - msg.request.requestTime);
+        } else {
+            quality.failed(System.currentTimeMillis() - msg.request.requestTime);
+        }
         DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
         msg.request.sender.forward(r, context());
     }

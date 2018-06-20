@@ -100,6 +100,7 @@ message ServiceResponse {
     bytes payload = 2;
     EnumSerialize serialize = 3;
     string typeName = 4;
+    bool succeed = 5;
 }
 //------------------------------------------------
 //服务实例请求计数历史数据
