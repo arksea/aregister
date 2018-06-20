@@ -36,6 +36,8 @@ export const ServicesReducer = function(state: ServicesState = initialState, act
                 let count = c1.requestCount - c2.requestCount;
                 inst.qps = Math.round(count/60);
                 inst.tts = Math.round((c1.respondTime - c2.respondTime) / count);
+                let rate = (c1.succeedCount - c2.succeedCount) / count;
+                inst.succeedRate = Math.round(rate*1000) / 10;
                 return state;
             } else {
                 return state;

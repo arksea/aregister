@@ -26,6 +26,7 @@ export interface Instance {
   lastOnlineTime?: number;
   qps?: number;
   tts?: number;
+  succeedRate?: number;
 };
 
 export interface Subscriber {
