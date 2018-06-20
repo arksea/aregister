@@ -47,7 +47,7 @@ public class JavaSerializeCodes implements ICodes {
     }
 
     @Override
-    public DSF.ServiceResponse encodeResponse(Object msg, String reqid) {
+    public DSF.ServiceResponse encodeResponse(Object msg, String reqid, boolean succeed) {
         try {
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(buff);
@@ -59,6 +59,7 @@ public class JavaSerializeCodes implements ICodes {
                 .setPayload(payload)
                 .setSerialize(DSF.EnumSerialize.JAVA)
                 .setTypeName("_JAVA_")
+                .setSucceed(succeed)
                 .build();
         } catch (IOException ex) {
             throw new RuntimeException("protocol error", ex);

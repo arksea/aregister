@@ -5,11 +5,12 @@
     <tr>
         <th>地址</th>
         <th>在线</th>
-        <th>前一次上线时间</th>
-        <th>前一次离线时间</th>
-        <th>注册时间</th>
+        <th>上线时间</th>
+        <th>离线时间</th>
         <th>已注销</th>
-        <th>注销时间</th>
+        <th>QPS</th>
+        <th>TTS(ms)</th>
+        <th>成功率(%)</th>
     </tr>
     </thead>
     <tbody>
@@ -18,9 +19,10 @@
         <td>{{i.online}}</td>
         <td>{{formatTime(i.lastOnlineTime)}}</td>
         <td>{{formatTime(i.lastOfflineTime)}}</td>
-        <td>{{formatTime(i.registerTime)}}</td>
         <td>{{i.unregistered}}</td>
-        <td>{{formatTime(i.unregisterTime)}}</td>
+        <td>{{i.qps}}</td>
+        <td>{{i.tts}}</td>
+        <td>{{i.succeedRate}}</td>
     </tr>
     </tbody>
 </table>

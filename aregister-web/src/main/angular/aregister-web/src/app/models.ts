@@ -24,6 +24,9 @@ export interface Instance {
   unregisterTime?: number;
   lastOfflineTime?:number;
   lastOnlineTime?: number;
+  qps?: number;
+  tts?: number;
+  succeedRate?: number;
 };
 
 export interface Subscriber {
@@ -47,3 +50,14 @@ export interface ServiceNamespace {
   expanded: boolean;
   serviceList: ServiceSeries[];
 };
+
+export interface RequestCount {
+  requestCount: number;
+  succeedCount: number;
+  respondTime: number;
+};
+
+//服务实例请求计数历史数据，每分钟一条
+export interface RequestCountHistory {
+  items: RequestCount[];
+}

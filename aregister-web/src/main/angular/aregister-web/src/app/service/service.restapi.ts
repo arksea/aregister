@@ -4,11 +4,14 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs';
 import { map, catchError,tap } from 'rxjs/operators';
-import { RestResult,ServiceList,Service, ServiceVersion, ServiceSeries, ServiceNamespace } from '../models'
+import { RestResult,ServiceList,Service, ServiceVersion, ServiceSeries, ServiceNamespace,
+         RequestCountHistory,Instance
+       } from '../models'
 
 import { Store } from 'redux';
 import { AppStore } from '../app-store';
 import { AppState } from '../app-state';
+import * as ServiceActions from './service.actions';
 import * as SystemEventActions from '../system/system-event.actions';
 
 @Injectable()
@@ -45,6 +48,39 @@ export class ServiceAPI {
             tap((r: RestResult<Service>) => this.handleErrorResult(r, method, name, this.store)),
             catchError(r => this.handleCatchedError(r, method, name, this.store))
         );
+    }
+
+    public getRequestCountHistory(servicePath: string): Observable<RestResult<RequestCountHistory>> {
+        let method = 'Request service request count history';
+        return this.http.get(environment.apiUrl + '/api/v1/services/request?path=' + encodeURIComponent(servicePath))
+            .pipe(
+                tap((r: RestResult<RequestCountHistory>) => this.handleErrorResult(r, method, name, this.store)),
+                catchError(r => this.handleCatchedError(r, method, name, this.store)
+            )
+        );
+    }
+
+    public onUpdateService(regname: string) {
+            const state: AppState = this.store.getState() as AppState;
+            this.getService(regname).subscribe(
+                (r: RestResult<Service>) => {
+                    if (r.code == 0) {
+                        let act = ServiceActions.updateService(r.result);
+                        this.store.dispatch(act);
+                        for (let i = 0; i< r.result.instances.length; i++) {
+                            let inst : Instance = r.result.instances[i];
+                            if (inst.online) {
+                                this.getRequestCountHistory(inst.path).subscribe(
+                                    (h: RestResult<RequestCountHistory>) => {
+                                        let actC = ServiceActions.updateRequestCount(regname,i,h.result);
+                                        this.store.dispatch(actC);
+                                    }
+                                );
+                            }
+                        };
+                    }
+                }
+            );
     }
 
     private handleCatchedError(error, method: string, args: string, store: Store<AppState>) {
