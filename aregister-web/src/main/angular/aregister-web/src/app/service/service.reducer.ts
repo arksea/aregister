@@ -34,7 +34,12 @@ export const ServicesReducer = function(state: ServicesState = initialState, act
                 let svc: Service = state.serviceMap[act.name];
                 let inst: Instance = svc.instances[act.index];
                 let count = c1.requestCount - c2.requestCount;
-                inst.qps = Math.round(count/60);
+                let qps = count/60;
+                if (qps < 5) {
+                    inst.qps = Math.round(qps*10)/10;
+                } else {
+                    inst.qps = Math.round(qps);
+                }
                 inst.tts = Math.round((c1.respondTime - c2.respondTime) / count);
                 let rate = (c1.succeedCount - c2.succeedCount) / count;
                 inst.succeedRate = Math.round(rate*1000) / 10;
