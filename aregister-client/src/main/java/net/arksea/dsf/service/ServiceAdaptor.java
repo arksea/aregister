@@ -125,7 +125,7 @@ public class ServiceAdaptor extends AbstractActor {
         } else {
             quality.failed(System.currentTimeMillis() - msg.request.requestTime);
         }
-        DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid);
+        DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid, msg.succeed);
         msg.request.sender.forward(r, context());
     }
     //------------------------------------------------------------------------------------
