@@ -35,7 +35,7 @@ export class ServiceDAO {
     }
 
     public updateRquestCount(inst: Instance): void {
-        this.api.getRequestCountHistory(inst.path).subscribe (
+        this.api.getRequestCountHistory(inst.addr, inst.path).subscribe (
             (h: RestResult<RequestCountHistory>) => {
                 if (h.code == 0) {
                     inst.quality.next(this.countQuality(h.result));
@@ -44,7 +44,7 @@ export class ServiceDAO {
         )
     }
 
-    countQuality(history: RequestCountHistory): Quality {
+    private countQuality(history: RequestCountHistory): Quality {
         if (history.items.length > 2) {
             let c1: RequestCount = history.items[1];
             let c2: RequestCount = history.items[2];
