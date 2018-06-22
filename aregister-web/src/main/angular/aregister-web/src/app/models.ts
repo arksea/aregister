@@ -1,10 +1,12 @@
+import { Subject, BehaviorSubject, Observable } from 'rxjs';
+
 export interface RestResult<T> {
   code: number;
   result?: T;
   error?: string;
   reqid: string;
 };
-
+//---------------------------------------------
 export interface ServiceList {
   items: string[];
 };
@@ -24,16 +26,20 @@ export interface Instance {
   unregisterTime?: number;
   lastOfflineTime?:number;
   lastOnlineTime?: number;
-  qps?: number;
-  tts?: number;
-  succeedRate?: number;
+  quality?: Subject<Quality>;
+};
+
+export interface Quality {
+    qps: number;
+    tts: number;
+    succeedRate: number;
 };
 
 export interface Subscriber {
   name: string;
   count: number;
 };
-
+//---------------------------------------------
 export interface ServiceVersion {
   version: string;
   regname: string;
@@ -50,7 +56,7 @@ export interface ServiceNamespace {
   expanded: boolean;
   serviceList: ServiceSeries[];
 };
-
+//---------------------------------------------
 export interface RequestCount {
   requestCount: number;
   succeedCount: number;
