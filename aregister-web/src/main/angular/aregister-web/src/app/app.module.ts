@@ -15,7 +15,6 @@ import { ServiceDAO } from './service/service.dao';
 import { AppComponent } from './app.component';
 import { ServiceTreeComponent } from './service/service-tree.component';
 import { ServiceComponent } from './service/service.component';
-import { InstanceRowComponent } from './service/instance-row.component';
 import { SystemStatusBarComponent } from './system/status-bar.component';
 
 
@@ -38,7 +37,6 @@ const appRoutes: Routes = [
     AppComponent,
     ServiceTreeComponent,
     ServiceComponent,
-    InstanceRowComponent,
     SystemStatusBarComponent
   ],
   imports: [
