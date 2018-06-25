@@ -9,7 +9,6 @@ import { ServiceAPI } from './service.restapi';
 export class ServiceDAO {
     serviceTree: Subject<ServiceNamespace[]> = new BehaviorSubject<ServiceNamespace[]>([]);
     selectedService: Subject<string> = new BehaviorSubject<string>(null);
-    currentService: Subject<Service> = new BehaviorSubject<Service>(null);
     instances: Subject<Instance[]> = new BehaviorSubject<Instance[]>([]);
     subscribers: Subject<Subscriber[]> = new BehaviorSubject<Subscriber[]>([]);
 
