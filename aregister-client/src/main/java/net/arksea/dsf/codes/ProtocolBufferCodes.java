@@ -50,7 +50,7 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
     }
 
     @Override
-    public DSF.ServiceResponse encodeResponse(Object obj, String reqid) {
+    public DSF.ServiceResponse encodeResponse(Object obj, String reqid, boolean succeed) {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
             ByteString payload = msg.toByteString();
@@ -59,9 +59,10 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
                 .setPayload(payload)
                 .setSerialize(DSF.EnumSerialize.PROTO)
                 .setTypeName(msg.getDescriptorForType().getName())
+                .setSucceed(succeed)
                 .build();
         } else {
-            return super.encodeResponse(obj, reqid);
+            return super.encodeResponse(obj, reqid, succeed);
         }
     }
 

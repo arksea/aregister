@@ -2,7 +2,7 @@
     <clr-icon shape="cloud-traffic"></clr-icon>
     更新服务列表
 </button>
-<clr-tree-node *ngFor="let namespace of serviceTree">
+<clr-tree-node *ngFor="let namespace of serviceTree | async">
     <clr-icon shape="folder"></clr-icon>
     {{namespace.namespace}}
     <ng-template [(clrIfExpanded)]="namespace.expanded">

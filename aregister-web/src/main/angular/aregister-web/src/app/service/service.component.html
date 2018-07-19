@@ -1,27 +1,36 @@
-<h3> {{service.name}} </h3>
+<h3> {{serviceName | async}} </h3>
 <h5>服务实例</h5>
-<table id="instanceTable" class="table table-striped table-bordered table-condensed">
+<table class="table table-bordered">
     <thead>
     <tr>
         <th>地址</th>
         <th>在线</th>
-        <th>前一次上线时间</th>
-        <th>前一次离线时间</th>
-        <th>注册时间</th>
+        <th>上线时间</th>
+        <th>离线时间</th>
         <th>已注销</th>
-        <th>注销时间</th>
+        <th>QPS</th>
+        <th>TTS(ms)</th>
+        <th>成功率(%)</th>
+        <th>刷新</th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let i of service.instances">
-        <td>{{i.addr}}</td>
-        <td>{{i.online}}</td>
-        <td>{{formatTime(i.lastOnlineTime)}}</td>
-        <td>{{formatTime(i.lastOfflineTime)}}</td>
-        <td>{{formatTime(i.registerTime)}}</td>
-        <td>{{i.unregistered}}</td>
-        <td>{{formatTime(i.unregisterTime)}}</td>
-    </tr>
+        <tr *ngFor="let i of instances | async">
+            <td>{{i.addr}}</td>
+            <td>{{i.online}}</td>
+            <td>{{formatTime(i.lastOnlineTime)}}</td>
+            <td>{{formatTime(i.lastOfflineTime)}}</td>
+            <td>{{i.unregistered}}</td>
+            <td>{{(i.quality | async).qps}}</td>
+            <td>{{(i.quality | async).tts}}</td>
+            <td>{{(i.quality | async).succeedRate}}</td>
+            <td>
+                <a (click)="updateRquestCount(i)">
+                    <clr-icon shape="refresh"></clr-icon>
+                </a>
+            </td>
+        </tr>
+
     </tbody>
 </table>
 
@@ -34,7 +43,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let s of service.subscribers">
+    <tr *ngFor="let s of subscribers | async">
         <td>{{s.name}}</td>
         <td>{{s.count}}</td>
     </tr>

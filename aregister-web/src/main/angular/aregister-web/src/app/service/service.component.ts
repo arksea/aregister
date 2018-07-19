@@ -1,57 +1,31 @@
 import { Component, Inject, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap,NavigationEnd  } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Store } from 'redux';
-import { AppStore } from '../app-store';
-import { AppState } from '../app-state';
-import { ServiceAPI } from './service.restapi';
-import * as ServiceActions from './service.actions';
-import * as SystemEventActions from '../system/system-event.actions';
-import { RestResult,Service,Instance } from '../models'
+import { ServiceDAO } from './service.dao';
 
 @Component({
   selector: 'service',
   templateUrl: './service.component.html'
 })
 export class ServiceComponent {
-    service: Service = {
-        name: '',
-        instances: [],
-        subscribers: []
-    } as Service;
+    serviceName = this.serviceDao.selectedService;
+    instances = this.serviceDao.instances;
+    subscribers = this.serviceDao.subscribers;
 
-    constructor(@Inject(AppStore) private store: Store<AppState>,
-                private api: ServiceAPI,
+    constructor(private serviceDao: ServiceDAO,
                 private router: Router,
                 private route: ActivatedRoute) {
-        store.subscribe(() => this.refresh());
     }
 
     ngOnInit(): void {
-        const state: AppState = this.store.getState() as AppState;
         let regname = this.route.snapshot.paramMap.get('regname')
-        if (regname && this.service.name == '') {
-            const state: AppState = this.store.getState() as AppState;
-            this.api.getService(regname).subscribe(
-                (r: RestResult<Service>) => {
-                    if (r.code == 0) {
-                        let act = ServiceActions.updateService(r.result);
-                        this.store.dispatch(act);
-                    }
-                }
-            );
+        if (regname) {
+            this.serviceDao.selectService(regname);
         }
     }
 
-    refresh() {
-        const state: AppState = this.store.getState() as AppState;
-        let regname = this.route.snapshot.paramMap.get('regname')
-        if (regname) {
-            let svc = state.services.serviceMap[regname];
-            if (svc) {
-                this.service = svc;
-            }
-        }
+
+    updateRquestCount(i): void {
+        this.serviceDao.updateRquestCount(i);
     }
 
     //格式化时间展示

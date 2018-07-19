@@ -7,24 +7,16 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 import { ClarityModule } from "clarity-angular";
 
-import { createStore, Store, StoreEnhancer } from 'redux';
-import { AppStore } from './app-store';
-import { AppState, rootReducer } from './app-state';
-
 import { AppComponent } from './app.component';
+
 import { ServiceTreeComponent } from './service/service-tree.component';
 import { ServiceComponent } from './service/service.component';
+import { ServiceDAO } from './service/service.dao';
+
 import { SystemStatusBarComponent } from './system/status-bar.component';
-
-
+import { SystemDAO } from './system/system.dao';
 
 import { ServiceAPI } from './service/service.restapi';
-
-const devtools: StoreEnhancer<AppState> =
-  window['devToolsExtension'] ? window['devToolsExtension']() : f => f;
-
-
-export const store: Store<AppState> = createStore(rootReducer, devtools);
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'services/', pathMatch: 'full' },
@@ -48,8 +40,7 @@ const appRoutes: Routes = [
   ],
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy }, //自动在路由路径前添加#号，部署到Tomcat需要做此转换
-    { provide: AppStore, useValue: store },
-    ServiceAPI
+    ServiceAPI, ServiceDAO, SystemDAO
   ],
   bootstrap: [AppComponent]
 })

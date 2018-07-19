@@ -31,16 +31,6 @@ message Subscriber {
     int32 count = 2;
 }
 //------------------------------
-message GetInstanceStatus {
-    string name = 1;
-    string addr = 2;
-}
-
-message InstanceStatus {
-    int32 qps = 2;
-    int32 tts = 3;
-}
-
 //注册服务实例
 message RegService {
     string name = 1;
@@ -96,7 +86,7 @@ enum EnumSerialize {
     JAVA = 1;
     PROTO = 2;
 }
-
+//------------------------------------------------
 message ServiceRequest {
     string requestId = 1;
     bool  oneway = 2;
@@ -110,8 +100,26 @@ message ServiceResponse {
     bytes payload = 2;
     EnumSerialize serialize = 3;
     string typeName = 4;
+    bool succeed = 5;
+}
+//------------------------------------------------
+//服务实例请求计数历史数据
+message RequestCount {
+    int64 requestCount = 1;
+    int64 succeedCount = 2;
+    int64 respondTime = 3;
+}
+//服务实例请求计数历史数据，每分钟一条
+message RequestCountHistory {
+    repeated RequestCount items = 1;
 }
 
+//获取服务实例请求计数历史数据
+message GetRequestCountHistory {
+}
+
+//------------------------------------------------
+//获取注册服务节点列表
 message GetRegisterInstances {
 }
 

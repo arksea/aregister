@@ -1,7 +1,7 @@
 <clr-alert [clrAlertType]="'alert-info'">
     <div class="alert-item">
         <div class="alert-text">
-            {{eventMessage}}
+            {{eventMessage | async}}
         </div>
     </div>
 </clr-alert>

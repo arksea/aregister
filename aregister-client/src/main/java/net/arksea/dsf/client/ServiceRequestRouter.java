@@ -71,7 +71,7 @@ public class ServiceRequestRouter extends RequestRouter {
         } else {
             state.requester.forward(msg, context());
             long time = System.currentTimeMillis() - state.startTime;
-            if (time > getReuqestTimeout()) {
+            if (time > getReuqestTimeout() || !msg.getSucceed()) {
                 onRequestFailed(state.instance, time);
             } else {
                 onRequestSucceed(state.instance, time);
