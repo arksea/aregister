@@ -63,4 +63,14 @@ public class Client {
                 }
             },system.dispatcher());
     }
+
+    public Future<Object> request(String reqid, Object msg, long timeout) {
+        DSF.ServiceRequest req = codes.encodeRequest(reqid, msg, false);
+        return Patterns.ask(router, req, timeout).mapTo(classTag(DSF.ServiceResponse.class)).map(
+            new Mapper<DSF.ServiceResponse, Object>() {
+                public Object apply(DSF.ServiceResponse m) {
+                    return codes.decodeResponse(m);
+                }
+            },system.dispatcher());
+    }
 }

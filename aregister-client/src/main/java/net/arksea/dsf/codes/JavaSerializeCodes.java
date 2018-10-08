@@ -17,6 +17,11 @@ public class JavaSerializeCodes implements ICodes {
 
     @Override
     public DSF.ServiceRequest encodeRequest(Object msg, boolean oneway) {
+        return encodeRequest(makeRequestId(), msg, oneway);
+    }
+
+    @Override
+    public DSF.ServiceRequest encodeRequest(String requestId, Object msg, boolean oneway) {
         try {
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(buff);
@@ -25,7 +30,7 @@ public class JavaSerializeCodes implements ICodes {
             ByteString payload = ByteString.copyFrom(bytes);
             return DSF.ServiceRequest.newBuilder()
                 .setOneway(oneway)
-                .setRequestId(makeRequestId())
+                .setRequestId(requestId)
                 .setPayload(payload)
                 .setSerialize(DSF.EnumSerialize.JAVA)
                 .setTypeName("_JAVA_")
