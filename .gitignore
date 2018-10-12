@@ -10,7 +10,6 @@
 /demo-service/build
 /demo-client/config
 aregister/config/net.arksea.dsf.DemoService-1.0.svc
-/aregister/publish
 aregister-web/src/main/angular/aregister-web/.alm/sessionsV2.json
 /aregister-web/build
 /aregister-web/online
