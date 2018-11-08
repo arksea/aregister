@@ -46,40 +46,8 @@ task ngBuild(type: Exec) {
 ngBuild.dependsOn(deleteOnline)
 
 
-//拷贝部署文件到指定目录
-task publishOnline <<{
-    //拷贝前先删除部署目录
-    delete('online/aregister-web/WEB-INF')
-    delete('online/aregister-web/META-INF')
-    copy{ //拷贝本项目WEB相关文件
-        from 'src/main/webapp/'
-        into 'online/aregister-web'
-    }
-    copy{ //拷贝本项目WEB相关文件
-        from 'src/main/angular/aregister-web/dist'
-        into 'online/aregister-web'
-    }
-    copy{ //拷贝依赖库
-        from configurations.runtime
-        into 'online/aregister-web/WEB-INF/lib'
-    }
-    copy{ //拷贝类
-        from 'build/classes/groovy/main/'
-        into 'online/aregister-web/WEB-INF/classes'
-    }
-    copy{ //拷贝资源
-        from 'build/resources/main/'
-        into 'online/aregister-web/WEB-INF/classes'
-    }
-    copy{ //拷贝META-INF
-        from 'build/tmp/war/'
-        into 'online/aregister-web/META-INF/'
-    }
-}
-publishOnline.dependsOn(build,ngBuild)
 
-//拷贝部署文件到指定目录
-task publishDev <<{
+task publishCopy <<{
     //拷贝前先删除部署目录
     delete('./tomcat/webapps/aregister-web')
     copy{ //拷贝本项目WEB相关文件
@@ -103,16 +71,29 @@ task publishDev <<{
         from 'build/resources/main/'
         into './tomcat/webapps/aregister-web/WEB-INF/classes'
     }
-    copy{ //拷贝资源
-        from 'build/resources/test/'
-        into './tomcat/webapps/aregister-web/WEB-INF/classes'
-    }
     copy{ //拷贝META-INF
         from 'build/tmp/war/'
         into './tomcat/webapps/aregister-web/META-INF/'
     }
 }
-publishDev.dependsOn(build,ngBuild)
+
+//拷贝正式配置文件到指定目录
+task publish <<{
+    copy{ //拷贝资源
+        from 'build/resources/main/'
+        into './tomcat/webapps/aregister-web/WEB-INF/classes'
+    }
+}
+publish.dependsOn(build,ngBuild,publishCopy)
+
+//拷贝开发配置文件到指定目录
+task publishDev <<{
+    copy{ //拷贝资源
+        from 'build/resources/test/'
+        into './tomcat/webapps/aregister-web/WEB-INF/classes'
+    }
+}
+publishDev.dependsOn(build,ngBuild,publishCopy)
 
 task startTomcat(type: Exec) {
     workingDir './tomcat'
@@ -121,12 +102,3 @@ task startTomcat(type: Exec) {
 }
 
 startTomcat.dependsOn(publishDev)
-
-
-//将更新cache的最大延迟时间改为10分钟（默认为24小时）
-configurations.all {
-    resolutionStrategy {
-        cacheDynamicVersionsFor 1, 'minutes'
-        cacheChangingModulesFor 60, 'seconds'
-    }
-}
