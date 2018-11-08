@@ -3,14 +3,18 @@ package net.arksea.dsf.demo.client;
 import akka.dispatch.OnComplete;
 import net.arksea.dsf.client.Client;
 import net.arksea.dsf.demo.DemoRequest1;
+import net.arksea.dsf.demo.DemoResponse1;
 import net.arksea.dsf.register.RegisterClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
+import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
+
+import static akka.japi.Util.classTag;
 
 /**
  *
@@ -33,10 +37,11 @@ public final class ClientMain {
             Client client = register.subscribe(serviceName);
             for (int i=0; i<80000; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
-                client.request(msg, 10000).onComplete(
-                    new OnComplete<Object>() {
+                Future<DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DemoResponse1.class));
+                f.onComplete(
+                    new OnComplete<DemoResponse1>() {
                         @Override
-                        public void onComplete(Throwable failure, Object ret) throws Throwable {
+                        public void onComplete(Throwable failure, DemoResponse1 ret) throws Throwable {
                             if (failure != null) {
                                 logger.warn("failed", failure);
                             }
