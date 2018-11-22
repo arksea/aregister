@@ -69,7 +69,7 @@ public class ServiceAdaptor extends AbstractActor {
 
     @Override
     public void preStart() {
-        logger.debug("ServiceAdaptor preStart: {}", serviceName);
+        logger.info("ServiceAdaptor preStart: {}", serviceName);
         context().system().scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS),
             self(),new DelayRegister(),context().dispatcher(),self());
         saveStatDataTimer = context().system().scheduler().schedule(
@@ -80,7 +80,7 @@ public class ServiceAdaptor extends AbstractActor {
 
     @Override
     public void postStop() {
-        logger.debug("ServiceAdaptor postStop: {}", serviceName);
+        logger.info("ServiceAdaptor postStop: {}", serviceName);
         if (saveStatDataTimer != null) {
             saveStatDataTimer.cancel();
             saveStatDataTimer = null;
@@ -89,6 +89,7 @@ public class ServiceAdaptor extends AbstractActor {
             Future f = Patterns.ask(register.actorRef, new UnregLocalService(serviceName,serviceAddr), 10000)
                 .mapTo(classTag(Boolean.class));
             Await.result(f, Duration.create(10, TimeUnit.SECONDS));
+            logger.info("Service unregisted: {}@{}", serviceName, serviceAddr);
         } catch (Exception ex) {
             logger.warn("Unregister service timeout: {}@{}", serviceName, serviceAddr, ex);
         }

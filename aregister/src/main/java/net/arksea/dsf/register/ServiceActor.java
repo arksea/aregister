@@ -65,7 +65,6 @@ public class ServiceActor extends AbstractActor {
             self(),new CheckServiceAlive(),context().dispatcher(),self());
     }
 
-    //re-subscribe when restart
     @Override
     public void postStop() {
         if (loadServiceInfoTimer != null) {

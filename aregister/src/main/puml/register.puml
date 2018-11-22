@@ -17,6 +17,8 @@ participant ServiceManagerActor
 collections ServiceActor
 end box
 
+collections RequestRouter
+
 User -\ RegisterClient: register
 activate RegisterClient
 create RegisteredServiceAdaptor
@@ -42,8 +44,10 @@ ServiceManagerActor -> ServiceActor: actorOf
 ServiceManagerActor -\\ ServiceActor : RegService
 deactivate ServiceManagerActor
 activate ServiceActor
-ServiceActor -> ServiceActor: addInstance
+ServiceActor -> ServiceActor: addInstance()
+ServiceActor -> ServiceActor: tellToSubscribers()
 activate ServiceActor
+ServiceActor -// RequestRouter: RegService
 deactivate ServiceActor
 deactivate ServiceActor
 
