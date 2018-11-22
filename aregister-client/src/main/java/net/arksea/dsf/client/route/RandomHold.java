@@ -22,12 +22,12 @@ public class RandomHold implements IRouteStrategy {
 
     @Override
     public Optional<Instance> getInstance(List<Instance> list) {
-        if (current != null && current.status == InstanceStatus.ONLINE) {
+        if (current != null && current.getStatus() == InstanceStatus.ONLINE) {
             return Optional.of(current);
         } else {
             List<Instance> onlines = new LinkedList<>();
             list.forEach(it -> {
-                if (it.status == InstanceStatus.ONLINE) {
+                if (it.getStatus() == InstanceStatus.ONLINE) {
                     onlines.add(it);
                 }
             });
