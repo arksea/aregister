@@ -7,9 +7,13 @@ participant User
 
 participant RegisterClient
 
-participant RegisteredServiceAdaptor
+participant ServiceAdaptor
 participant RegisterClientActor
 
+activate RegisterClient
+create RegisterClientActor
+RegisterClient -> RegisterClientActor: actorOf
+deactivate RegisterClient
 
 box "Actor Register Server" #white
 collections RegisterActor
@@ -21,10 +25,10 @@ collections RequestRouter
 
 User -\ RegisterClient: register
 activate RegisterClient
-create RegisteredServiceAdaptor
-RegisterClient -> RegisteredServiceAdaptor: actorOf
+create ServiceAdaptor
+RegisterClient -> ServiceAdaptor: actorOf
 deactivate RegisterClient
-RegisteredServiceAdaptor -\\ RegisterClientActor: RegLocalService
+ServiceAdaptor -\\ RegisterClientActor: RegLocalService
 activate RegisterClientActor
 RegisterClientActor ->>x RegisterActor : ask(RegService)
 deactivate RegisterClientActor

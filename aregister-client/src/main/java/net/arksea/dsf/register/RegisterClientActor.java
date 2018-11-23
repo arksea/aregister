@@ -279,7 +279,7 @@ public class RegisterClientActor extends RequestRouter {
         }
         registerClient.tell(new RegisterRequestFailed(), ActorRef.noSender());
         context().system().scheduler().scheduleOnce(
-            Duration.create(backoff, TimeUnit.SECONDS),registerClient,message,context().system().dispatcher(),registerClient
+            Duration.create(backoff, TimeUnit.SECONDS),registerClient,message,context().system().dispatcher(),requester
         );
     }
 }
