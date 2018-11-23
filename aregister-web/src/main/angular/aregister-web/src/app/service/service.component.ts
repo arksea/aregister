@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap,NavigationEnd  } from '@angular/router';
 import { ServiceDAO } from './service.dao';
+import { Instance } from '../models';
 
 @Component({
   selector: 'service',
@@ -24,7 +25,7 @@ export class ServiceComponent {
     }
 
 
-    updateRquestCount(i): void {
+    updateRquestCount(i: Instance): void {
         this.serviceDao.updateRquestCount(i);
     }
 
@@ -37,5 +38,20 @@ export class ServiceComponent {
          } else {
            return '';
          }
+    }
+
+    onRegisterClick(i: Instance): void {
+        if (i.unregistered) {
+        } else {
+          this.serviceDao.unregister(i);
+        }
+    }
+
+    registerButtonText(i: Instance): string {
+        if (i.unregistered) {
+            return '注册';
+        } else {
+            return '注销';
+        }
     }
 }

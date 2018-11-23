@@ -25,6 +25,9 @@
             <td>{{(i.quality | async).tts}}</td>
             <td>{{(i.quality | async).succeedRate}}</td>
             <td>
+                <button type="button" class="btn btn-xs btn-danger" (click)="onRegisterClick(i)">{{registerButtonText(i)}}</button>
+            </td>
+            <td>
                 <a (click)="updateRquestCount(i)">
                     <clr-icon shape="refresh"></clr-icon>
                 </a>

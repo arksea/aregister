@@ -3,14 +3,30 @@ import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { ServiceNamespace,Service,RestResult,Instance,Quality,
          Subscriber,RequestCountHistory,RequestCount } from '../models';
 import { ServiceAPI } from './service.restapi';
+import { scan, map, publishReplay, refCount } from 'rxjs/operators';
 
+type IInstancesOperation = (instances: Instance[]) => Instance[];
+interface UpdateReg {
+    addr: string;
+    unregistered: boolean;
+}
 
 @Injectable()
 export class ServiceDAO {
+    // updateReg       ───┬───▶ instanceUpdates ─────▶ instance
+    // updateInstances ───┘
+    //                   ┌──▶ subscribers
+    // selectedService ──┴──▶ updateInstances
+
     serviceTree: Subject<ServiceNamespace[]> = new BehaviorSubject<ServiceNamespace[]>([]);
     selectedService: Subject<string> = new BehaviorSubject<string>(null);
-    instances: Subject<Instance[]> = new BehaviorSubject<Instance[]>([]);
+
     subscribers: Subject<Subscriber[]> = new BehaviorSubject<Subscriber[]>([]);
+
+    instances: Observable<Instance[]>;
+    instanceUpdates: Subject<any> = new Subject<any>();
+    updateReg: Subject<UpdateReg> = new Subject();
+    updateInstances: Subject<Instance[]> = new Subject();
 
     constructor(private api: ServiceAPI) {
         this.selectedService.subscribe(regname => {
@@ -18,19 +34,53 @@ export class ServiceDAO {
                 this.api.getService(regname).subscribe(r => {
                     if (r.code == 0) {
                         let service: Service = r.result;
+                        this.updateInstances.next(service.instances);
+                        this.subscribers.next(service.subscribers);
                         for (let i = 0; i< service.instances.length; i++) {
                             let inst : Instance = service.instances[i];
+                            inst.serviceName = regname;
                             inst.quality = new BehaviorSubject<Quality>({qps:0,tts:0,succeedRate:100});
                             if (inst.online) {
                                 this.updateRquestCount(inst);
                             }
                         }
-                        this.instances.next(service.instances);
-                        this.subscribers.next(service.subscribers);
                     }
                 });
             }
         });
+
+        this.updateInstances.pipe(
+            map(function(instances: Instance[]): IInstancesOperation {
+                return (old: Instance[]) => {
+                    return instances;
+                };
+            })
+        ).subscribe(this.instanceUpdates);
+        this.updateReg.pipe(
+            map(function(msg: UpdateReg): IInstancesOperation {
+                return (old: Instance[]) => {
+                    let instances: Instance[] = [];
+                    old.forEach(it => {
+                        if (it.addr === msg.addr) {
+                            let inst: Instance = {addr: '', online: false};
+                            Object.assign(inst,it);
+                            inst.unregistered = msg.unregistered;
+                            instances.push(inst);
+                        } else {
+                            instances.push(it);
+                        }
+                    });
+                    return instances;
+                };
+            })
+        ).subscribe(this.instanceUpdates);
+        this.instances = this.instanceUpdates.pipe(
+            scan((old: Instance[], op: IInstancesOperation) => {
+                return op(old);
+            }, []),
+            publishReplay(1),
+            refCount()
+        );
     }
 
     public updateRquestCount(inst: Instance): void {
@@ -80,5 +130,9 @@ export class ServiceDAO {
 
     public selectService(regname: string): void {
         this.selectedService.next(regname);
+    }
+
+    public unregister(inst: Instance): void {
+        this.api.unregister(inst.serviceName, inst.addr);
     }
 }

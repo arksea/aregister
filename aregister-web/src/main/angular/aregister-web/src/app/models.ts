@@ -18,6 +18,7 @@ export interface Service {
 };
 
 export interface Instance {
+  serviceName?:    string;
   addr:            string;
   online:          boolean;
   path?:           string;
