@@ -157,7 +157,7 @@ public class RegisterClientActor extends RequestRouter {
     //-------------------------------------------------------------------------------------------------
     //向注册服务器发起注册请求，并重试直到成功
     private void handleRegLocalService(RegLocalService msg) {
-        log.trace("RegisterClientActor.handleRegLocalService({})", msg.addr);
+        log.debug("RegisterClientActor.handleRegLocalService({})", msg.addr);
         DSF.RegService dsfmsg = DSF.RegService.newBuilder()
             .setName(msg.name)
             .setAddr(msg.addr)
@@ -167,8 +167,6 @@ public class RegisterClientActor extends RequestRouter {
         if (op.isPresent()) {
             Instance i = op.get();
             ActorSelection register = context().actorSelection(i.path);
-            ActorRef registerClient = self();
-            ActorRef requester = sender();
             Patterns.ask(register, dsfmsg, timeout).mapTo(classTag(Boolean.class)).onComplete(
                 new OnComplete<Boolean>() {
                     @Override
@@ -179,10 +177,8 @@ public class RegisterClientActor extends RequestRouter {
                     }
                 }, context().dispatcher());
         } else {
-            log.trace("no usable register");
-            context().system().scheduler().scheduleOnce(
-                Duration.create(backoff, TimeUnit.SECONDS),self(),dsfmsg,context().dispatcher(),self()
-            );
+            tryUntilSucceed(null, false, msg,"",
+                "No usable register, delay retry register service: " + msg.name + "@" + msg.addr);
         }
     }
     //将集群中广播的注册事件分发给所有本地订阅者
@@ -214,9 +210,8 @@ public class RegisterClientActor extends RequestRouter {
                     }
                 }, context().dispatcher());
         } else {
-            context().system().scheduler().scheduleOnce(
-                Duration.create(backoff, TimeUnit.SECONDS),self(),dsfmsg,context().dispatcher(),self()
-            );
+            tryUntilSucceed(null, false, msg,"",
+                "No usable register, delay retry unregister service: " + msg.name + "@" + msg.addr);
         }
     }
     //将集群中广播的注销事件分发给所有订阅者
@@ -254,7 +249,7 @@ public class RegisterClientActor extends RequestRouter {
     }
     //-------------------------------------------------------------------------------------------------
     private void tryUntilSucceed(Throwable failure, Boolean success, Object message,
-                                 String succeedLogInfo, String failedLogInfo) throws Throwable {
+                                 String succeedLogInfo, String failedLogInfo) {
         ActorRef registerClient = self();
         ActorRef requester = sender();
         if (failure == null) {
@@ -272,9 +267,9 @@ public class RegisterClientActor extends RequestRouter {
             }
         } else {
             if (backoff >= MAX_RETRY_DELAY) {
-                log.error(failedLogInfo);
+                log.error(failedLogInfo, failure);
             } else {
-                log.warn(failedLogInfo);
+                log.warn(failedLogInfo, failure);
             }
         }
         registerClient.tell(new RegisterRequestFailed(), ActorRef.noSender());

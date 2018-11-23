@@ -3,14 +3,11 @@ package net.arksea.dsf.service;
 import akka.actor.*;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
-import akka.pattern.Patterns;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.InstanceQuality;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
-import net.arksea.dsf.register.RegLocalService;
 import net.arksea.dsf.register.RegisterClient;
-import net.arksea.dsf.register.UnregLocalService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -19,8 +16,6 @@ import scala.concurrent.duration.Duration;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static akka.japi.Util.classTag;
 
 /**
  *
@@ -86,8 +81,7 @@ public class ServiceAdaptor extends AbstractActor {
             saveStatDataTimer = null;
         }
         try {
-            Future f = Patterns.ask(register.actorRef, new UnregLocalService(serviceName,serviceAddr), 10000)
-                .mapTo(classTag(Boolean.class));
+            Future<Boolean> f =register.unregisterAtRepertory(serviceName, serviceAddr, 10000);
             Await.result(f, Duration.create(10, TimeUnit.SECONDS));
             logger.info("Service unregisted: {}@{}", serviceName, serviceAddr);
         } catch (Exception ex) {
@@ -141,7 +135,7 @@ public class ServiceAdaptor extends AbstractActor {
     //------------------------------------------------------------------------------------
     class DelayRegister {}
     private void handleDelayRegister(DelayRegister msg) {
-        register.actorRef.tell(new RegLocalService(serviceName,serviceAddr,servicePath), ActorRef.noSender());
+        register.registerAtRepertory(serviceName, serviceAddr, servicePath);
     }
     //------------------------------------------------------------------------------------
     private void handleGetRequestCountHistory(DSF.GetRequestCountHistory msg) {

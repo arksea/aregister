@@ -39,7 +39,7 @@ public class RegisterClient {
     /**
      *
      * @param clientName 用于注册服务分辨请求是由哪个客户端发出的
-     * @param seedServerAddrs 注册服务集群的种子服务器地址，通常提供2个即可
+     * @param seedServerAddrs 注册服务集群的种子服务器地址，通常提供2~3个即可
      */
     public RegisterClient(String clientName, List<String> seedServerAddrs) {
         this.clientName = clientName;
@@ -91,7 +91,33 @@ public class RegisterClient {
     }
 
     /**
-     * 注册服务，系统会尝试向注册服务器注册指定服务，失败会重试，直到成功
+     * 直接在注册服务器上注销一个服务
+     * @param serviceName  服务注册名
+     * @param serviceAddr  host:port 格式的服务地址
+     */
+    public Future<Boolean> unregisterAtRepertory(String serviceName, String serviceAddr, long timeout) {
+        return Patterns.ask(actorRef, new UnregLocalService(serviceName,serviceAddr), timeout)
+            .mapTo(classTag(Boolean.class));
+    }
+    public void unregisterAtRepertory(String serviceName, String serviceAddr) {
+        actorRef.tell(new UnregLocalService(serviceName, serviceAddr), ActorRef.noSender());
+    }
+
+    /**
+     * 直接在注册服务器上注册一个服务（提供服务path）
+     * @param serviceName
+     * @param serviceAddr
+     */
+    public Future<Boolean> registerAtRepertory(String serviceName, String serviceAddr, String servicePath, long timeout) {
+        return Patterns.ask(actorRef, new RegLocalService(serviceName, serviceAddr, servicePath), timeout)
+            .mapTo(classTag(Boolean.class));
+    }
+    public void registerAtRepertory(String serviceName, String serviceAddr, String servicePath) {
+        actorRef.tell(new RegLocalService(serviceName, serviceAddr, servicePath), ActorRef.noSender());
+    }
+
+    /**
+     * 注册一个服务实例（提供服务实例），系统会尝试向注册服务器注册指定服务，失败会重试，直到成功
      * @param serviceName 全局唯一服务注册名，建议通过这几个部分组成： 包名.服务名-版本号-Profile，例如 net.arksea.DemoService-v1-QA
      * @param bindHost 服务绑定的主机名
      * @param bindPort 服务绑定的端口号
