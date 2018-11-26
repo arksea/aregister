@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ServiceActor extends AbstractActor {
     public final static String ACTOR_NAME_PRE = "dsfService-";
     private final Logger logger = LogManager.getLogger(ServiceActor.class);
-    private final static long UNREG_TIMEOUT = 1200_000L;//24L * 3600_000L;
+    private final static long UNREG_TIMEOUT = 24L * 3600_000L;
     private final static long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
     private final String serviceName;
     private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发

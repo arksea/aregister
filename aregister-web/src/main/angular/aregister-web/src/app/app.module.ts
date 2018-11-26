@@ -4,6 +4,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule }     from '@angular/common/http';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { AppNotifyDialogComponent } from './app-notify-dialog.component';
+import { AppNotifyDialogService } from './app-notify-dialog.service';
 
 import { ClarityModule } from "clarity-angular";
 
@@ -26,6 +28,7 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
+    AppNotifyDialogComponent,
     ServiceTreeComponent,
     ServiceComponent,
     SystemStatusBarComponent
@@ -39,6 +42,7 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes, { enableTracing: true })
   ],
   providers: [
+    AppNotifyDialogService,
     { provide: LocationStrategy, useClass: HashLocationStrategy }, //自动在路由路径前添加#号，部署到Tomcat需要做此转换
     ServiceAPI, ServiceDAO, SystemDAO
   ],
