@@ -11,6 +11,7 @@
         <th>QPS</th>
         <th>TTS(ms)</th>
         <th>成功率(%)</th>
+        <th>操作</th>
         <th>刷新</th>
     </tr>
     </thead>
@@ -25,7 +26,7 @@
             <td>{{(i.quality | async).tts}}</td>
             <td>{{(i.quality | async).succeedRate}}</td>
             <td>
-                <button type="button" class="btn btn-xs btn-danger" (click)="onRegisterClick(i)">{{registerButtonText(i)}}</button>
+                <a (click)="onRegisterClick(i)">{{registerButtonText(i)}}</a>
             </td>
             <td>
                 <a (click)="updateRquestCount(i)">

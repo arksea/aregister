@@ -45,11 +45,13 @@ export class ServiceAPI {
     }
 
     public register(serviceName: string, instAddr: string, servicePath: string): Observable<RestResult<string>> {
-        let method = 'Unregister service';
-        return this.http.put(environment.apiUrl + '/api/v1/services/register/'
-                             + encodeURIComponent(serviceName)
-                             +'/'+encodeURIComponent(instAddr)+'?path=' + encodeURIComponent(servicePath),'')
-            .pipe(
+        let method = 'Register service';
+        let url = environment.apiUrl + '/api/v1/services/register/'
+                                     + encodeURIComponent(serviceName)
+                                     + '/'+encodeURIComponent(instAddr) + '/'
+                                     + '?path=' + encodeURIComponent(servicePath);
+        let body = '';
+        return this.http.put(url, body).pipe(
                 tap((r: RestResult<string>) => this.handleResult(r, method, serviceName+'@'+instAddr)),
                 catchError(r => this.handleCatchedError(r, method, instAddr)
             )
@@ -57,9 +59,12 @@ export class ServiceAPI {
     }
 
     public unregister(serviceName: string, instAddr: string): Observable<RestResult<string>> {
+        console.log('Unregister service ' + serviceName + '@' + instAddr);
         let method = 'Unregister service';
-        return this.http.delete(environment.apiUrl + '/api/v1/services/register/'+encodeURIComponent(serviceName)
-                                +'/'+encodeURIComponent(instAddr))
+        let url = environment.apiUrl + '/api/v1/services/register/'
+                              + encodeURIComponent(serviceName)
+                              +'/'+encodeURIComponent(instAddr)+'/';
+        return this.http.delete(url, { headers: this.headers })
             .pipe(
                 tap((r: RestResult<string>) => this.handleResult(r, method, serviceName+'@'+instAddr)),
                 catchError(r => this.handleCatchedError(r, method, instAddr)

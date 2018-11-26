@@ -163,6 +163,8 @@ public class RegisterClientActor extends RequestRouter {
             .setAddr(msg.addr)
             .setPath(msg.path)
             .build();
+        ActorRef requester = sender();
+        ActorRef registerClient = self();
         Optional<Instance> op = getInstance();
         if (op.isPresent()) {
             Instance i = op.get();
@@ -171,13 +173,13 @@ public class RegisterClientActor extends RequestRouter {
                 new OnComplete<Boolean>() {
                     @Override
                     public void onComplete(Throwable failure, Boolean success) throws Throwable {
-                        tryUntilSucceed(failure, success, msg,
+                        tryUntilSucceed(failure, success, msg, registerClient, requester,
                             "Register service success: "+msg.name+"@"+msg.addr,
                             "Register service failed: "+msg.name+"@"+msg.addr);
                     }
                 }, context().dispatcher());
         } else {
-            tryUntilSucceed(null, false, msg,"",
+            tryUntilSucceed(null, false, msg, registerClient, requester,"",
                 "No usable register, delay retry register service: " + msg.name + "@" + msg.addr);
         }
     }
@@ -196,6 +198,8 @@ public class RegisterClientActor extends RequestRouter {
             .setName(msg.name)
             .setAddr(msg.addr)
             .build();
+        ActorRef requester = sender();
+        ActorRef registerClient = self();
         Optional<Instance> op = getInstance();
         if (op.isPresent()) {
             Instance i = op.get();
@@ -204,13 +208,13 @@ public class RegisterClientActor extends RequestRouter {
                 new OnComplete<Boolean>() {
                     @Override
                     public void onComplete(Throwable failure, Boolean success) throws Throwable {
-                        tryUntilSucceed(failure, success, msg,
+                        tryUntilSucceed(failure, success, msg, registerClient, requester,
                             "Unregister service success: " + msg.name + "@" + msg.addr,
                             "Unregister service failed: " + msg.name + "@" + msg.addr);
                     }
                 }, context().dispatcher());
         } else {
-            tryUntilSucceed(null, false, msg,"",
+            tryUntilSucceed(null, false, msg,registerClient, requester, "",
                 "No usable register, delay retry unregister service: " + msg.name + "@" + msg.addr);
         }
     }
@@ -249,9 +253,8 @@ public class RegisterClientActor extends RequestRouter {
     }
     //-------------------------------------------------------------------------------------------------
     private void tryUntilSucceed(Throwable failure, Boolean success, Object message,
+                                 ActorRef registerClient, ActorRef requester,
                                  String succeedLogInfo, String failedLogInfo) {
-        ActorRef registerClient = self();
-        ActorRef requester = sender();
         if (failure == null) {
             if (success) {
                 log.info(succeedLogInfo);

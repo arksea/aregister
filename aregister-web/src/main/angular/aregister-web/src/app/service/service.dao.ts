@@ -132,7 +132,23 @@ export class ServiceDAO {
         this.selectedService.next(regname);
     }
 
+    public register(inst: Instance): void {
+        this.api.register(inst.serviceName, inst.addr, inst.path).subscribe (
+            (h: RestResult<string>) => {
+                if (h.code == 0) {
+                    this.updateReg.next({addr: inst.addr, unregistered: false});
+                }
+            }
+        )
+    }
+
     public unregister(inst: Instance): void {
-        this.api.unregister(inst.serviceName, inst.addr);
+        this.api.unregister(inst.serviceName, inst.addr).subscribe (
+            (h: RestResult<string>) => {
+                if (h.code == 0) {
+                    this.updateReg.next({addr: inst.addr, unregistered: true});
+                }
+            }
+        )
     }
 }

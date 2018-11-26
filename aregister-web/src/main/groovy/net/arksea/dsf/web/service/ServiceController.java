@@ -149,21 +149,22 @@ public class ServiceController {
         return result;
     }
 
-    @RequestMapping(path = "register/{name}/{addr}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    @RequestMapping(path = "register/{name}/{addr}/", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public DeferredResult<String> unregisterService(
-        @PathVariable("name") final String servieName,
-        @PathVariable("addr") final String servieAddr,
+        @PathVariable("name") final String serviceName,
+        @PathVariable("addr") final String serviceAddr,
         final HttpServletRequest httpRequest) {
+        logger.info("register {}@{}", serviceName, serviceAddr);
         DeferredResult<String> result = new DeferredResult<>();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        registerClient.unregisterAtRepertory(servieName, servieAddr, 10000).onComplete(
+        registerClient.unregisterAtRepertory(serviceName, serviceAddr, 10000).onComplete(
             new OnComplete<Boolean>() {
                 @Override
                 public void onComplete(Throwable failure, Boolean succeed) throws Throwable {
                     if (failure == null) {
                         result.setResult(RestUtils.createJsonResult(0, "true", reqid));
                     } else {
-                        logger.warn("Unregister service failed: {}@{}", servieName, servieAddr, failure);
+                        logger.warn("Unregister service failed: {}@{}", serviceName, serviceAddr, failure);
                         result.setErrorResult(RestUtils.createError(1, failure.getMessage(), reqid));
                     }
                 }
@@ -171,22 +172,23 @@ public class ServiceController {
         return result;
     }
 
-    @RequestMapping(path = "register/{name}/{addr}", method = RequestMethod.PUT, produces = MEDIA_TYPE)
+    @RequestMapping(path = "register/{name}/{addr}/", method = RequestMethod.PUT, produces = MEDIA_TYPE)
     public DeferredResult<String> registerService(
-        @PathVariable("name") final String servieName,
-        @PathVariable("addr") final String servieAddr,
+        @PathVariable("name") final String serviceName,
+        @PathVariable("addr") final String serviceAddr,
         @RequestParam("path") final String servicePath,
         final HttpServletRequest httpRequest) {
+        logger.info("unregister {}@{} : {}", serviceName, serviceAddr, servicePath);
         DeferredResult<String> result = new DeferredResult<>();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        registerClient.registerAtRepertory(servieName, servieAddr, servicePath,10000).onComplete(
+        registerClient.registerAtRepertory(serviceName, serviceAddr, servicePath,10000).onComplete(
             new OnComplete<Boolean>() {
                 @Override
                 public void onComplete(Throwable failure, Boolean succeed) throws Throwable {
                     if (failure == null) {
                         result.setResult(RestUtils.createResult(0, reqid));
                     } else {
-                        logger.warn("Register service failed: {}@{}", servieName, servieAddr, failure);
+                        logger.warn("Register service failed: {}@{}", serviceName, serviceAddr, failure);
                         result.setErrorResult(RestUtils.createError(1, failure.getMessage(), reqid));
                     }
                 }

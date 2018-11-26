@@ -42,8 +42,9 @@ export class ServiceComponent {
 
     onRegisterClick(i: Instance): void {
         if (i.unregistered) {
+            this.serviceDao.register(i);
         } else {
-          this.serviceDao.unregister(i);
+            this.serviceDao.unregister(i);
         }
     }
 
