@@ -39,7 +39,7 @@ export class ServiceDAO {
                         for (let i = 0; i< service.instances.length; i++) {
                             let inst : Instance = service.instances[i];
                             inst.serviceName = regname;
-                            inst.quality = new BehaviorSubject<Quality>({qps:0,tts:0,succeedRate:100});
+                            inst.quality = new BehaviorSubject<Quality>({count:0,qpm:0,tts:0,succeedRate:100});
                             if (inst.online) {
                                 this.updateRquestCount(inst);
                             }
@@ -94,11 +94,12 @@ export class ServiceDAO {
     }
 
     private countQuality(history: RequestCountHistory): Quality {
-        if (history.items.length > 2) {
+        if (history.items.length >= 2) {
             let c1: RequestCount = history.items[1];
             let c2: RequestCount = history.items[2];
             let count = c1.requestCount - c2.requestCount;
             let qps = count/60;
+            let qpm = count;
             if (qps < 5) {
                 qps = Math.round(qps*10)/10;
             } else {
@@ -112,9 +113,9 @@ export class ServiceDAO {
             }
             tts = Math.round(tts);
             rate = rate*1000 / 10;
-            return {qps:qps,tts:tts,succeedRate:rate};
+            return {count:history.items[0].requestCount, qpm:qpm, tts:tts, succeedRate:rate};
         } else {
-            return {qps:0, tts:0, succeedRate: 100};
+            return {count:0, qpm:0, tts:0, succeedRate: 100};
         }
     }
 

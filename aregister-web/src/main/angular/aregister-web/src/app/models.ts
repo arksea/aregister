@@ -31,7 +31,8 @@ export interface Instance {
 };
 
 export interface Quality {
-    qps: number;
+    count: number;
+    qpm: number;
     tts: number;
     succeedRate: number;
 };

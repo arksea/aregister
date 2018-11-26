@@ -22,7 +22,8 @@ import java.util.concurrent.TimeUnit;
 public class ServiceActor extends AbstractActor {
     public final static String ACTOR_NAME_PRE = "dsfService-";
     private final Logger logger = LogManager.getLogger(ServiceActor.class);
-
+    private final static long UNREG_TIMEOUT = 1200_000L;//24L * 3600_000L;
+    private final static long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
     private final String serviceName;
     private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发
     private final Map<String,String> attributes = new HashMap<>();
@@ -248,8 +249,14 @@ public class ServiceActor extends AbstractActor {
             }
             if (!instances.isEmpty()) {
                 changed = true;
-                for (String addr : instances.keySet()) {
-                    logger.info("Service DEL : {}@{}", serviceName, addr);
+                long now = System.currentTimeMillis();
+                for (Map.Entry<String, InstanceInfo> e: instances.entrySet()) {
+                    InstanceInfo i = e.getValue();
+                    if (i.isUnregistered() && now - i.getUnregisterTime() < UNREG_TIMEOUT) {
+                        newInstances.put(i.addr, i);
+                    } else {
+                        logger.info("Service DEL : {}@{}", serviceName, i.addr);
+                    }
                 }
                 this.instances.clear();
             }
@@ -291,28 +298,33 @@ public class ServiceActor extends AbstractActor {
         List<String> unregedList = new LinkedList<>();
         instances.forEach((addr,it) -> {
             if(it.isUnregistered()) {
-                //移除已注销1小时以上的服务
+                //移除已注销1天以上的服务
                 long unregTime = System.currentTimeMillis() - it.getUnregisterTime();
-                if (unregTime > 3600_000L) {
+                if (unregTime > UNREG_TIMEOUT) {
                     unregedList.add(addr);
+                    storeDelServiceInstance(addr);
                 }
             } else if (!it.isOnline()){
                 //超过3天拨测失败则认为服务已注销
-                final long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
                 long offlineTime = it.getOfflineTime();
                 if (offlineTime > OFFLINE_TIMEOUT) {
                     unregedList.add(addr);
-                    try {
-                        logger.warn("Service UNREG : {}@{}", serviceName, addr);
-                        store.delServiceInstance(serviceName, addr);
-                    } catch (Exception ex) {
-                        logger.warn("Unregister a service instance failed: {}@{}", serviceName, addr, ex);
-                    }
+                    storeDelServiceInstance(addr);
                 }
             }
         });
         unregedList.forEach(instances::remove);
     }
+
+    private void storeDelServiceInstance(String addr) {
+        try {
+            logger.warn("Service UNREG : {}@{}", serviceName, addr);
+            store.delServiceInstance(serviceName, addr);
+        } catch (Exception ex) {
+            logger.warn("Unregister a service instance failed: {}@{}", serviceName, addr, ex);
+        }
+    }
+
     private void checkServiceAlive(InstanceInfo instance) {
         logger.trace("Check servcie alive: {}@{} ",instance.name, instance.addr);
         ActorSelection service = context().actorSelection(instance.path);
