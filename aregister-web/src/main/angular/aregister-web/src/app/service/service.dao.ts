@@ -100,11 +100,6 @@ export class ServiceDAO {
             let count = c1.requestCount - c2.requestCount;
             let qps = count/60;
             let qpm = count;
-            if (qps < 5) {
-                qps = Math.round(qps*10)/10;
-            } else {
-                qps = Math.round(qps);
-            }
             let tts = 0;
             let rate = 1;
             if (count>0) {

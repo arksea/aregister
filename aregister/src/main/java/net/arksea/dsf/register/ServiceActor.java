@@ -185,6 +185,7 @@ public class ServiceActor extends AbstractActor {
             Address address = subscriber.path().address();
             String addr = address.host().get() + ":" + address.port().get();
             logger.info("{}@{} subscribe {}",subscriberName, addr, serviceName);
+            context().unwatch(subscriber);
             context().watchWith(subscriber, new SubscriberTerminated(subscriberName, subscriber));
             subscriberMap.put(subscriber, new SubscriberInfo(subscriberName));
         }
