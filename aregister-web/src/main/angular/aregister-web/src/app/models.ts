@@ -18,6 +18,7 @@ export interface Service {
 };
 
 export interface Instance {
+  serviceName?:    string;
   addr:            string;
   online:          boolean;
   path?:           string;
@@ -30,7 +31,8 @@ export interface Instance {
 };
 
 export interface Quality {
-    qps: number;
+    count: number;
+    qpm: number;
     tts: number;
     succeedRate: number;
 };

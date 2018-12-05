@@ -30,7 +30,7 @@ public final class ClientMain {
     public static void main(final String[] args) {
         try {
             logger.info("Start DEMO Client");
-            String serviceName = "net.arksea.dsf.DemoService-1.0";
+            String serviceName = "net.arksea.dsf.DemoService-v1";
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
             RegisterClient register = new RegisterClient("TestClient",addrs);

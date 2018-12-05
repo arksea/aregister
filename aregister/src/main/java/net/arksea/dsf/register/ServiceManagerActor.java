@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class ServiceManagerActor extends AbstractActor {
     public final static String ACTOR_NAME = "dsfServiceManager";
-    private final Logger log = LogManager.getLogger(ServiceActor.class);
+    private final Logger log = LogManager.getLogger(ServiceManagerActor.class);
     private final Map<String, ActorRef> serviceMap = new HashMap<>();
     private final Cluster cluster = Cluster.get(getContext().getSystem());
     private final IRegisterStore register;
