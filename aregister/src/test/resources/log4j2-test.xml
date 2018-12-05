@@ -8,7 +8,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <!--<Logger name="net.arksea.dsf" level="trace"/>-->
+        <Logger name="net.arksea.dsf" level="trace"/>
         <Root level="info">
             <AppenderRef ref="console"/>
         </Root>

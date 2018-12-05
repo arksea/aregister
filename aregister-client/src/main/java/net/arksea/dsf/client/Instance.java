@@ -8,7 +8,7 @@ public class Instance implements Comparable {
     public final String name;
     public final String addr;
     public final String path;
-    public InstanceStatus status;
+    private InstanceStatus status;
     private long checkCount;
 
     public Instance(String name, String addr, String path) {
@@ -47,6 +47,14 @@ public class Instance implements Comparable {
         //当为UP状态时使用1/10的流量进行尝试性访问
         return status == InstanceStatus.ONLINE ||
                status == InstanceStatus.UP && checkCount++ % 10 == 0;
+    }
+
+    public InstanceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(InstanceStatus status) {
+        this.status = status;
     }
 
     @Override

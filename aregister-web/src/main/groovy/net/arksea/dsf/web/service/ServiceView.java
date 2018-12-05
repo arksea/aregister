@@ -49,7 +49,12 @@ public class ServiceView {
     }
 
     private static Tuple3<String,String,String> parseServiceName(String fullname) {
-        String[] strs = StringUtils.split(fullname, '.');
+        String[] list = StringUtils.split(fullname, "-", 2);
+        String ver = "default";
+        if (list.length > 1) {
+            ver = list[1];
+        }
+        String[] strs = StringUtils.split(list[0], '.');
         int n = strs.length;
         StringBuilder namespace = new StringBuilder();
         int m = n - 1;
@@ -63,13 +68,7 @@ public class ServiceView {
         } else {
             namespace.append("/");
         }
-        String last = strs[m];
-        String[] list = StringUtils.split(last, "-", 2);
-        String name = list[0];
-        String ver = "default";
-        if (list.length > 1) {
-            ver = list[1];
-        }
+        String name = strs[m];
         return Tuple3.apply(namespace.toString(),name,ver);
     }
 }

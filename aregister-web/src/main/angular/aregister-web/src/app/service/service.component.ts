@@ -1,6 +1,8 @@
 import { Component, Inject, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap,NavigationEnd  } from '@angular/router';
 import { ServiceDAO } from './service.dao';
+import { Instance } from '../models';
+import { AppNotifyDialogService } from '../app-notify-dialog.service';
 
 @Component({
   selector: 'service',
@@ -13,7 +15,8 @@ export class ServiceComponent {
 
     constructor(private serviceDao: ServiceDAO,
                 private router: Router,
-                private route: ActivatedRoute) {
+                private route: ActivatedRoute,
+                private notify: AppNotifyDialogService) {
     }
 
     ngOnInit(): void {
@@ -24,7 +27,7 @@ export class ServiceComponent {
     }
 
 
-    updateRquestCount(i): void {
+    updateRquestCount(i: Instance): void {
         this.serviceDao.updateRquestCount(i);
     }
 
@@ -37,5 +40,33 @@ export class ServiceComponent {
          } else {
            return '';
          }
+    }
+
+    onRegisterClick(i: Instance): void {
+        if (i.unregistered) {
+            this.notify.openWidthConfirm('注册实例', '确认要注册吗？操作将导入请求流量！', i.addr).subscribe(
+                succeed => {
+                    if (succeed) {
+                        this.serviceDao.register(i);
+                    }
+                }
+            );
+        } else {
+            this.notify.openWidthConfirm('注销实例', '确认要注销吗？操作将切除请求流量！', i.addr).subscribe(
+                succeed => {
+                    if (succeed) {
+                        this.serviceDao.unregister(i);
+                    }
+                }
+            );
+        }
+    }
+
+    registerButtonText(i: Instance): string {
+        if (i.unregistered) {
+            return '注册';
+        } else {
+            return '注销';
+        }
     }
 }

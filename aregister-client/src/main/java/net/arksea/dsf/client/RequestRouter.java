@@ -84,17 +84,20 @@ public class RequestRouter extends AbstractActor {
         this.instances.clear();
         msg.getInstancesList().forEach(it -> {
             qualityMap.computeIfAbsent(it.getAddr(), k -> new InstanceQuality(it.getAddr()));
-            Instance old = oldMap.remove(it.getAddr());
-            if (old == null) {
-                InstanceStatus status = it.getOnline() ? InstanceStatus.ONLINE : InstanceStatus.OFFLINE;
-                Instance instance =  new Instance(serviceName, it.getAddr(), it.getPath(), status);
-                this.instances.add(instance);
-                checkServiceAlive(instance);
-                log.info("Service ADD : {}@{}, status={}", serviceName, it.getAddr(), status);
-            } else {
-                //因为服务的本地Online状态只采信质量统计或者心跳拨测的结果，
-                //所以此处不使用Register获取到的值进行更新
-                this.instances.add(old);
+            boolean unreg = it.getUnregistered();
+            if (!unreg) {
+                Instance old = oldMap.remove(it.getAddr());
+                if (old == null) {
+                    InstanceStatus status = it.getOnline() ? InstanceStatus.ONLINE : InstanceStatus.OFFLINE;
+                    Instance instance = new Instance(serviceName, it.getAddr(), it.getPath(), status);
+                    this.instances.add(instance);
+                    checkServiceAlive(instance);
+                    log.info("Service ADD : {}@{}, status={}", serviceName, it.getAddr(), status);
+                } else {
+                    //因为服务的本地Online状态只采信质量统计或者心跳拨测的结果，
+                    //所以此处不使用Register获取到的值进行更新
+                    this.instances.add(old);
+                }
             }
         });
         if (oldMap.size() > 0) {
@@ -113,7 +116,6 @@ public class RequestRouter extends AbstractActor {
 
     protected ReceiveBuilder createReceiveBuilder() {
         return receiveBuilder()
-
             .match(SaveStatData.class,       this::handleSaveStatData)
             .match(CheckServiceAlive.class,this::handleCheckServiceAlive)
             .match(ServiceAlive.class,       this::handleServiceAlive)
@@ -146,7 +148,7 @@ public class RequestRouter extends AbstractActor {
             this.instances.add(i);
             q = new InstanceQuality(i.addr);
             qualityMap.put(i.addr, q);
-            i.status = InstanceStatus.OFFLINE;
+            i.setStatus(InstanceStatus.OFFLINE);
         }
     }
     protected long getReuqestTimeout() {
@@ -166,17 +168,17 @@ public class RequestRouter extends AbstractActor {
 
     private void updateInstanceStatus(Instance it) {
         InstanceQuality q = qualityMap.get(it.addr);
-        if (it.status == InstanceStatus.ONLINE){
+        if (it.getStatus() == InstanceStatus.ONLINE){
             if (switchCondition.onlineToOffline(q)) {
-                it.status = InstanceStatus.OFFLINE;
+                it.setStatus(InstanceStatus.OFFLINE);
                 log.error("Service OFFLINE : {}@{}", it.name, it.addr);
             }
-        } else if (it.status == InstanceStatus.UP) {
+        } else if (it.getStatus() == InstanceStatus.UP) {
             if (switchCondition.upToOffline(q)) {
-                it.status = InstanceStatus.OFFLINE;
+                it.setStatus(InstanceStatus.OFFLINE);
                 log.error("Service OFFLINE : {}@{}", it.name, it.addr);
             } else if (switchCondition.upToOnline(q)) {
-                it.status = InstanceStatus.ONLINE;
+                it.setStatus(InstanceStatus.ONLINE);
                 log.info("Service ONLINE : {}@{}", it.name, it.addr);
             }
         }
@@ -185,7 +187,7 @@ public class RequestRouter extends AbstractActor {
     private class CheckServiceAlive {}
     private void handleCheckServiceAlive(CheckServiceAlive msg) {
         this.instances.forEach(it -> {
-            if (checkOnlineServiceAlive || it.status == InstanceStatus.OFFLINE) {
+            if (checkOnlineServiceAlive || it.getStatus() == InstanceStatus.OFFLINE) {
                 checkServiceAlive(it);
             }
         });
@@ -222,10 +224,10 @@ public class RequestRouter extends AbstractActor {
     private void handleServiceAlive(ServiceAlive msg) {
         for (Instance i : instances) {
             if (i.addr.equals(msg.addr)) {
-                if (i.status == InstanceStatus.OFFLINE) {
+                if (i.getStatus() == InstanceStatus.OFFLINE) {
                     InstanceQuality q = qualityMap.get(msg.addr);
                     if (switchCondition.offlineToUp(q)) {
-                        i.status = msg.status;
+                        i.setStatus(msg.status);
                         log.info("Service {} : {}@{}", msg.status, i.name, i.addr);
                     }
                 }

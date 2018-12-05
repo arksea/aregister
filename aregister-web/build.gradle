@@ -35,15 +35,15 @@ dependencies {
     providedCompile  'javax.servlet:javax.servlet-api:3.1.0'
 }
 
-task deleteOnline(type: Exec) {
-    commandLine 'cmd', '/c', 'del /Q .\\online\\aregister-web\\*.*'
-}
+//task deleteOnline(type: Exec) {
+//    commandLine 'cmd', '/c', 'del /Q .\\online\\aregister-web\\*.*'
+//}
 
 task ngBuild(type: Exec) {
     workingDir './src/main/angular/aregister-web'
     commandLine 'cmd', '/c', 'ng build --env=prod'
 }
-ngBuild.dependsOn(deleteOnline)
+ngBuild.dependsOn() //deleteOnline)
 
 
 
@@ -93,7 +93,7 @@ task publishDev <<{
         into './tomcat/webapps/aregister-web/WEB-INF/classes'
     }
 }
-publishDev.dependsOn(build,ngBuild,publishCopy)
+publishDev.dependsOn(build,ngBuild,publish)
 
 task startTomcat(type: Exec) {
     workingDir './tomcat'

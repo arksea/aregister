@@ -7,11 +7,13 @@
         <th>在线</th>
         <th>上线时间</th>
         <th>离线时间</th>
-        <th>已注销</th>
-        <th>QPS</th>
+        <th>访问计数</th>
+        <th>QPM</th>
         <th>TTS(ms)</th>
         <th>成功率(%)</th>
-        <th>刷新</th>
+        <th>已注销</th>
+        <th>操作</th>
+        <th>刷新计数</th>
     </tr>
     </thead>
     <tbody>
@@ -20,10 +22,14 @@
             <td>{{i.online}}</td>
             <td>{{formatTime(i.lastOnlineTime)}}</td>
             <td>{{formatTime(i.lastOfflineTime)}}</td>
-            <td>{{i.unregistered}}</td>
-            <td>{{(i.quality | async).qps}}</td>
+            <td>{{(i.quality | async).count}}</td>
+            <td>{{(i.quality | async).qpm}}</td>
             <td>{{(i.quality | async).tts}}</td>
             <td>{{(i.quality | async).succeedRate}}</td>
+            <td>{{i.unregistered}}</td>
+            <td>
+                <a (click)="onRegisterClick(i)">{{registerButtonText(i)}}</a>
+            </td>
             <td>
                 <a (click)="updateRquestCount(i)">
                     <clr-icon shape="refresh"></clr-icon>

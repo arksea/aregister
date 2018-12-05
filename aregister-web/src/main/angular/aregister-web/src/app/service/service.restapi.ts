@@ -28,7 +28,7 @@ export class ServiceAPI {
 
     public getService(name: string): Observable<RestResult<Service>> {
         let method = 'Request service runtime';
-        return this.http.get(environment.apiUrl + '/api/v1/services/'+name+'/runtime').pipe(
+        return this.http.get(environment.apiUrl + '/api/v1/services/'+encodeURIComponent(name)+'/runtime').pipe(
             tap((r: RestResult<Service>) => this.handleResult(r, method, name)),
             catchError(r => this.handleCatchedError(r, method, name))
         );
@@ -39,6 +39,34 @@ export class ServiceAPI {
         return this.http.get(environment.apiUrl + '/api/v1/services/request?path=' + encodeURIComponent(servicePath))
             .pipe(
                 tap((r: RestResult<RequestCountHistory>) => this.handleResult(r, method, instAddr)),
+                catchError(r => this.handleCatchedError(r, method, instAddr)
+            )
+        );
+    }
+
+    public register(serviceName: string, instAddr: string, servicePath: string): Observable<RestResult<string>> {
+        let method = 'Register service';
+        let url = environment.apiUrl + '/api/v1/services/register/'
+                                     + encodeURIComponent(serviceName)
+                                     + '/'+encodeURIComponent(instAddr) + '/'
+                                     + '?path=' + encodeURIComponent(servicePath);
+        let body = '';
+        return this.http.put(url, body).pipe(
+                tap((r: RestResult<string>) => this.handleResult(r, method, serviceName+'@'+instAddr)),
+                catchError(r => this.handleCatchedError(r, method, instAddr)
+            )
+        );
+    }
+
+    public unregister(serviceName: string, instAddr: string): Observable<RestResult<string>> {
+        console.log('Unregister service ' + serviceName + '@' + instAddr);
+        let method = 'Unregister service';
+        let url = environment.apiUrl + '/api/v1/services/register/'
+                              + encodeURIComponent(serviceName)
+                              +'/'+encodeURIComponent(instAddr)+'/';
+        return this.http.delete(url, { headers: this.headers })
+            .pipe(
+                tap((r: RestResult<string>) => this.handleResult(r, method, serviceName+'@'+instAddr)),
                 catchError(r => this.handleCatchedError(r, method, instAddr)
             )
         );

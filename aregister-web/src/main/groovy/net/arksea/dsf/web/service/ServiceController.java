@@ -1,6 +1,5 @@
 package net.arksea.dsf.web.service;
 
-import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
@@ -54,14 +53,12 @@ public class ServiceController {
                             String json = printer.print(list);
                             result.setResult(RestUtils.createJsonResult(0, json, reqid));
                         } catch (Exception ex) {
-                            String err = "format service list failed";
-                            logger.debug(err, ex);
-                            result.setErrorResult(RestUtils.createError(1, err, reqid));
+                            logger.warn("Format service list failed", ex);
+                            result.setErrorResult(RestUtils.createError(1, ex.getMessage(), reqid));
                         }
                     } else {
-                        String err = "get service list failed";
-                        logger.debug(err, failure);
-                        result.setErrorResult(RestUtils.createError(1, err, reqid));
+                        logger.warn("Get service list failed", failure);
+                        result.setErrorResult(RestUtils.createError(1, failure.getMessage(), reqid));
                     }
                 }
             }, restapiSys.dispatcher());
@@ -81,14 +78,12 @@ public class ServiceController {
                             String json = ServiceView.renderServiceTree(list);
                             result.setResult(RestUtils.createJsonResult(0, json, reqid));
                         } catch (Exception ex) {
-                            String err = "format service tree failed";
-                            logger.debug(err, ex);
-                            result.setErrorResult(RestUtils.createError(1, err, reqid));
+                            logger.warn("Format service tree failed", ex);
+                            result.setErrorResult(RestUtils.createError(1, ex.getMessage(), reqid));
                         }
                     } else {
-                        String err = "get service tree failed";
-                        logger.debug(err, failure);
-                        result.setErrorResult(RestUtils.createError(1, err, reqid));
+                        logger.warn("Get service tree failed", failure);
+                        result.setErrorResult(RestUtils.createError(1, failure.getMessage(), reqid));
                     }
                 }
             }, restapiSys.dispatcher());
@@ -110,14 +105,12 @@ public class ServiceController {
                             String json = printer.print(service);
                             result.setResult(RestUtils.createJsonResult(0, json, reqid));
                         } catch (InvalidProtocolBufferException ex) {
-                            String err = "format service runtime failed: "+servieName;
-                            logger.debug(err, ex);
-                            result.setErrorResult(RestUtils.createError(1, err, reqid));
+                            logger.warn("Format service runtime failed: {}", servieName, ex);
+                            result.setErrorResult(RestUtils.createError(1, ex.getMessage(), reqid));
                         }
                     } else {
-                        String err = "get service runtime failed: "+servieName;
-                        logger.debug(err, failure);
-                        result.setErrorResult(RestUtils.createError(1, err, reqid));
+                        logger.warn("Get service runtime failed: {}", servieName, failure);
+                        result.setErrorResult(RestUtils.createError(1, failure.getMessage(), reqid));
                     }
                 }
             }, restapiSys.dispatcher());
@@ -144,18 +137,62 @@ public class ServiceController {
                             String json = printer.print(his);
                             result.setResult(RestUtils.createJsonResult(0, json, reqid));
                         } catch (InvalidProtocolBufferException ex) {
-                            String err = "format request count failed: "+servicePath;
-                            logger.debug(err, ex);
-                            result.setErrorResult(RestUtils.createError(1, err, reqid));
+                            logger.warn("Format request count failed: {}", servicePath, ex);
+                            result.setErrorResult(RestUtils.createError(1, ex.getMessage(), reqid));
                         }
                     } else {
-                        String err = "get request count failed: "+servicePath;
-                        logger.debug(err, failure);
-                        result.setErrorResult(RestUtils.createError(1, err, reqid));
+                        logger.warn("Get request count failed: {}", servicePath, failure);
+                        result.setErrorResult(RestUtils.createError(1, failure.getMessage(), reqid));
                     }
                 }
             }, restapiSys.dispatcher());
         return result;
     }
 
+    @RequestMapping(path = "register/{name}/{addr}/", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public DeferredResult<String> unregisterService(
+        @PathVariable("name") final String serviceName,
+        @PathVariable("addr") final String serviceAddr,
+        final HttpServletRequest httpRequest) {
+        logger.info("register {}@{}", serviceName, serviceAddr);
+        DeferredResult<String> result = new DeferredResult<>();
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        registerClient.unregisterAtRepertory(serviceName, serviceAddr, 10000).onComplete(
+            new OnComplete<Boolean>() {
+                @Override
+                public void onComplete(Throwable failure, Boolean succeed) throws Throwable {
+                    if (failure == null) {
+                        result.setResult(RestUtils.createJsonResult(0, "true", reqid));
+                    } else {
+                        logger.warn("Unregister service failed: {}@{}", serviceName, serviceAddr, failure);
+                        result.setErrorResult(RestUtils.createError(1, failure.getMessage(), reqid));
+                    }
+                }
+            }, restapiSys.dispatcher());
+        return result;
+    }
+
+    @RequestMapping(path = "register/{name}/{addr}/", method = RequestMethod.PUT, produces = MEDIA_TYPE)
+    public DeferredResult<String> registerService(
+        @PathVariable("name") final String serviceName,
+        @PathVariable("addr") final String serviceAddr,
+        @RequestParam("path") final String servicePath,
+        final HttpServletRequest httpRequest) {
+        logger.info("unregister {}@{} : {}", serviceName, serviceAddr, servicePath);
+        DeferredResult<String> result = new DeferredResult<>();
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        registerClient.registerAtRepertory(serviceName, serviceAddr, servicePath,10000).onComplete(
+            new OnComplete<Boolean>() {
+                @Override
+                public void onComplete(Throwable failure, Boolean succeed) throws Throwable {
+                    if (failure == null) {
+                        result.setResult(RestUtils.createResult(0, reqid));
+                    } else {
+                        logger.warn("Register service failed: {}@{}", serviceName, serviceAddr, failure);
+                        result.setErrorResult(RestUtils.createError(1, failure.getMessage(), reqid));
+                    }
+                }
+            }, restapiSys.dispatcher());
+        return result;
+    }
 }
