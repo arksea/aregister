@@ -1,6 +1,7 @@
 package net.arksea.dsf.demo.client;
 
 import akka.dispatch.OnComplete;
+import akka.japi.pf.FI;
 import net.arksea.dsf.client.Client;
 import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.demo.DemoResponse1;
@@ -23,7 +24,7 @@ import static akka.japi.Util.classTag;
 public final class ClientMain {
     private static final Logger logger = LogManager.getLogger(ClientMain.class);
     private ClientMain() {};
-
+    private static Client client;
     /**
      * @param args command line args
      */
@@ -34,7 +35,7 @@ public final class ClientMain {
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
             RegisterClient register = new RegisterClient("TestClient",addrs);
-            Client client = register.subscribe(serviceName);
+            client = register.subscribe(serviceName);
             for (int i=0; i<2; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
                 Future<DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DemoResponse1.class));
@@ -42,7 +43,9 @@ public final class ClientMain {
                     new OnComplete<DemoResponse1>() {
                         @Override
                         public void onComplete(Throwable failure, DemoResponse1 ret) throws Throwable {
-                            if (failure != null) {
+                            if (failure == null) {
+                                handleComplete(ret, ClientMain::complete);
+                            } else {
                                 logger.warn("failed", failure);
                             }
                         }
@@ -55,5 +58,13 @@ public final class ClientMain {
         } catch (Exception ex) {
             logger.error("Start DEMO Client failed", ex);
         }
+    }
+
+    private static <T> void handleComplete(T ret, FI.UnitApply<T> apply) throws Exception {
+        client.tracing.trace(ret, apply);
+    }
+
+    private static void complete(DemoResponse1 ret) {
+        client.tracing.addAnnotation("111111");
     }
 }

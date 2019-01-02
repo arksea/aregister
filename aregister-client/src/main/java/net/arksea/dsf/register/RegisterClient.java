@@ -59,7 +59,7 @@ public class RegisterClient {
      * @return
      */
     public Client subscribe(String serviceName, RouteStrategy routeStrategy, ICodes codes, ISwitchCondition condition, ActorSystem clientSystem) {
-        return new Client(serviceName, routeStrategy, codes, condition, clientSystem, new ServiceInstanceSource(serviceName, this));
+        return new Client(serviceName, routeStrategy, codes, condition, clientSystem, new ServiceInstanceSource(serviceName, this), clientName);
     }
 
     public Client subscribe(String serviceName) {

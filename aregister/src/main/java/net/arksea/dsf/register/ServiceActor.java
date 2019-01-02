@@ -28,7 +28,7 @@ public class ServiceActor extends AbstractActor {
     private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发
     private final Map<String,String> attributes = new HashMap<>();
     private Map<String, InstanceInfo> instances = new HashMap<>();
-    private Map<ActorRef, SubscriberInfo> subscriberMap = new HashMap<>();
+    private final Map<ActorRef, SubscriberInfo> subscriberMap = new HashMap<>();
     private final IRegisterStore store;
     private Cancellable loadServiceInfoTimer;  //从Store更新服务实例定时器
     private Cancellable checkAliveTimer;

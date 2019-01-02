@@ -9,6 +9,8 @@ import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategyFactory;
+import net.arksea.zipkin.akka.ActorTracingFactory;
+import net.arksea.zipkin.akka.IActorTracing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -27,7 +29,9 @@ public class Client {
     public final ActorSystem system;
     public final ActorRef router;
     public final ICodes codes;
+    public final IActorTracing tracing;
     private final Logger log = LogManager.getLogger(Client.class);
+    public final String clientName;
 
     /**
      * 序列化：Protocol Buffer
@@ -36,9 +40,11 @@ public class Client {
      * @param codes
      * @param system
      */
-    public Client(String serviceName, RouteStrategy strategy, ICodes codes, ISwitchCondition condition, ActorSystem system, IInstanceSource instanceSource) {
+    public Client(String serviceName, RouteStrategy strategy, ICodes codes, ISwitchCondition condition, ActorSystem system, IInstanceSource instanceSource, String clientName) {
         this.system = system;
         this.codes = codes;
+        this.clientName = clientName;
+        this.tracing = clientName == null ? null : ActorTracingFactory.create(clientName);
         IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
         router = system.actorOf(ServiceRequestRouter.props(serviceName, instanceSource, routeStrategy, condition));
         Future f = Patterns.ask(router, new ServiceRequestRouter.Ready(), 25000); //等待RequestRouter初始化完毕
@@ -51,26 +57,39 @@ public class Client {
 
     public void tell(Object msg, boolean oneway, ActorRef sender) {
         DSF.ServiceRequest req = codes.encodeRequest(msg, oneway);
-        router.tell(req, sender);
+        if (tracing == null) {
+            router.tell(req, sender);
+        } else {
+            tracing.tell(router, req, sender);
+        }
+
     }
 
     public Future<Object> request(Object msg, long timeout) {
         DSF.ServiceRequest req = codes.encodeRequest(msg, false);
-        return Patterns.ask(router, req, timeout).mapTo(classTag(DSF.ServiceResponse.class)).map(
-            new Mapper<DSF.ServiceResponse, Object>() {
-                public Object apply(DSF.ServiceResponse m) {
-                    return codes.decodeResponse(m);
-                }
-            },system.dispatcher());
+        return request(req, timeout);
     }
 
     public Future<Object> request(String reqid, Object msg, long timeout) {
         DSF.ServiceRequest req = codes.encodeRequest(reqid, msg, false);
-        return Patterns.ask(router, req, timeout).mapTo(classTag(DSF.ServiceResponse.class)).map(
-            new Mapper<DSF.ServiceResponse, Object>() {
-                public Object apply(DSF.ServiceResponse m) {
-                    return codes.decodeResponse(m);
-                }
-            },system.dispatcher());
+        return request(req, timeout);
+    }
+
+    private Future<Object> request(DSF.ServiceRequest req, long timeout) {
+        if (tracing == null) {
+            return Patterns.ask(router, req, timeout).mapTo(classTag(DSF.ServiceResponse.class)).map(
+                new Mapper<DSF.ServiceResponse, Object>() {
+                    public Object apply(DSF.ServiceResponse m) {
+                        return codes.decodeResponse(m);
+                    }
+                },system.dispatcher());
+        } else {
+            return tracing.ask(router, req, clientName, timeout).mapTo(classTag(DSF.ServiceResponse.class)).map(
+                new Mapper<DSF.ServiceResponse, Object>() {
+                    public Object apply(DSF.ServiceResponse m) {
+                        return codes.decodeResponse(m);
+                    }
+                },system.dispatcher());
+        }
     }
 }

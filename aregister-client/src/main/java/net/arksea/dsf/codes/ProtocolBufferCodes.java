@@ -3,8 +3,6 @@ package net.arksea.dsf.codes;
 import com.google.protobuf.*;
 import net.arksea.dsf.DSF;
 
-import java.util.UUID;
-
 /**
  *
  * Created by xiaohaixing on 2018/5/7.
@@ -14,21 +12,13 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
     public ProtocolBufferCodes(Descriptors.GenericDescriptor descriptor) {
         this.descriptor = descriptor;
     }
-    private String makeRequestId() {
-        return UUID.randomUUID().toString();
-    }
+
     @Override
-    public DSF.ServiceRequest encodeRequest(Object obj, boolean oneway) {
+    public DSF.ServiceRequest encodeRequest(String requestId, Object obj, boolean oneway) {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
             ByteString payload = msg.toByteString();
-            return DSF.ServiceRequest.newBuilder()
-                .setOneway(oneway)
-                .setRequestId(makeRequestId())
-                .setPayload(payload)
-                .setSerialize(DSF.EnumSerialize.PROTO)
-                .setTypeName(msg.getDescriptorForType().getName())
-                .build();
+            return encodeRequest(requestId, msg, payload, oneway);
         } else {
             return super.encodeRequest(obj, oneway);
         }
@@ -41,8 +31,15 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
                 return super.decodeRequest(msg);
             } else {
                 Descriptors.Descriptor d = descriptor.getFile().findMessageTypeByName(msg.getTypeName());
-                DynamicMessage.Builder b = DynamicMessage.newBuilder(d);
-                return b.mergeFrom(msg.getPayload()).build();
+                DynamicMessage.Builder b = DynamicMessage.newBuilder(d)
+                    .mergeFrom(msg.getPayload());
+                if (msg.getTracingSpan() != null) {
+                    Descriptors.FieldDescriptor field = d.findFieldByName("tracingSpan");
+                    if (field != null) {
+                        b.setField(field, msg.getTracingSpan());
+                    }
+                }
+                return b.build();
             }
         } catch (InvalidProtocolBufferException e) {
             throw new RuntimeException("protocol error", e);
@@ -54,13 +51,7 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
             ByteString payload = msg.toByteString();
-            return DSF.ServiceResponse.newBuilder()
-                .setRequestId(reqid)
-                .setPayload(payload)
-                .setSerialize(DSF.EnumSerialize.PROTO)
-                .setTypeName(msg.getDescriptorForType().getName())
-                .setSucceed(succeed)
-                .build();
+            return encodeResponse(msg, reqid, payload, succeed);
         } else {
             return super.encodeResponse(obj, reqid, succeed);
         }
@@ -73,8 +64,15 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
                 return super.decodeResponse(response);
             } else {
                 Descriptors.Descriptor d = descriptor.getFile().findMessageTypeByName(response.getTypeName());
-                DynamicMessage.Builder b = DynamicMessage.newBuilder(d);
-                return b.mergeFrom(response.getPayload()).build();
+                DynamicMessage.Builder b = DynamicMessage.newBuilder(d)
+                    .mergeFrom(response.getPayload());
+                if (response.getTracingSpan() != null) {
+                    Descriptors.FieldDescriptor field = d.findFieldByName("tracingSpan");
+                    if (field != null) {
+                        b.setField(field, response.getTracingSpan());
+                    }
+                }
+                return b.build();
             }
         } catch (InvalidProtocolBufferException e) {
             throw new RuntimeException("Invalid protocol", e);
