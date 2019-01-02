@@ -3,11 +3,12 @@ package net.arksea.dsf.demo.service;
 import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.japi.Creator;
-import akka.japi.pf.ReceiveBuilder;
 import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.demo.DemoResponse1;
 import net.arksea.dsf.service.ServiceRequest;
 import net.arksea.dsf.service.ServiceResponse;
+import net.arksea.zipkin.akka.ActorTracingFactory;
+import net.arksea.zipkin.akka.IActorTracing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
@@ -22,9 +23,11 @@ public class DemoActor extends AbstractActor {
 
     private final Logger log = LogManager.getLogger(DemoActor.class);
     private final int port;
+    private IActorTracing tracing;
 
     public DemoActor(int port) {
         this.port = port;
+        tracing = ActorTracingFactory.create(self(), port);
     }
 
     public static Props props(int port) {
@@ -37,7 +40,7 @@ public class DemoActor extends AbstractActor {
     }
     @Override
     public Receive createReceive() {
-        return ReceiveBuilder.create()
+        return tracing.receiveBuilder()
             .match(ServiceRequest.class, this::onRequest)
             .match(String.class, this::onMessage)
             .build();
@@ -69,12 +72,12 @@ public class DemoActor extends AbstractActor {
                 if (online) {
                     DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);
                     ServiceResponse response = new ServiceResponse(resule, msg);
-                    sender().tell(response, self());
+                    tracing.tell(sender(), response, self());
                 }
             } else {
                 DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);
                 ServiceResponse response = new ServiceResponse(resule, msg);
-                sender().tell(response, self());
+                tracing.tell(sender(), response, self());
             }
         }
     }

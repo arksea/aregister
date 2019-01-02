@@ -30,12 +30,12 @@ public final class ClientMain {
     public static void main(final String[] args) {
         try {
             logger.info("Start DEMO Client");
-            String serviceName = "net.arksea.dsf.DemoService-v1";
+            String serviceName = "net.arksea.dsf.DemoService-v1.5";
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
             RegisterClient register = new RegisterClient("TestClient",addrs);
             Client client = register.subscribe(serviceName);
-            for (int i=0; i<80000; ++i) {
+            for (int i=0; i<2; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
                 Future<DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DemoResponse1.class));
                 f.onComplete(
