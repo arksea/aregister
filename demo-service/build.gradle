@@ -6,6 +6,7 @@ apply plugin: 'maven'
 description = """Actor Register DEMO Service"""
 
 dependencies {
+    compile ('net.arksea:akka-tracing-zipkin:1.0.0-SNAPSHOT')
     compile project(':aregister-client')
 }
 

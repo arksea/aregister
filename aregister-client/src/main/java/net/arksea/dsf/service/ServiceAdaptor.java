@@ -3,18 +3,23 @@ package net.arksea.dsf.service;
 import akka.actor.*;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
+import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.InstanceQuality;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
+import net.arksea.zipkin.akka.TracingUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+import zipkin2.Span;
+import zipkin2.codec.SpanBytesEncoder;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Created by xiaohaixing on 2018/5/4.
  */
 public class ServiceAdaptor extends AbstractActor {
+    protected SpanBytesEncoder spanEncoder = SpanBytesEncoder.PROTO3;
     private static final Logger logger = LogManager.getLogger(ServiceAdaptor.class);
     private final ActorRef service;
     private final ICodes codes;
@@ -120,7 +126,13 @@ public class ServiceAdaptor extends AbstractActor {
         } else {
             quality.failed(System.currentTimeMillis() - msg.request.requestTime);
         }
-        DSF.ServiceResponse r = codes.encodeResponse(msg.result, msg.request.reqid, msg.succeed);
+        DSF.ServiceResponse.Builder builder = codes.encodeResponse(msg.result, msg.request.reqid, msg.succeed);
+        Optional<Span> op = TracingUtils.getTracingSpan(msg);
+        if (op != null && op.isPresent()) {
+            byte[] sb = spanEncoder.encode(op.get());
+            builder.setTracingSpan(ByteString.copyFrom(sb));
+        }
+        DSF.ServiceResponse r = builder.build();
         msg.request.sender.forward(r, context());
     }
     //------------------------------------------------------------------------------------

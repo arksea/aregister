@@ -9,6 +9,7 @@ String mavenArtifactId = name
 description = """ASC(Actor Service Cluster)客户端支持库"""
 
 dependencies {
+    compile ('net.arksea:akka-tracing-zipkin:1.0.0-SNAPSHOT')
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.4.0'
 }

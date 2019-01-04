@@ -57,14 +57,12 @@ pmd {
         'java-basic',
         'java-braces',
         'java-clone',
-        'java-design',
         'java-empty',
         'java-finalizers',
         'java-imports',
         'java-migrating',
         'java-sunsecure',
         'java-unnecessary',
-        'java-unusedcode'
     ]
 }
 

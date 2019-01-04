@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.dispatch.Mapper;
 import akka.pattern.Patterns;
+import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.client.route.IRouteStrategy;
@@ -11,12 +12,18 @@ import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategyFactory;
 import net.arksea.zipkin.akka.ActorTracingFactory;
 import net.arksea.zipkin.akka.IActorTracing;
+import net.arksea.zipkin.akka.ITraceableMessage;
+import net.arksea.zipkin.akka.TracingUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+import zipkin2.Endpoint;
+import zipkin2.Span;
+import zipkin2.codec.SpanBytesEncoder;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static akka.japi.Util.classTag;
@@ -26,6 +33,7 @@ import static akka.japi.Util.classTag;
  * Created by xiaohaixing on 2018/5/4.
  */
 public class Client {
+    protected SpanBytesEncoder spanEncoder = SpanBytesEncoder.PROTO3;
     public final ActorSystem system;
     public final ActorRef router;
     public final ICodes codes;
@@ -56,22 +64,55 @@ public class Client {
     }
 
     public void tell(Object msg, boolean oneway, ActorRef sender) {
-        DSF.ServiceRequest req = codes.encodeRequest(msg, oneway);
+        DSF.ServiceRequest req = encodeRequest(msg, oneway);
         if (tracing == null) {
             router.tell(req, sender);
         } else {
             tracing.tell(router, req, sender);
         }
-
     }
 
+    private DSF.ServiceRequest encodeRequest(Object msg, boolean oneway) {
+        return encodeRequest(codes.makeRequestId(), msg, oneway);
+    }
+    private DSF.ServiceRequest encodeRequest(String reqid, Object msg, boolean oneway) {
+        DSF.ServiceRequest.Builder builder = codes.encodeRequest(reqid, msg, oneway);
+        Optional<Span> op = TracingUtils.getTracingSpan(msg);
+        if (op != null && op.isPresent()) {
+            byte[] sb = spanEncoder.encode(op.get());
+            builder.setTracingSpan(ByteString.copyFrom(sb));
+        } else if (op != null){
+            Endpoint endpoint = tracing.makeEndpoint(this.clientName);
+            Span span = Span.newBuilder()
+                .traceId(reqid.replace("-", ""))
+                .id(tracing.makeSpanId())
+                .name(getMsgSpanName(msg))
+                .kind(Span.Kind.PRODUCER)
+                .timestamp(tracing.tracingTimestamp())
+                .remoteEndpoint(endpoint)
+                .build();
+            ByteString spanStr = ByteString.copyFrom(spanEncoder.encode(span));
+            builder.setTracingSpan(spanStr);
+        }
+        return builder.build();
+    }
+
+    private String getMsgSpanName(Object msg) {
+        String name;
+        if (msg instanceof ITraceableMessage) {
+            name = ((ITraceableMessage)msg).getTracingName();
+        } else {
+            name = msg.getClass().getSimpleName();
+        }
+        return name;
+    }
     public Future<Object> request(Object msg, long timeout) {
-        DSF.ServiceRequest req = codes.encodeRequest(msg, false);
+        DSF.ServiceRequest req = encodeRequest(msg, false);
         return request(req, timeout);
     }
 
     public Future<Object> request(String reqid, Object msg, long timeout) {
-        DSF.ServiceRequest req = codes.encodeRequest(reqid, msg, false);
+        DSF.ServiceRequest req = encodeRequest(reqid, msg, false);
         return request(req, timeout);
     }
 

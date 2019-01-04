@@ -65,6 +65,6 @@ public final class ClientMain {
     }
 
     private static void complete(DemoResponse1 ret) {
-        client.tracing.addAnnotation("111111");
+        logger.info("request succeed, result message: ", ret.msg);
     }
 }

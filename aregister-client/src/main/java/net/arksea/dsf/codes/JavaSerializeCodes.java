@@ -3,11 +3,8 @@ package net.arksea.dsf.codes;
 import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
 import net.arksea.zipkin.akka.TracingUtils;
-import zipkin2.Span;
-import zipkin2.codec.SpanBytesEncoder;
 
 import java.io.*;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -15,44 +12,37 @@ import java.util.UUID;
  * Created by xiaohaixing on 2018/5/7.
  */
 public class JavaSerializeCodes implements ICodes {
-    protected SpanBytesEncoder spanEncoder = SpanBytesEncoder.PROTO3;
-
-    protected String makeRequestId() {
-        return UUID.randomUUID().toString();
+    public String makeRequestId() {
+        return UUID.randomUUID().toString().replace("-","");
     }
 
     @Override
-    public DSF.ServiceRequest encodeRequest(Object msg, boolean oneway) {
+    public DSF.ServiceRequest.Builder encodeRequest(Object msg, boolean oneway) {
         return encodeRequest(makeRequestId(), msg, oneway);
     }
 
     @Override
-    public DSF.ServiceRequest encodeRequest(String requestId, Object msg, boolean oneway) {
+    public DSF.ServiceRequest.Builder encodeRequest(String requestId, Object msg, boolean oneway) {
         try {
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(buff);
             out.writeObject(msg);
             byte[] bytes = buff.toByteArray();
             ByteString payload = ByteString.copyFrom(bytes);
-            return encodeRequest(requestId, msg, payload, oneway);
+            return encodeRequest(requestId, payload, oneway);
         } catch (IOException ex) {
             throw new RuntimeException("Invalid protocol", ex);
         }
     }
 
-    protected DSF.ServiceRequest encodeRequest(String requestId, Object msg, ByteString payload, boolean oneway) {
+    protected DSF.ServiceRequest.Builder encodeRequest(String requestId, ByteString payload, boolean oneway) {
         DSF.ServiceRequest.Builder builder = DSF.ServiceRequest.newBuilder()
             .setOneway(oneway)
             .setRequestId(requestId)
             .setPayload(payload)
             .setSerialize(DSF.EnumSerialize.JAVA)
             .setTypeName("_JAVA_");
-        Optional<Span> op = TracingUtils.getTracingSpan(msg);
-        if (op != null && op.isPresent()) {
-            byte[] sb = spanEncoder.encode(op.get());
-            builder.setTracingSpan(ByteString.copyFrom(sb));
-        }
-        return builder.build();
+        return builder;
     }
 
     @Override
@@ -71,7 +61,7 @@ public class JavaSerializeCodes implements ICodes {
     }
 
     @Override
-    public DSF.ServiceResponse encodeResponse(Object msg, String reqid, boolean succeed) {
+    public DSF.ServiceResponse.Builder encodeResponse(Object msg, String reqid, boolean succeed) {
         try {
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(buff);
@@ -85,19 +75,14 @@ public class JavaSerializeCodes implements ICodes {
     }
 
 
-    protected DSF.ServiceResponse encodeResponse(Object msg, String reqid, ByteString payload, boolean succeed) {
+    protected DSF.ServiceResponse.Builder encodeResponse(Object msg, String reqid, ByteString payload, boolean succeed) {
         DSF.ServiceResponse.Builder builder = DSF.ServiceResponse.newBuilder()
             .setRequestId(reqid)
             .setPayload(payload)
             .setSerialize(DSF.EnumSerialize.JAVA)
             .setTypeName("_JAVA_")
             .setSucceed(succeed);
-        Optional<Span> op = TracingUtils.getTracingSpan(msg);
-        if (op != null && op.isPresent()) {
-            byte[] sb = spanEncoder.encode(op.get());
-            builder.setTracingSpan(ByteString.copyFrom(sb));
-        }
-        return builder.build();
+        return builder;
     }
 
     @Override

@@ -14,11 +14,11 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
     }
 
     @Override
-    public DSF.ServiceRequest encodeRequest(String requestId, Object obj, boolean oneway) {
+    public DSF.ServiceRequest.Builder encodeRequest(String requestId, Object obj, boolean oneway) {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
             ByteString payload = msg.toByteString();
-            return encodeRequest(requestId, msg, payload, oneway);
+            return encodeRequest(requestId, payload, oneway);
         } else {
             return super.encodeRequest(obj, oneway);
         }
@@ -47,7 +47,7 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
     }
 
     @Override
-    public DSF.ServiceResponse encodeResponse(Object obj, String reqid, boolean succeed) {
+    public DSF.ServiceResponse.Builder encodeResponse(Object obj, String reqid, boolean succeed) {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
             ByteString payload = msg.toByteString();

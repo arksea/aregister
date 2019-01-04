@@ -5,6 +5,7 @@ apply plugin: 'maven'
 description = """ASC DEMO"""
 
 dependencies {
+    compile ('net.arksea:akka-tracing-zipkin:1.0.0-SNAPSHOT')
     compile project(':aregister-client')
 }
 
