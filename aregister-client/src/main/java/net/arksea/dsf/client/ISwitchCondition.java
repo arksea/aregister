@@ -11,9 +11,15 @@ public interface ISwitchCondition {
     }
     //请求响应超过此时间（毫秒）将判为超时错误
     default long requestTimeout() {
-        return 3000;
+        return 5000;
     }
 
+    //根据quality决定是否进行限流， 返回值 <= 0则不做限流，其他值为每秒访问次数
+    default int rateLimit(InstanceQuality quality) {
+        return 0;
+    }
+
+    //根据quality判断状态切换，每个周期会调用一次
     boolean offlineToUp(InstanceQuality quality);
     boolean upToOnline(InstanceQuality quality);
     boolean upToOffline(InstanceQuality quality);

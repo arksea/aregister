@@ -6,10 +6,10 @@ package net.arksea.dsf.client;
  */
 public class DefaultSwitchCondition implements ISwitchCondition {
 
-    //默认实现：3个周期内正确率高于80%，将服务从offline状态切换为up状态
+    //默认实现：15个周期内正确率高于80%，将服务从offline状态切换为up状态
     @Override
     public boolean offlineToUp(InstanceQuality quality) {
-        int step = 3;
+        int step = 15;
         float succeedRate = quality.getSucceedRate(step);
         long requestCount = quality.getRequestCount(step);
         return requestCount > 0 && succeedRate > 0.8f;
@@ -28,13 +28,7 @@ public class DefaultSwitchCondition implements ISwitchCondition {
     //默认实现：当3个周期内正确率低于70%，将服务切换为offline状态
     @Override
     public boolean upToOffline(InstanceQuality quality) {
-        int step = 3;
-        if (quality.getRequestCount(step) < 10) { //请求量太少不做切换
-            return false;
-        } else {
-            float succeedRate = quality.getSucceedRate(step);
-            return succeedRate < 0.7f;
-        }
+        return onlineToOffline(quality);
     }
     //默认实现：当3个周期内正确率低于70%，将服务切换为offline状态
     @Override
@@ -46,5 +40,10 @@ public class DefaultSwitchCondition implements ISwitchCondition {
             float succeedRate = quality.getSucceedRate(step);
             return succeedRate < 0.7f;
         }
+    }
+
+    @Override
+    public int rateLimit(InstanceQuality quality) {
+        return 0;
     }
 }

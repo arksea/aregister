@@ -117,7 +117,7 @@ public class RequestRouter extends AbstractActor {
     protected ReceiveBuilder createReceiveBuilder() {
         return receiveBuilder()
             .match(SaveStatData.class,       this::handleSaveStatData)
-            .match(CheckServiceAlive.class,this::handleCheckServiceAlive)
+            .match(CheckServiceAlive.class,  this::handleCheckServiceAlive)
             .match(ServiceAlive.class,       this::handleServiceAlive)
             .match(Ready.class,              this::handleReady);
     }
