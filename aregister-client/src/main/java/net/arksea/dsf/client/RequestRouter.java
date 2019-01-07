@@ -25,7 +25,6 @@ public class RequestRouter extends AbstractActor {
     private final List<Instance> instances = new LinkedList<>();
     private Cancellable saveStatDataTimer; //保存历史统计数据定时器
     private Cancellable checkOfflineTimer;
-    private static final int CHECK_OFFLINE_SECONDS = 5; //测试OFFLINE服务是否存活
     private final DSF.Ping ping;
     private IInstanceSource instanceSource;
     private final IRouteStrategy routeStrategy;
@@ -52,6 +51,7 @@ public class RequestRouter extends AbstractActor {
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
             self(),new SaveStatData(),context().dispatcher(),self());
+        final long CHECK_OFFLINE_SECONDS = Math.max(10, switchCondition.statPeriod() / 2);
         checkOfflineTimer = context().system().scheduler().schedule(
             Duration.create(CHECK_OFFLINE_SECONDS, TimeUnit.SECONDS),
             Duration.create(CHECK_OFFLINE_SECONDS,TimeUnit.SECONDS),
