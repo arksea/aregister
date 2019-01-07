@@ -26,8 +26,6 @@ import zipkin2.codec.SpanBytesEncoder;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static akka.japi.Util.classTag;
-
 /**
  *
  * Created by xiaohaixing on 2018/5/4.
@@ -42,7 +40,6 @@ public class Client {
     public final String clientName;
 
     /**
-     * 序列化：Protocol Buffer
      * @param serviceName
      * @param strategy
      * @param codes
@@ -118,17 +115,27 @@ public class Client {
 
     private Future<Object> request(DSF.ServiceRequest req, long timeout) {
         if (tracing == null) {
-            return Patterns.ask(router, req, timeout).mapTo(classTag(DSF.ServiceResponse.class)).map(
-                new Mapper<DSF.ServiceResponse, Object>() {
-                    public Object apply(DSF.ServiceResponse m) {
-                        return codes.decodeResponse(m);
+            return Patterns.ask(router, req, timeout).map(
+                new Mapper<Object, Object>() {
+                    public Object apply(Object obj) {
+                        if (obj instanceof RuntimeException) {
+                            throw (RuntimeException) obj;
+                        } else {
+                            DSF.ServiceResponse m = (DSF.ServiceResponse) obj;
+                            return codes.decodeResponse(m);
+                        }
                     }
                 },system.dispatcher());
         } else {
-            return tracing.ask(router, req, clientName, timeout).mapTo(classTag(DSF.ServiceResponse.class)).map(
-                new Mapper<DSF.ServiceResponse, Object>() {
-                    public Object apply(DSF.ServiceResponse m) {
-                        return codes.decodeResponse(m);
+            return tracing.ask(router, req, clientName, timeout).map(
+                new Mapper<Object, Object>() {
+                    public Object apply(Object obj) {
+                        if (obj instanceof RuntimeException) {
+                            throw (RuntimeException) obj;
+                        } else {
+                            DSF.ServiceResponse m = (DSF.ServiceResponse) obj;
+                            return codes.decodeResponse(m);
+                        }
                     }
                 },system.dispatcher());
         }
