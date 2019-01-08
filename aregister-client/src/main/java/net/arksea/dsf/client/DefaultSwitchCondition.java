@@ -6,31 +6,31 @@ package net.arksea.dsf.client;
  */
 public class DefaultSwitchCondition implements ISwitchCondition {
 
-    //默认实现：15个周期内正确率高于80%，将服务从offline状态切换为up状态
+    //默认实现：10个周期内正确率高于80%，将服务从offline状态切换为up状态
     @Override
     public boolean offlineToUp(InstanceQuality quality) {
-        int step = 15;
+        int step = 10;
         float succeedRate = quality.getSucceedRate(step);
         long requestCount = quality.getRequestCount(step);
-        return requestCount > 0 && succeedRate > 0.8f;
+        return requestCount > 10 && succeedRate > 0.8f;
     }
 
-    //默认实现：15个周期内正确率高于90%，将服务从up状态切换为online状态
+    //默认实现：10个周期内正确率高于90%，将服务从up状态切换为online状态
     //注意：UP状态时Router将调度部分流量到此实例做灰度测试，实际比例看路由策略实现
     @Override
     public boolean upToOnline(InstanceQuality quality) {
-        int step = 15;
+        int step = 10;
         float succeedRate = quality.getSucceedRate(step);
         long requestCount = quality.getRequestCount(step);
-        return requestCount>0 && succeedRate > 0.9f;
+        return requestCount > 10 && succeedRate > 0.9f && getMeanRespondTime(quality) < rateLimitRequestTimeMin();
     }
 
-    //默认实现：当3个周期内正确率低于70%，将服务切换为offline状态
+    //默认实现：当3个周期内正确率低于50%，将服务切换为offline状态
     @Override
     public boolean upToOffline(InstanceQuality quality) {
         return onlineToOffline(quality);
     }
-    //默认实现：当3个周期内正确率低于70%，将服务切换为offline状态
+    //默认实现：当3个周期内正确率低于50%，将服务切换为offline状态
     @Override
     public boolean onlineToOffline(InstanceQuality quality) {
         int step = 3;
@@ -38,12 +38,17 @@ public class DefaultSwitchCondition implements ISwitchCondition {
             return false;
         } else {
             float succeedRate = quality.getSucceedRate(step);
-            return succeedRate < 0.7f;
+            return succeedRate < 0.5f;
         }
     }
 
+    //根据quality决定是否进行限流， 服务在UP状态时将被限流，框架只会调度1/mod的流量进行访问
     @Override
-    public int rateLimit(InstanceQuality quality) {
-        return 0;
+    public boolean onlineToUp(InstanceQuality quality) {
+        return getMeanRespondTime(quality) > rateLimitRequestTimeMax();
+    }
+
+    private long getMeanRespondTime(InstanceQuality quality) {
+        return quality.getMeanRespondTime(15);
     }
 }

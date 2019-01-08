@@ -43,10 +43,6 @@ public class Instance implements Comparable {
         }
     }
 
-    public boolean check() {
-        return check(10);
-    }
-
     public boolean check(int mod) {
         //当为UP状态时使用1/mod的流量进行尝试性访问
         return status == InstanceStatus.ONLINE ||

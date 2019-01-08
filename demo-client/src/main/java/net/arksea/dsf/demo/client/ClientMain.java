@@ -36,7 +36,7 @@ public final class ClientMain {
             addrs.add("127.0.0.1:6501");
             RegisterClient register = new RegisterClient("TestClient",addrs);
             client = register.subscribe(serviceName);
-            for (int i=0; i<2; ++i) {
+            for (int i=0; i<5; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
                 Future<DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DemoResponse1.class));
                 f.onComplete(

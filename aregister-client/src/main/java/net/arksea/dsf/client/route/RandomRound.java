@@ -18,11 +18,11 @@ public class RandomRound implements IRouteStrategy {
     }
 
     @Override
-    public Optional<Instance> getInstance(List<Instance> list) {
+    public Optional<Instance> getInstance(List<Instance> list, int checkMod) {
         int index = list.size() > 1 ? random.nextInt(list.size()) : 0;
         for (int i = 0; i < list.size(); ++i) {
             Instance s = list.get(index);
-            if (s.check()) {
+            if (s.check(checkMod)) {
                 return Optional.of(s);
             }
             ++index;

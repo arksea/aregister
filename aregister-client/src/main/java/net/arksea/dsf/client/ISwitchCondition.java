@@ -9,20 +9,28 @@ public interface ISwitchCondition {
     default long statPeriod() {
         return 20;
     }
-    //请求响应超过此时间（毫秒）将判为超时错误
+    //请求响应超过此时间(毫秒)将判为超时错误
     default long requestTimeout() {
         return 5000;
     }
 
-    //根据quality决定是否进行限流， 返回值 <= 0则不做限流，其他值为每秒访问次数
-    default int rateLimit(InstanceQuality quality) {
-        return 0;
+    //平均请求响应超过Max将会被切换到UP限流状态，当低于Min将切换到Online取消限流
+    //Min与Max不能靠的太近，否则容易引起频繁的状态切换
+    default long rateLimitRequestTimeMax() {
+        return 2000;
     }
+    default long rateLimitRequestTimeMin() {
+        return 1000;
+    }
+
+    //UP状态时限制使用1/rateLimitMod的流量进行访问
+    default int rateLimitMod() { return 10; }
 
     //根据quality判断状态切换，每个周期会调用一次
     boolean offlineToUp(InstanceQuality quality);
     boolean upToOnline(InstanceQuality quality);
     boolean upToOffline(InstanceQuality quality);
     boolean onlineToOffline(InstanceQuality quality);
+    //根据quality决定是否进行限流， 服务在UP状态时将被限流，Router只会调度部分流量进行访问
+    boolean onlineToUp(InstanceQuality quality);
 }
-

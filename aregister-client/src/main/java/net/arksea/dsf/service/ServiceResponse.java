@@ -19,6 +19,15 @@ public class ServiceResponse implements ITraceableMessage {
         this.request = request;
         this.succeed = true;
     }
+
+    /**
+     *
+     * @param result
+     * @param request
+     * @param succeed 当设置为false时，用于标识服务端运行时异常，不可用于业务错误。
+     *                此异常将被纳入统计系统健康状态的统计，当被判断为健康状态不佳时可能会被做限流或下线处理，
+     *                所以只有当服务遭遇不可恢复的运行时异常，希望系统做限流或下线处理时才可设置此值为false，不可用于业务错误
+     */
     public ServiceResponse(Object result, ServiceRequest request, boolean succeed) {
         this.result = result;
         this.request = request;

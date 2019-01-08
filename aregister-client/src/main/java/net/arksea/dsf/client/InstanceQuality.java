@@ -100,7 +100,7 @@ public class InstanceQuality {
         Count cOld = getStepsBefore(s);
         long n = this.respondTime - cOld.respondTime;
         long m = this.requestCount - cOld.requestCount;
-        if (m == 0) {
+        if (m <= 0) {
             return 0L;
         } else {
             return n / m;

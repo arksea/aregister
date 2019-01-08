@@ -62,7 +62,8 @@ public class ServiceRequestRouter extends RequestRouter {
         log.trace("handleServiceResponse({},{})", msg.getTypeName(), msg.getRequestId());
         RequestState state = requests.remove(msg.getRequestId());
         if (state == null) {
-            log.warn("not fond the request state : {}", msg.getRequestId());
+            //可能在checkTimeoutRequest时已被移除
+            log.debug("not fond the request state : {}", msg.getRequestId());
         } else {
             state.requester.forward(msg, context());
             long time = System.currentTimeMillis() - state.startTime;
