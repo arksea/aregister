@@ -28,7 +28,7 @@ public interface ISwitchCondition {
 
     //根据Ping成功率决定是否切换到UP状态做1/rateLimitMod灰度测试
     boolean offlineToUp(InstanceQuality quality);
-    //根据灰度测试成功率决定是否切换为在线状态
+    //根据灰度测试成功率与响应时间决定是否切换为在线状态
     boolean upToOnline(InstanceQuality quality);
     //根据请求成功率做熔断
     boolean upToOffline(InstanceQuality quality);
