@@ -38,7 +38,7 @@ public final class ServerMain {
             RegisterClient registerClient = new RegisterClient("TestClient",addrs);
             String serviceName = "net.arksea.dsf.DemoService-v1.5";
             int port = cfg.getInt("akka.remote.netty.tcp.port");
-            IRateLimitStrategy rs = new DefaultRateLimitStrategy(new DemoResponse1(1, "rate limit"), 10, 20);
+            IRateLimitStrategy rs = new DefaultRateLimitStrategy(new DemoResponse1(1, "rate limit"), 4, 8);
             ActorRef service = system.actorOf(DemoActor.props(port), "DemoService");
             registerClient.register(serviceName, port, service, system, rs);
             Thread.sleep(3000);

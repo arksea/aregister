@@ -11,9 +11,6 @@ import net.arksea.zipkin.akka.ActorTracingFactory;
 import net.arksea.zipkin.akka.IActorTracing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.concurrent.duration.Duration;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -68,9 +65,14 @@ public class DemoActor extends AbstractActor {
     private void onRequest(ServiceRequest msg) {
         if (msg.message instanceof DemoRequest1) {
             long time = System.currentTimeMillis() - start;
-            if (time > 180_000 && time < 480_000) {
+            if (time > 180_000 && time <= 360_000) {
                 try {
-                    Thread.sleep(25);
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                }
+            } else if (time > 360_000 && time < 480_000) {
+                try {
+                    Thread.sleep(5);
                 } catch (InterruptedException e) {
                 }
             }

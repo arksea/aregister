@@ -26,11 +26,13 @@ public interface ISwitchCondition {
     //UP状态时限制使用1/rateLimitMod的流量进行访问
     default int rateLimitMod() { return 10; }
 
-    //根据quality判断状态切换，每个周期会调用一次
+    //根据Ping成功率决定是否切换到UP状态做1/rateLimitMod灰度测试
     boolean offlineToUp(InstanceQuality quality);
+    //根据灰度测试成功率决定是否切换为在线状态
     boolean upToOnline(InstanceQuality quality);
+    //根据请求成功率做熔断
     boolean upToOffline(InstanceQuality quality);
     boolean onlineToOffline(InstanceQuality quality);
-    //根据quality决定是否进行限流， 服务在UP状态时将被限流，Router只会调度部分流量进行访问
+    //根据请求响应时间做限流， 服务在UP状态时将被限流，Router只会调度部分流量进行访问
     boolean onlineToUp(InstanceQuality quality);
 }
