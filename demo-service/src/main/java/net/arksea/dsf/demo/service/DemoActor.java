@@ -24,6 +24,7 @@ public class DemoActor extends AbstractActor {
     private final Logger log = LogManager.getLogger(DemoActor.class);
     private final int port;
     private IActorTracing tracing;
+    private long start = System.currentTimeMillis();
 
     public DemoActor(int port) {
         this.port = port;
@@ -66,8 +67,15 @@ public class DemoActor extends AbstractActor {
 
     private void onRequest(ServiceRequest msg) {
         if (msg.message instanceof DemoRequest1) {
+            long time = System.currentTimeMillis() - start;
+            if (time > 180_000 && time < 480_000) {
+                try {
+                    Thread.sleep(25);
+                } catch (InterruptedException e) {
+                }
+            }
             DemoRequest1 request = (DemoRequest1) msg.message;
-            log.info("onRequest: {}, online: {}", request.msg, online);
+//            log.info("onRequest: {}, online: {}", request.msg, online);
             if (port == 8772) {
                 if (online) {
                     DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);

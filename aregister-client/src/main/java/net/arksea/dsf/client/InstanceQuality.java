@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class InstanceQuality {
     private final Logger log = LogManager.getLogger(InstanceQuality.class);
-    private static int MAX_HISTORY_COUNT = 15;   //保存历史数据的周期数
+    public static int MAX_HISTORY_COUNT = 15;   //保存历史数据的周期数
     private final ArrayList<Count> historyStat;  //每分钟保存一个历史值
     private long requestCount;
     private long respondTime;
@@ -81,10 +81,11 @@ public class InstanceQuality {
      * @return 0~1.0
      */
     public float getSucceedRate(int step) {
-        int s = Math.min(MAX_HISTORY_COUNT -1, step);
-        Count cOld = getStepsBefore(s);
-        long n = this.succeedCount - cOld.succeedCount;
-        long m = this.requestCount - cOld.requestCount;
+        int s = Math.min(MAX_HISTORY_COUNT - 2, step);
+        Count c1 = getStepsBefore(s+1);
+        Count c2 = getStepsBefore(s);
+        long n = c2.succeedCount - c1.succeedCount;
+        long m = c2.requestCount - c1.requestCount;
         if (m == 0) {
             return 1.0f;
         } else {
@@ -96,10 +97,11 @@ public class InstanceQuality {
      * 计算指定时间范围内的平均请求响应时间
      */
     public long getMeanRespondTime(int step) {
-        int s = Math.min(MAX_HISTORY_COUNT -1, step);
-        Count cOld = getStepsBefore(s);
-        long n = this.respondTime - cOld.respondTime;
-        long m = this.requestCount - cOld.requestCount;
+        int s = Math.min(MAX_HISTORY_COUNT - 2, step);
+        Count c1 = getStepsBefore(s+1);
+        Count c2 = getStepsBefore(s);
+        long n = c2.respondTime - c1.respondTime;
+        long m = c2.requestCount - c1.requestCount;
         if (m <= 0) {
             return 0L;
         } else {
@@ -108,9 +110,10 @@ public class InstanceQuality {
     }
 
     public long getRequestCount(int step) {
-        int s = Math.min(MAX_HISTORY_COUNT -1, step);
-        Count cOld = getStepsBefore(s);
-        return this.requestCount - cOld.requestCount;
+        int s = Math.min(MAX_HISTORY_COUNT - 2, step);
+        Count c1 = getStepsBefore(s+1);
+        Count c2 = getStepsBefore(s);
+        return c2.requestCount - c1.requestCount;
     }
 
     /**

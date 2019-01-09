@@ -11,6 +11,7 @@ import net.arksea.dsf.client.*;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
+import net.arksea.dsf.service.IRateLimitStrategy;
 import net.arksea.dsf.service.ServiceAdaptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -125,7 +126,7 @@ public class RegisterClient {
      * @param serviceSystem 创建服务的ActorSystem
      */
     public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem) {
-        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this, null), serviceName+"-Adaptor");
     }
 
     /**
@@ -134,8 +135,22 @@ public class RegisterClient {
     public void register(String serviceName, int bindPort, ActorRef service, ActorSystem serviceSystem) throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         final String bindHost = addr.getHostAddress();
-        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this), serviceName+"-Adaptor");
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this, null), serviceName+"-Adaptor");
     }
+
+    public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem, IRateLimitStrategy strategy) {
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this, strategy), serviceName+"-Adaptor");
+    }
+
+    /**
+     * 注册服务，此重载方法默认使用LocalHost作为绑定主机名
+     */
+    public void register(String serviceName, int bindPort, ActorRef service, ActorSystem serviceSystem, IRateLimitStrategy strategy) throws UnknownHostException {
+        InetAddress addr = InetAddress.getLocalHost();
+        final String bindHost = addr.getHostAddress();
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this, strategy), serviceName+"-Adaptor");
+    }
+
 
     /**
      * 获取指定服务的实例列表

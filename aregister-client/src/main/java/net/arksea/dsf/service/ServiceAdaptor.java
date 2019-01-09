@@ -3,6 +3,7 @@ package net.arksea.dsf.service;
 import akka.actor.*;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
+import com.google.common.util.concurrent.RateLimiter;
 import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.InstanceQuality;
@@ -37,8 +38,15 @@ public class ServiceAdaptor extends AbstractActor {
     private final String serviceName;
     private final String serviceAddr;
     private final String servicePath;
+    private final IRateLimitStrategy rateLimitStrategy; //限流策略
+    private RateLimiter rateLimiter;
+    private long lastUpdateCheckTime;  //最后一次检测是否需要限流的时间
+    private long rateLimitQPS;         //限流QPS，<=0表示不限流
 
-    protected ServiceAdaptor(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register) {
+    protected ServiceAdaptor(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register ) {
+        this(serviceName, host, port, service, codes, register, null);
+    }
+    protected ServiceAdaptor(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register, IRateLimitStrategy rateLimitStrategy) {
         this.service = service;
         this.codes = codes;
         this.quality = new InstanceQuality("");
@@ -47,23 +55,24 @@ public class ServiceAdaptor extends AbstractActor {
         Address address = Address.apply("akka.tcp",context().system().name(),host, port);
         serviceAddr = host + ":" + port;
         servicePath = self().path().toStringWithAddress(address);
+        this.rateLimitStrategy = rateLimitStrategy;
         logger.info("Create Service Adaptor: addr={}, path={}", serviceAddr, servicePath);
     }
 
-    public static Props props(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register) {
+    public static Props props(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register, IRateLimitStrategy rateLimitStrategy) {
         return Props.create(new Creator<ServiceAdaptor>() {
             @Override
             public ServiceAdaptor create() throws Exception {
-                return new ServiceAdaptor(serviceName, host, port, service, codes, register);
+                return new ServiceAdaptor(serviceName, host, port, service, codes, register, rateLimitStrategy);
             }
         });
     }
 
-    public static Props props(String serviceName, String host, int port, ActorRef service, RegisterClient register) {
+    public static Props props(String serviceName, String host, int port, ActorRef service, RegisterClient register, IRateLimitStrategy rateLimitStrategy) {
         return Props.create(new Creator<ServiceAdaptor>() {
             @Override
             public ServiceAdaptor create() throws Exception {
-                return new ServiceAdaptor(serviceName, host, port, service, new JavaSerializeCodes(), register);
+                return new ServiceAdaptor(serviceName, host, port, service, new JavaSerializeCodes(), register, rateLimitStrategy);
             }
         });
     }
@@ -112,11 +121,50 @@ public class ServiceAdaptor extends AbstractActor {
     //------------------------------------------------------------------------------------
     private void handleServiceRequest(DSF.ServiceRequest msg) {
         logger.trace("handleServiceRequest(type={},reqid={})", msg.getTypeName(), msg.getRequestId());
+        if (rateLimitStrategy != null) {
+            updateRateLimiter();
+            if (rateLimitQPS > 0 && !rateLimiter.tryAcquire()) {
+                Object result = rateLimitStrategy.getRateLimitResponse();
+                // quality.failed(0); 此处为异常时的快速失败应对，不能再加入请求时间统计，否则会导致系统"自激振荡"
+                DSF.ServiceResponse.Builder builder = codes.encodeResponse(result, msg.getRequestId(), true);
+                Optional<Span> op = TracingUtils.getTracingSpan(msg);
+                if (op != null && op.isPresent()) {
+                    byte[] sb = spanEncoder.encode(op.get());
+                    builder.setTracingSpan(ByteString.copyFrom(sb));
+                }
+                DSF.ServiceResponse r = builder.build();
+                sender().forward(r, context());
+                return;
+            }
+        }
         ServiceRequest request;
         ActorRef sender = sender();
         Object obj = codes.decodeRequest(msg);
         request = new ServiceRequest(obj, msg.getRequestId(), sender);
         service.tell(request, self());
+    }
+
+    //long ___lastDebugLog;
+
+    private void updateRateLimiter() {
+        long now = System.currentTimeMillis();
+        if (now - lastUpdateCheckTime > rateLimitStrategy.getMinUpdatePeriod()) {
+            this.lastUpdateCheckTime = now;
+            long meanQPS = quality.getRequestCount(1) / (60);
+            long meanTTS = quality.getMeanRespondTime(1);
+            //if (now - ___lastDebugLog > 10_000) {
+            //    logger.debug("Current rateLimitQPS={}, meanQPS={}, meanTTS={}", rateLimitQPS, meanQPS, meanTTS);
+            //    ___lastDebugLog = now;
+            //}
+            long qps = rateLimitStrategy.getLimitQPS(meanTTS, meanQPS, rateLimitQPS);
+            if (rateLimitQPS != qps) {
+                rateLimitQPS = qps;
+                logger.warn("Update rateLimitQPS={}, meanQPS={}, meanTTS={}", rateLimitQPS, meanQPS, meanTTS);
+                if (rateLimitQPS > 0) {
+                    this.rateLimiter = RateLimiter.create(rateLimitQPS);
+                }
+            }
+        }
     }
     //------------------------------------------------------------------------------------
     private void handleServiceResponse(ServiceResponse msg) {

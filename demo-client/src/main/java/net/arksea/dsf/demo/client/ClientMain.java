@@ -36,7 +36,7 @@ public final class ClientMain {
             addrs.add("127.0.0.1:6501");
             RegisterClient register = new RegisterClient("TestClient",addrs);
             client = register.subscribe(serviceName);
-            for (int i=0; i<5; ++i) {
+            for (int i=0; i<500000; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
                 Future<DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DemoResponse1.class));
                 f.onComplete(
@@ -51,7 +51,7 @@ public final class ClientMain {
                         }
                     }, client.system.dispatcher()
                 );
-                Thread.sleep(1000);
+                Thread.sleep(35);
             }
             Thread.sleep(10000);
             Await.result(client.system.terminate(), Duration.apply(10, TimeUnit.SECONDS));
@@ -64,7 +64,11 @@ public final class ClientMain {
         client.tracing.trace(ret, apply);
     }
 
+    static long __lastLogTime;
     private static void complete(DemoResponse1 ret) {
-        logger.info("request succeed, result message: ", ret.msg);
+        if (System.currentTimeMillis() - __lastLogTime > 10_000) {
+            __lastLogTime = System.currentTimeMillis();
+            logger.info("result message: {}", ret.msg);
+        }
     }
 }

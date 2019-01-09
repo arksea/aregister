@@ -12,6 +12,7 @@ dependencies {
     compile ('net.arksea:akka-tracing-zipkin:1.0.0-SNAPSHOT')
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.4.0'
+    compile 'com.google.guava:guava:17.0'
 }
 
 configure(install.repositories.mavenInstaller) {
