@@ -17,5 +17,5 @@ public interface IRouteStrategy {
      * @throw   NoUseableServiceException 没有可用的在线服务
      * @throw   RateLimitedException 所有服务都达到流控门限
      */
-    Optional<Instance> getInstance(List<Instance> list);
+    Optional<Instance> getInstance(List<Instance> list, int checkMod);
 }

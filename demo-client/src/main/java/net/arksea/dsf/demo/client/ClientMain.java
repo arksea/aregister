@@ -1,6 +1,7 @@
 package net.arksea.dsf.demo.client;
 
 import akka.dispatch.OnComplete;
+import akka.japi.pf.FI;
 import net.arksea.dsf.client.Client;
 import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.demo.DemoResponse1;
@@ -23,37 +24,51 @@ import static akka.japi.Util.classTag;
 public final class ClientMain {
     private static final Logger logger = LogManager.getLogger(ClientMain.class);
     private ClientMain() {};
-
+    private static Client client;
     /**
      * @param args command line args
      */
     public static void main(final String[] args) {
         try {
             logger.info("Start DEMO Client");
-            String serviceName = "net.arksea.dsf.DemoService-v1";
+            String serviceName = "net.arksea.dsf.DemoService-v1.5";
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
             RegisterClient register = new RegisterClient("TestClient",addrs);
-            Client client = register.subscribe(serviceName);
-            for (int i=0; i<80000; ++i) {
+            client = register.subscribe(serviceName);
+            for (int i=0; i<500000; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
                 Future<DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DemoResponse1.class));
                 f.onComplete(
                     new OnComplete<DemoResponse1>() {
                         @Override
                         public void onComplete(Throwable failure, DemoResponse1 ret) throws Throwable {
-                            if (failure != null) {
+                            if (failure == null) {
+                                handleComplete(ret, ClientMain::complete);
+                            } else {
                                 logger.warn("failed", failure);
                             }
                         }
                     }, client.system.dispatcher()
                 );
-                Thread.sleep(1000);
+                Thread.sleep(20);
             }
             Thread.sleep(10000);
             Await.result(client.system.terminate(), Duration.apply(10, TimeUnit.SECONDS));
         } catch (Exception ex) {
             logger.error("Start DEMO Client failed", ex);
+        }
+    }
+
+    private static <T> void handleComplete(T ret, FI.UnitApply<T> apply) throws Exception {
+        client.tracing.trace(ret, apply);
+    }
+
+    static long __lastLogTime;
+    private static void complete(DemoResponse1 ret) {
+        if (System.currentTimeMillis() - __lastLogTime > 10_000) {
+            __lastLogTime = System.currentTimeMillis();
+            logger.info("result message: {}", ret.msg);
         }
     }
 }

@@ -13,15 +13,14 @@ public class Roundrobin implements IRouteStrategy {
     private int index = 0;
 
     @Override
-    public Optional<Instance> getInstance(List<Instance> list) {
+    public Optional<Instance> getInstance(List<Instance> list, int checkMod) {
         for (int i = 0; i < list.size(); ++i) {
             if (index >= list.size()) {
                 index = 0;
             }
             Instance s = list.get(index);
-            //System.out.println("size="+list.size()+"======"+index+"========"+status);
             ++index;
-            if (s.check()) {
+            if (s.check(checkMod)) {
                 return Optional.of(s);
             }
         }

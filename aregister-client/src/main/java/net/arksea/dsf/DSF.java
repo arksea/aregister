@@ -9716,6 +9716,11 @@ public final class DSF {
      */
     com.google.protobuf.ByteString
         getTypeNameBytes();
+
+    /**
+     * <code>bytes tracingSpan = 6;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
   }
   /**
    * <pre>
@@ -9739,6 +9744,7 @@ public final class DSF {
       payload_ = com.google.protobuf.ByteString.EMPTY;
       serialize_ = 0;
       typeName_ = "";
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -9798,6 +9804,11 @@ public final class DSF {
               java.lang.String s = input.readStringRequireUtf8();
 
               typeName_ = s;
+              break;
+            }
+            case 50: {
+
+              tracingSpan_ = input.readBytes();
               break;
             }
           }
@@ -9926,6 +9937,15 @@ public final class DSF {
       }
     }
 
+    public static final int TRACINGSPAN_FIELD_NUMBER = 6;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 6;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -9953,6 +9973,9 @@ public final class DSF {
       if (!getTypeNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, typeName_);
       }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(6, tracingSpan_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -9979,6 +10002,10 @@ public final class DSF {
       if (!getTypeNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, typeName_);
       }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, tracingSpan_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -10004,6 +10031,8 @@ public final class DSF {
       result = result && serialize_ == other.serialize_;
       result = result && getTypeName()
           .equals(other.getTypeName());
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -10026,6 +10055,8 @@ public final class DSF {
       hash = (53 * hash) + serialize_;
       hash = (37 * hash) + TYPENAME_FIELD_NUMBER;
       hash = (53 * hash) + getTypeName().hashCode();
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -10169,6 +10200,8 @@ public final class DSF {
 
         typeName_ = "";
 
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
         return this;
       }
 
@@ -10196,6 +10229,7 @@ public final class DSF {
         result.payload_ = payload_;
         result.serialize_ = serialize_;
         result.typeName_ = typeName_;
+        result.tracingSpan_ = tracingSpan_;
         onBuilt();
         return result;
       }
@@ -10253,6 +10287,9 @@ public final class DSF {
         if (!other.getTypeName().isEmpty()) {
           typeName_ = other.typeName_;
           onChanged();
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -10517,6 +10554,35 @@ public final class DSF {
         onChanged();
         return this;
       }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 6;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 6;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 6;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
+        onChanged();
+        return this;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFieldsProto3(unknownFields);
@@ -10608,6 +10674,11 @@ public final class DSF {
      * <code>bool succeed = 5;</code>
      */
     boolean getSucceed();
+
+    /**
+     * <code>bytes tracingSpan = 6;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
   }
   /**
    * Protobuf type {@code net.arksea.dsf.ServiceResponse}
@@ -10627,6 +10698,7 @@ public final class DSF {
       serialize_ = 0;
       typeName_ = "";
       succeed_ = false;
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -10686,6 +10758,11 @@ public final class DSF {
             case 40: {
 
               succeed_ = input.readBool();
+              break;
+            }
+            case 50: {
+
+              tracingSpan_ = input.readBytes();
               break;
             }
           }
@@ -10814,6 +10891,15 @@ public final class DSF {
       return succeed_;
     }
 
+    public static final int TRACINGSPAN_FIELD_NUMBER = 6;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 6;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -10841,6 +10927,9 @@ public final class DSF {
       if (succeed_ != false) {
         output.writeBool(5, succeed_);
       }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(6, tracingSpan_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -10867,6 +10956,10 @@ public final class DSF {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(5, succeed_);
       }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, tracingSpan_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -10892,6 +10985,8 @@ public final class DSF {
           .equals(other.getTypeName());
       result = result && (getSucceed()
           == other.getSucceed());
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -10914,6 +11009,8 @@ public final class DSF {
       hash = (37 * hash) + SUCCEED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getSucceed());
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -11053,6 +11150,8 @@ public final class DSF {
 
         succeed_ = false;
 
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
         return this;
       }
 
@@ -11080,6 +11179,7 @@ public final class DSF {
         result.serialize_ = serialize_;
         result.typeName_ = typeName_;
         result.succeed_ = succeed_;
+        result.tracingSpan_ = tracingSpan_;
         onBuilt();
         return result;
       }
@@ -11137,6 +11237,9 @@ public final class DSF {
         }
         if (other.getSucceed() != false) {
           setSucceed(other.getSucceed());
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -11398,6 +11501,35 @@ public final class DSF {
       public Builder clearSucceed() {
         
         succeed_ = false;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 6;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 6;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 6;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
         onChanged();
         return this;
       }
@@ -14505,21 +14637,22 @@ public final class DSF {
       "rialId\030\002 \001(\t\022+\n\tinstances\030\003 \003(\0132\030.net.ar" +
       "ksea.dsf.Instance\"1\n\nSubService\022\017\n\007servi" +
       "ce\030\001 \001(\t\022\022\n\nsubscriber\030\002 \001(\t\"\037\n\014UnsubSer" +
-      "vice\022\017\n\007service\030\001 \001(\t\"\210\001\n\016ServiceRequest" +
+      "vice\022\017\n\007service\030\001 \001(\t\"\235\001\n\016ServiceRequest" +
       "\022\021\n\trequestId\030\001 \001(\t\022\016\n\006oneway\030\002 \001(\010\022\017\n\007p" +
       "ayload\030\003 \001(\014\0220\n\tserialize\030\004 \001(\0162\035.net.ar" +
       "ksea.dsf.EnumSerialize\022\020\n\010typeName\030\005 \001(\t" +
-      "\"\212\001\n\017ServiceResponse\022\021\n\trequestId\030\001 \001(\t\022" +
-      "\017\n\007payload\030\002 \001(\014\0220\n\tserialize\030\003 \001(\0162\035.ne" +
-      "t.arksea.dsf.EnumSerialize\022\020\n\010typeName\030\004" +
-      " \001(\t\022\017\n\007succeed\030\005 \001(\010\"O\n\014RequestCount\022\024\n" +
-      "\014requestCount\030\001 \001(\003\022\024\n\014succeedCount\030\002 \001(" +
-      "\003\022\023\n\013respondTime\030\003 \001(\003\"B\n\023RequestCountHi" +
-      "story\022+\n\005items\030\001 \003(\0132\034.net.arksea.dsf.Re" +
-      "questCount\"\030\n\026GetRequestCountHistory\"\026\n\024" +
-      "GetRegisterInstances\"\006\n\004Ping\"\006\n\004Pong*/\n\r" +
-      "EnumSerialize\022\t\n\005BYTES\020\000\022\010\n\004JAVA\020\001\022\t\n\005PR" +
-      "OTO\020\002B\025\n\016net.arksea.dsfB\003DSFb\006proto3"
+      "\022\023\n\013tracingSpan\030\006 \001(\014\"\237\001\n\017ServiceRespons" +
+      "e\022\021\n\trequestId\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014\0220\n" +
+      "\tserialize\030\003 \001(\0162\035.net.arksea.dsf.EnumSe" +
+      "rialize\022\020\n\010typeName\030\004 \001(\t\022\017\n\007succeed\030\005 \001" +
+      "(\010\022\023\n\013tracingSpan\030\006 \001(\014\"O\n\014RequestCount\022" +
+      "\024\n\014requestCount\030\001 \001(\003\022\024\n\014succeedCount\030\002 " +
+      "\001(\003\022\023\n\013respondTime\030\003 \001(\003\"B\n\023RequestCount" +
+      "History\022+\n\005items\030\001 \003(\0132\034.net.arksea.dsf." +
+      "RequestCount\"\030\n\026GetRequestCountHistory\"\026" +
+      "\n\024GetRegisterInstances\"\006\n\004Ping\"\006\n\004Pong*/" +
+      "\n\rEnumSerialize\022\t\n\005BYTES\020\000\022\010\n\004JAVA\020\001\022\t\n\005" +
+      "PROTO\020\002B\025\n\016net.arksea.dsfB\003DSFb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -14616,13 +14749,13 @@ public final class DSF {
     internal_static_net_arksea_dsf_ServiceRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_ServiceRequest_descriptor,
-        new java.lang.String[] { "RequestId", "Oneway", "Payload", "Serialize", "TypeName", });
+        new java.lang.String[] { "RequestId", "Oneway", "Payload", "Serialize", "TypeName", "TracingSpan", });
     internal_static_net_arksea_dsf_ServiceResponse_descriptor =
       getDescriptor().getMessageTypes().get(14);
     internal_static_net_arksea_dsf_ServiceResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_ServiceResponse_descriptor,
-        new java.lang.String[] { "RequestId", "Payload", "Serialize", "TypeName", "Succeed", });
+        new java.lang.String[] { "RequestId", "Payload", "Serialize", "TypeName", "Succeed", "TracingSpan", });
     internal_static_net_arksea_dsf_RequestCount_descriptor =
       getDescriptor().getMessageTypes().get(15);
     internal_static_net_arksea_dsf_RequestCount_fieldAccessorTable = new

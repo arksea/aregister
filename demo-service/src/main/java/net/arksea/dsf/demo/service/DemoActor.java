@@ -3,16 +3,14 @@ package net.arksea.dsf.demo.service;
 import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.japi.Creator;
-import akka.japi.pf.ReceiveBuilder;
 import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.demo.DemoResponse1;
 import net.arksea.dsf.service.ServiceRequest;
 import net.arksea.dsf.service.ServiceResponse;
+import net.arksea.zipkin.akka.ActorTracingFactory;
+import net.arksea.zipkin.akka.IActorTracing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.concurrent.duration.Duration;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -22,9 +20,12 @@ public class DemoActor extends AbstractActor {
 
     private final Logger log = LogManager.getLogger(DemoActor.class);
     private final int port;
+    private IActorTracing tracing;
+    private long start = System.currentTimeMillis();
 
     public DemoActor(int port) {
         this.port = port;
+        tracing = ActorTracingFactory.create(self(), port);
     }
 
     public static Props props(int port) {
@@ -37,7 +38,7 @@ public class DemoActor extends AbstractActor {
     }
     @Override
     public Receive createReceive() {
-        return ReceiveBuilder.create()
+        return tracing.receiveBuilder()
             .match(ServiceRequest.class, this::onRequest)
             .match(String.class, this::onMessage)
             .build();
@@ -63,18 +64,30 @@ public class DemoActor extends AbstractActor {
 
     private void onRequest(ServiceRequest msg) {
         if (msg.message instanceof DemoRequest1) {
+            long time = System.currentTimeMillis() - start;
+            if (time > 180_000 && time <= 360_000) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                }
+            } else if (time > 360_000 && time < 480_000) {
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                }
+            }
             DemoRequest1 request = (DemoRequest1) msg.message;
-            log.info("onRequest: {}, online: {}", request.msg, online);
+//            log.info("onRequest: {}, online: {}", request.msg, online);
             if (port == 8772) {
                 if (online) {
                     DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);
                     ServiceResponse response = new ServiceResponse(resule, msg);
-                    sender().tell(response, self());
+                    tracing.tell(sender(), response, self());
                 }
             } else {
                 DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);
                 ServiceResponse response = new ServiceResponse(resule, msg);
-                sender().tell(response, self());
+                tracing.tell(sender(), response, self());
             }
         }
     }
