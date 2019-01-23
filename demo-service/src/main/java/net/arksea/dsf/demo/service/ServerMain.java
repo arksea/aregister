@@ -4,9 +4,11 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.demo.DemoResponse1;
 import net.arksea.dsf.register.RegisterClient;
 import net.arksea.dsf.service.DefaultRateLimitStrategy;
+import net.arksea.dsf.service.IRateLimitConfig;
 import net.arksea.dsf.service.IRateLimitStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +16,7 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
@@ -38,9 +41,25 @@ public final class ServerMain {
             RegisterClient registerClient = new RegisterClient("TestClient",addrs);
             String serviceName = "net.arksea.dsf.DemoService-v1.5";
             int port = cfg.getInt("akka.remote.netty.tcp.port");
-            IRateLimitStrategy rs = new DefaultRateLimitStrategy(new DemoResponse1(1, "rate limit"), 4, 8);
+            IRateLimitConfig limitConfig = new IRateLimitConfig() {
+                private final DemoResponse1 response = new DemoResponse1(1, "rate limit");
+                @Override
+                public long getLowThreshold() {
+                    return 4;
+                }
+                @Override
+                public long getHightThreshold() {
+                    return 8;
+                }
+                @Override
+                public Object getRateLimitResponse() {
+                    return response;
+                }
+            };
+            IRateLimitStrategy rs = new DefaultRateLimitStrategy(limitConfig);
             ActorRef service = system.actorOf(DemoActor.props(port), "DemoService");
-            registerClient.register(serviceName, port, service, system, rs);
+            String hostName = InetAddress.getLocalHost().getHostName();
+            registerClient.register(serviceName, hostName, port, service, system, new JavaSerializeCodes(), rs);
             Thread.sleep(3000);
 //            if (port == 8772) {
 //                Thread.sleep(400000);

@@ -19,8 +19,6 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -125,32 +123,9 @@ public class RegisterClient {
      * @param service  服务ActorRef
      * @param serviceSystem 创建服务的ActorSystem
      */
-    public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem) {
-        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this, null), serviceName+"-Adaptor");
+    public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem, ICodes codes, IRateLimitStrategy strategy) {
+        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, codes, this, strategy), serviceName+"-Adaptor");
     }
-
-    /**
-     * 注册服务，此重载方法默认使用LocalHost作为绑定主机名
-     */
-    public void register(String serviceName, int bindPort, ActorRef service, ActorSystem serviceSystem) throws UnknownHostException {
-        InetAddress addr = InetAddress.getLocalHost();
-        final String bindHost = addr.getHostAddress();
-        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this, null), serviceName+"-Adaptor");
-    }
-
-    public void register(String serviceName, String bindHost, int bindPort, ActorRef service, ActorSystem serviceSystem, IRateLimitStrategy strategy) {
-        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this, strategy), serviceName+"-Adaptor");
-    }
-
-    /**
-     * 注册服务，此重载方法默认使用LocalHost作为绑定主机名
-     */
-    public void register(String serviceName, int bindPort, ActorRef service, ActorSystem serviceSystem, IRateLimitStrategy strategy) throws UnknownHostException {
-        InetAddress addr = InetAddress.getLocalHost();
-        final String bindHost = addr.getHostAddress();
-        serviceSystem.actorOf(ServiceAdaptor.props(serviceName, bindHost, bindPort, service, this, strategy), serviceName+"-Adaptor");
-    }
-
 
     /**
      * 获取指定服务的实例列表

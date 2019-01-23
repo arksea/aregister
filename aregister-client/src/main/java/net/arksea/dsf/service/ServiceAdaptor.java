@@ -8,7 +8,6 @@ import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.InstanceQuality;
 import net.arksea.dsf.codes.ICodes;
-import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.register.RegisterClient;
 import net.arksea.zipkin.akka.TracingUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,9 +42,6 @@ public class ServiceAdaptor extends AbstractActor {
     private long lastUpdateCheckTime;  //最后一次检测是否需要限流的时间
     private long rateLimitQPS;         //限流QPS，<=0表示不限流
 
-    protected ServiceAdaptor(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register ) {
-        this(serviceName, host, port, service, codes, register, null);
-    }
     protected ServiceAdaptor(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register, IRateLimitStrategy rateLimitStrategy) {
         this.service = service;
         this.codes = codes;
@@ -64,15 +60,6 @@ public class ServiceAdaptor extends AbstractActor {
             @Override
             public ServiceAdaptor create() throws Exception {
                 return new ServiceAdaptor(serviceName, host, port, service, codes, register, rateLimitStrategy);
-            }
-        });
-    }
-
-    public static Props props(String serviceName, String host, int port, ActorRef service, RegisterClient register, IRateLimitStrategy rateLimitStrategy) {
-        return Props.create(new Creator<ServiceAdaptor>() {
-            @Override
-            public ServiceAdaptor create() throws Exception {
-                return new ServiceAdaptor(serviceName, host, port, service, new JavaSerializeCodes(), register, rateLimitStrategy);
             }
         });
     }
@@ -150,7 +137,7 @@ public class ServiceAdaptor extends AbstractActor {
         long now = System.currentTimeMillis();
         if (now - lastUpdateCheckTime > rateLimitStrategy.getMinUpdatePeriod()) {
             this.lastUpdateCheckTime = now;
-            long meanQPS = quality.getRequestCount(1) / (60);
+            long meanQPS = quality.getRequestCount(1) / 60;
             long meanTTS = quality.getMeanRespondTime(1);
             //if (now - ___lastDebugLog > 10_000) {
             //    logger.debug("Current rateLimitQPS={}, meanQPS={}, meanTTS={}", rateLimitQPS, meanQPS, meanTTS);
