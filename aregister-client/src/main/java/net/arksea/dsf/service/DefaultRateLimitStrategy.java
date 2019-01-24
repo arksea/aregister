@@ -40,6 +40,10 @@ public class DefaultRateLimitStrategy implements IRateLimitStrategy {
         }
     }
 
+    public  long getUpdatePeriodMinutes() {
+        return rateLimitConfig.getUpdatePeriodMinutes();
+    }
+
     public Object getRateLimitResponse() {
         return rateLimitConfig.getRateLimitResponse();
     }

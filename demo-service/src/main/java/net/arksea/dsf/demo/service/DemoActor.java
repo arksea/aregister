@@ -9,6 +9,7 @@ import net.arksea.dsf.service.ServiceRequest;
 import net.arksea.dsf.service.ServiceResponse;
 import net.arksea.zipkin.akka.ActorTracingFactory;
 import net.arksea.zipkin.akka.IActorTracing;
+import net.arksea.zipkin.akka.TracingConfigImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +26,7 @@ public class DemoActor extends AbstractActor {
 
     public DemoActor(int port) {
         this.port = port;
-        tracing = ActorTracingFactory.create(self(), port);
+        tracing = ActorTracingFactory.create(new TracingConfigImpl(), "DemoActor", "localhost", port);
     }
 
     public static Props props(int port) {
@@ -65,7 +66,7 @@ public class DemoActor extends AbstractActor {
     private void onRequest(ServiceRequest msg) {
         if (msg.message instanceof DemoRequest1) {
             long time = System.currentTimeMillis() - start;
-            if (time > 180_000 && time <= 360_000) {
+            if (time > 90_000 && time <= 360_000) {
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -77,7 +78,7 @@ public class DemoActor extends AbstractActor {
                 }
             }
             DemoRequest1 request = (DemoRequest1) msg.message;
-//            log.info("onRequest: {}, online: {}", request.msg, online);
+//            log.info("onRequest: {}, online: {}, name={}", request.msg, online, self().path().name());
             if (port == 8772) {
                 if (online) {
                     DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);

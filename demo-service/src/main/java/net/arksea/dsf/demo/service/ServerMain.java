@@ -2,6 +2,7 @@ package net.arksea.dsf.demo.service;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.routing.ConsistentHashingPool;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.codes.JavaSerializeCodes;
@@ -57,9 +58,11 @@ public final class ServerMain {
                 }
             };
             IRateLimitStrategy rs = new DefaultRateLimitStrategy(limitConfig);
-            ActorRef service = system.actorOf(DemoActor.props(port), "DemoService");
-            String hostName = InetAddress.getLocalHost().getHostName();
-            registerClient.register(serviceName, hostName, port, service, system, new JavaSerializeCodes(), rs);
+            ConsistentHashingPool pool = new ConsistentHashingPool(5);
+            ActorRef service = system.actorOf(pool.props(DemoActor.props(port)), "DemoServicePool");
+            String hostAddrss = InetAddress.getLocalHost().getHostAddress();
+            logger.info("hostAddress={}", hostAddrss);
+            registerClient.register(serviceName, hostAddrss, port, service, system, new JavaSerializeCodes(), rs);
             Thread.sleep(3000);
 //            if (port == 8772) {
 //                Thread.sleep(400000);
