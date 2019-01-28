@@ -18,11 +18,11 @@ public interface IRateLimitStrategy {
     }
 
     /**
-     * 限流QPS最小修改间隔，单位为毫秒
+     * 限流QPS最小修改间隔，单位为分钟
      * @return
      */
-    default long getMinUpdatePeriod() {
-        return 60_000;
+    default long getUpdatePeriodMinutes() {
+        return 2;
     }
 
     /**

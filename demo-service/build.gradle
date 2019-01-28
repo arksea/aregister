@@ -5,8 +5,15 @@ apply plugin: 'maven'
 
 description = """Actor Register DEMO Service"""
 
+configurations.all {
+    resolutionStrategy {
+        cacheDynamicVersionsFor  0, 'seconds'
+        cacheChangingModulesFor  0, 'seconds'
+    }
+}
+
 dependencies {
-    compile ('net.arksea:akka-tracing-zipkin:1.0.0-SNAPSHOT')
+    compile ('net.arksea:akka-tracing-zipkin:1.0.1-SNAPSHOT')
     compile project(':aregister-client')
 }
 

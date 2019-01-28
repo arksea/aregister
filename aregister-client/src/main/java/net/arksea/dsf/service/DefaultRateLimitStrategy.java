@@ -7,48 +7,44 @@ package net.arksea.dsf.service;
  * Created by xiaohaixing on 2019/1/8.
  */
 public class DefaultRateLimitStrategy implements IRateLimitStrategy {
-    private final Object rateLimitResponse;
-    private final long lowThreshold;  //响应时间下门限
-    private final long hightThreshold; //响应时间上门限
-    private final static int MIN_QPS = 10;  //最小限流流量
-    private final static float RATIO = 1.2f; //调整限流流量的系数
+    private IRateLimitConfig rateLimitConfig;
 
-    /**
-     *
-     * @param rateLimitResponse 当请求被限流时的返回值
-     * @param lowThreshold 响应时间下门限
-     * @param hightThreshold 响应时间上门限，必须大于下门限
-     */
-    public DefaultRateLimitStrategy(Object rateLimitResponse, long lowThreshold, long hightThreshold) {
-        this.rateLimitResponse = rateLimitResponse;
-        this.lowThreshold = lowThreshold;
-        this.hightThreshold = hightThreshold;
-        if (lowThreshold >= hightThreshold) {
+    public DefaultRateLimitStrategy(IRateLimitConfig rateLimitConfig) {
+        if (rateLimitConfig.getLowThreshold() >= rateLimitConfig.getHightThreshold()) {
             throw new IllegalArgumentException("lowThreshold greater than hightThreshold");
         }
+        this.rateLimitConfig = rateLimitConfig;
     }
 
     @Override
     public long getLimitQPS(long meanRequestTime, long meanQPS, long lastLimitQPS) {
-        if (meanRequestTime < lowThreshold) {
+        final long  LOW_THRESHOLD   = rateLimitConfig.getLowThreshold();
+        final long  HIGHT_THRESHOLD = rateLimitConfig.getHightThreshold();
+        final float UPDATE_RATIO    = rateLimitConfig.getUpdateRatio();
+        final int   MIN_LIMIT_QPS   = rateLimitConfig.getMinLimitQps();
+        if (meanRequestTime < LOW_THRESHOLD) {
             if (lastLimitQPS - meanQPS > meanQPS) {
                 //当限流QPS已经远大于实际QPS，则不再需要做限流了
                 return 0;
             } else {
-                return lastLimitQPS == 0 ? 0 : (int) (lastLimitQPS * RATIO);
+                return lastLimitQPS == 0 ? 0 : (int) (lastLimitQPS * UPDATE_RATIO);
             }
-        } else if (meanRequestTime > hightThreshold) {
+        } else if (meanRequestTime > HIGHT_THRESHOLD) {
             if (lastLimitQPS == 0) {
-                return meanQPS > MIN_QPS ? (int)(meanQPS / RATIO) : MIN_QPS;
+                return Math.max(MIN_LIMIT_QPS, (int)(meanQPS / UPDATE_RATIO));
             } else {
-                return lastLimitQPS > MIN_QPS ? (int)(lastLimitQPS / RATIO) : MIN_QPS;
+                return Math.max(MIN_LIMIT_QPS, (int)(lastLimitQPS / UPDATE_RATIO));
             }
         } else {
-            return lastLimitQPS;
+            return Math.max(MIN_LIMIT_QPS, lastLimitQPS);
         }
     }
 
+    public  long getUpdatePeriodMinutes() {
+        return rateLimitConfig.getUpdatePeriodMinutes();
+    }
+
     public Object getRateLimitResponse() {
-        return rateLimitResponse;
+        return rateLimitConfig.getRateLimitResponse();
     }
 }

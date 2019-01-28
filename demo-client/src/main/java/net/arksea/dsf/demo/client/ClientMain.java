@@ -51,12 +51,12 @@ public final class ClientMain {
                         }
                     }, client.system.dispatcher()
                 );
-                Thread.sleep(20);
+                Thread.sleep(10);
             }
             Thread.sleep(10000);
             Await.result(client.system.terminate(), Duration.apply(10, TimeUnit.SECONDS));
         } catch (Exception ex) {
-            logger.error("Start DEMO Client failed", ex);
+            logger.error("DEMO Client failed", ex);
         }
     }
 
