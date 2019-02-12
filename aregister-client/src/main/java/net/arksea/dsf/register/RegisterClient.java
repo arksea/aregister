@@ -13,6 +13,8 @@ import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.service.IRateLimitStrategy;
 import net.arksea.dsf.service.ServiceAdaptor;
+import net.arksea.zipkin.akka.ITracingConfig;
+import net.arksea.zipkin.akka.TracingConfigImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -35,17 +37,22 @@ public class RegisterClient {
     public final ActorRef actorRef;
     public final String clientName;
     private final ActorSystem system;
+    private final ITracingConfig tracingConfig;
     /**
      *
      * @param clientName 用于注册服务分辨请求是由哪个客户端发出的
      * @param seedServerAddrs 注册服务集群的种子服务器地址，通常提供2~3个即可
      */
     public RegisterClient(String clientName, List<String> seedServerAddrs) {
+        this(clientName, seedServerAddrs, new TracingConfigImpl());
+    }
+    public RegisterClient(String clientName, List<String> seedServerAddrs, ITracingConfig tracingConfig) {
         this.clientName = clientName;
         Config config = ConfigFactory.parseResources("default-register-client.conf");
         this.system = ActorSystem.create(REG_CLIENT_SYSTEM_NAME,config.getConfig(REG_CLIENT_SYSTEM_NAME).withFallback(config));
         IInstanceSource instanceSource = new RegisterInstanceSource(seedServerAddrs, this.system);
         actorRef = system.actorOf(RegisterClientActor.props(clientName, instanceSource), RegisterClientActor.ACTOR_NAME);
+        this.tracingConfig = tracingConfig;
     }
 
     /**
@@ -58,7 +65,7 @@ public class RegisterClient {
      * @return
      */
     public Client subscribe(String serviceName, RouteStrategy routeStrategy, ICodes codes, ISwitchCondition condition, ActorSystem clientSystem) {
-        return new Client(serviceName, routeStrategy, codes, condition, clientSystem, new ServiceInstanceSource(serviceName, this), clientName);
+        return new Client(serviceName, routeStrategy, codes, condition, clientSystem, new ServiceInstanceSource(serviceName, this), clientName, tracingConfig);
     }
 
     public Client subscribe(String serviceName) {

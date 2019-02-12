@@ -10,10 +10,7 @@ import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.client.route.IRouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.client.route.RouteStrategyFactory;
-import net.arksea.zipkin.akka.ActorTracingFactory;
-import net.arksea.zipkin.akka.IActorTracing;
-import net.arksea.zipkin.akka.ITraceableMessage;
-import net.arksea.zipkin.akka.TracingUtils;
+import net.arksea.zipkin.akka.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -45,11 +42,13 @@ public class Client {
      * @param codes
      * @param system
      */
-    public Client(String serviceName, RouteStrategy strategy, ICodes codes, ISwitchCondition condition, ActorSystem system, IInstanceSource instanceSource, String clientName) {
+    public Client(String serviceName, RouteStrategy strategy, ICodes codes,
+                  ISwitchCondition condition, ActorSystem system, IInstanceSource instanceSource,
+                  String clientName, ITracingConfig tracingConfig) {
         this.system = system;
         this.codes = codes;
         this.clientName = clientName;
-        this.tracing = clientName == null ? null : ActorTracingFactory.create(clientName);
+        this.tracing = tracingConfig == null ? null : ActorTracingFactory.create(tracingConfig, clientName, "", 0);
         IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
         router = system.actorOf(ServiceRequestRouter.props(serviceName, instanceSource, routeStrategy, condition));
         Future f = Patterns.ask(router, new ServiceRequestRouter.Ready(), 25000); //等待RequestRouter初始化完毕
