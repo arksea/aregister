@@ -13,7 +13,6 @@ configurations.all {
 }
 
 dependencies {
-    compile ('net.arksea:akka-tracing-zipkin:1.0.1-SNAPSHOT')
     compile project(':aregister-client')
 }
 

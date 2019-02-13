@@ -31,7 +31,7 @@ public final class ClientMain {
     public static void main(final String[] args) {
         try {
             logger.info("Start DEMO Client");
-            String serviceName = "net.arksea.dsf.DemoService-v1.5";
+            String serviceName = "net.arksea.dsf.DemoService-v2";
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
             RegisterClient register = new RegisterClient("TestClient",addrs);
@@ -44,7 +44,7 @@ public final class ClientMain {
                         @Override
                         public void onComplete(Throwable failure, DemoResponse1 ret) throws Throwable {
                             if (failure == null) {
-                                handleComplete(ret, ClientMain::complete);
+                                client.trace(ret, ClientMain::complete);
                             } else {
                                 logger.warn("failed", failure);
                             }
@@ -58,10 +58,6 @@ public final class ClientMain {
         } catch (Exception ex) {
             logger.error("DEMO Client failed", ex);
         }
-    }
-
-    private static <T> void handleComplete(T ret, FI.UnitApply<T> apply) throws Exception {
-        client.tracing.trace(ret, apply);
     }
 
     static long __lastLogTime;

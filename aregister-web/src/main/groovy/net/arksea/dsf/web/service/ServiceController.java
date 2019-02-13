@@ -7,7 +7,7 @@ import akka.pattern.Patterns;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import net.arksea.dsf.DSF;
-import net.arksea.dsf.register.RegisterClient;
+import net.arksea.dsf.register.RegisterManager;
 import net.arksea.restapi.RestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +31,7 @@ public class ServiceController {
     private Logger logger = LogManager.getLogger(ServiceController.class);
 
     @Autowired
-    private RegisterClient registerClient;
+    private RegisterManager register;
     @Resource(name = "restapiSystem")
     private ActorSystem restapiSys;
 
@@ -44,7 +44,7 @@ public class ServiceController {
     public DeferredResult<String> getServiceList(final HttpServletRequest httpRequest) {
         DeferredResult<String> result = new DeferredResult<>();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        registerClient.getServiceList(10000).onComplete(
+        register.getServiceList(10000).onComplete(
             new OnComplete<DSF.ServiceList>() {
                 @Override
                 public void onComplete(Throwable failure, DSF.ServiceList list) throws Throwable {
@@ -69,7 +69,7 @@ public class ServiceController {
     public DeferredResult<String> getServiceTree(final HttpServletRequest httpRequest) {
         DeferredResult<String> result = new DeferredResult<>();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        registerClient.getServiceList(10000).onComplete(
+        register.getServiceList(10000).onComplete(
             new OnComplete<DSF.ServiceList>() {
                 @Override
                 public void onComplete(Throwable failure, DSF.ServiceList list) throws Throwable {
@@ -96,7 +96,7 @@ public class ServiceController {
                 final HttpServletRequest httpRequest) {
         DeferredResult<String> result = new DeferredResult<>();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        registerClient.getService(servieName, 10000).onComplete(
+        register.getService(servieName, 10000).onComplete(
             new OnComplete<DSF.Service>() {
                 @Override
                 public void onComplete(Throwable failure, DSF.Service service) throws Throwable {
@@ -157,7 +157,7 @@ public class ServiceController {
         logger.info("register {}@{}", serviceName, serviceAddr);
         DeferredResult<String> result = new DeferredResult<>();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        registerClient.unregisterAtRepertory(serviceName, serviceAddr, 10000).onComplete(
+        register.unregisterAtRepertory(serviceName, serviceAddr, 10000).onComplete(
             new OnComplete<Boolean>() {
                 @Override
                 public void onComplete(Throwable failure, Boolean succeed) throws Throwable {
@@ -181,7 +181,7 @@ public class ServiceController {
         logger.info("unregister {}@{} : {}", serviceName, serviceAddr, servicePath);
         DeferredResult<String> result = new DeferredResult<>();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        registerClient.registerAtRepertory(serviceName, serviceAddr, servicePath,10000).onComplete(
+        register.registerAtRepertory(serviceName, serviceAddr, servicePath,10000).onComplete(
             new OnComplete<Boolean>() {
                 @Override
                 public void onComplete(Throwable failure, Boolean succeed) throws Throwable {

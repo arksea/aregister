@@ -51,7 +51,7 @@ public class JavaSerializeCodes implements ICodes {
             ByteArrayInputStream buff = new ByteArrayInputStream(msg.getPayload().toByteArray());
             ObjectInputStream in = new ObjectInputStream(buff);
             Object obj = in.readObject();
-            if (msg.getTracingSpan() != null) {
+            if (msg.getTracingSpan() != null && msg.getTracingSpan().size() > 0) {
                 obj = TracingUtils.fillTracingSpan(obj, msg.getTracingSpan());
             }
             return obj;
@@ -91,7 +91,7 @@ public class JavaSerializeCodes implements ICodes {
             ByteArrayInputStream buff = new ByteArrayInputStream(response.getPayload().toByteArray());
             ObjectInputStream in = new ObjectInputStream(buff);
             Object obj = in.readObject();
-            if (response.getTracingSpan() != null) {
+            if (response.getTracingSpan() != null && response.getTracingSpan().size() > 0) {
                 obj = TracingUtils.fillTracingSpan(obj, response.getTracingSpan());
             }
             return obj;

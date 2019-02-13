@@ -9,6 +9,7 @@ import net.arksea.dsf.DSF;
 import net.arksea.dsf.client.InstanceQuality;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.register.RegisterClient;
+import net.arksea.dsf.register.RegisterManager;
 import net.arksea.zipkin.akka.TracingUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +34,7 @@ public class ServiceAdaptor extends AbstractActor {
     private final ICodes codes;
     private InstanceQuality quality;
     private Cancellable saveStatDataTimer; //保存历史统计数据定时器
-    private final RegisterClient register;
+    private final RegisterManager register;
     private final String serviceName;
     private final String serviceAddr;
     private final String servicePath;
@@ -48,12 +49,16 @@ public class ServiceAdaptor extends AbstractActor {
         this.codes = codes;
         this.quality = new InstanceQuality("");
         this.serviceName = serviceName;
-        this.register = register;
+        this.register = new RegisterManager(register);
         Address address = Address.apply("akka.tcp",context().system().name(),host, port);
         serviceAddr = host + ":" + port;
         servicePath = self().path().toStringWithAddress(address);
         this.rateLimitStrategy = rateLimitStrategy;
         logger.info("Create Service Adaptor: addr={}, path={}", serviceAddr, servicePath);
+    }
+
+    public static Props props(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register) {
+        return props(serviceName, host, port, service, codes, register, null);
     }
 
     public static Props props(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register, IRateLimitStrategy rateLimitStrategy) {

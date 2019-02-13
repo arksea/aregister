@@ -40,7 +40,7 @@ public final class ServerMain {
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
             RegisterClient registerClient = new RegisterClient("TestClient",addrs);
-            String serviceName = "net.arksea.dsf.DemoService-v1.5";
+            String serviceName = "net.arksea.dsf.DemoService-v2";
             int port = cfg.getInt("akka.remote.netty.tcp.port");
             IRateLimitConfig limitConfig = new IRateLimitConfig() {
                 private final DemoResponse1 response = new DemoResponse1(1, "rate limit");

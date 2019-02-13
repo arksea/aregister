@@ -3,6 +3,7 @@ package net.arksea.dsf.client;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.dispatch.Mapper;
+import akka.japi.pf.FI;
 import akka.pattern.Patterns;
 import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
@@ -28,12 +29,12 @@ import java.util.concurrent.TimeUnit;
  * Created by xiaohaixing on 2018/5/4.
  */
 public class Client {
+    private static final Logger log = LogManager.getLogger(Client.class);
+    private final IActorTracing tracing;
     protected SpanBytesEncoder spanEncoder = SpanBytesEncoder.PROTO3;
     public final ActorSystem system;
     public final ActorRef router;
     public final ICodes codes;
-    public final IActorTracing tracing;
-    private final Logger log = LogManager.getLogger(Client.class);
     public final String clientName;
 
     /**
@@ -73,22 +74,24 @@ public class Client {
     }
     private DSF.ServiceRequest encodeRequest(String reqid, Object msg, boolean oneway) {
         DSF.ServiceRequest.Builder builder = codes.encodeRequest(reqid, msg, oneway);
-        Optional<Span> op = TracingUtils.getTracingSpan(msg);
-        if (op != null && op.isPresent()) {
-            byte[] sb = spanEncoder.encode(op.get());
-            builder.setTracingSpan(ByteString.copyFrom(sb));
-        } else if (op != null){
-            Endpoint endpoint = tracing.makeEndpoint(this.clientName);
-            Span span = Span.newBuilder()
-                .traceId(reqid.replace("-", ""))
-                .id(tracing.makeSpanId())
-                .name(getMsgSpanName(msg))
-                .kind(Span.Kind.PRODUCER)
-                .timestamp(tracing.tracingTimestamp())
-                .remoteEndpoint(endpoint)
-                .build();
-            ByteString spanStr = ByteString.copyFrom(spanEncoder.encode(span));
-            builder.setTracingSpan(spanStr);
+        if (tracing != null) {
+            Optional<Span> op = TracingUtils.getTracingSpan(msg);
+            if (op != null && op.isPresent()) {
+                byte[] sb = spanEncoder.encode(op.get());
+                builder.setTracingSpan(ByteString.copyFrom(sb));
+            } else if (op != null) {
+                Endpoint endpoint = tracing.makeEndpoint(this.clientName);
+                Span span = Span.newBuilder()
+                    .traceId(reqid.replace("-", ""))
+                    .id(tracing.makeSpanId())
+                    .name(getMsgSpanName(msg))
+                    .kind(Span.Kind.PRODUCER)
+                    .timestamp(tracing.tracingTimestamp())
+                    .remoteEndpoint(endpoint)
+                    .build();
+                ByteString spanStr = ByteString.copyFrom(spanEncoder.encode(span));
+                builder.setTracingSpan(spanStr);
+            }
         }
         return builder.build();
     }
@@ -137,6 +140,14 @@ public class Client {
                         }
                     }
                 },system.dispatcher());
+        }
+    }
+
+    public <T> void trace(T var, FI.UnitApply<T> apply) throws Exception {
+        if (tracing == null) {
+            apply.apply(var);
+        } else {
+            tracing.trace(var, apply);
         }
     }
 }

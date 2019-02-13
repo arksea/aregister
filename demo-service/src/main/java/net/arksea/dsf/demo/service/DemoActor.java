@@ -9,7 +9,7 @@ import net.arksea.dsf.service.ServiceRequest;
 import net.arksea.dsf.service.ServiceResponse;
 import net.arksea.zipkin.akka.ActorTracingFactory;
 import net.arksea.zipkin.akka.IActorTracing;
-import net.arksea.zipkin.akka.TracingConfigImpl;
+import net.arksea.zipkin.akka.demo.TracingConfigImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
