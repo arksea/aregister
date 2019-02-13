@@ -11,6 +11,7 @@ import net.arksea.dsf.register.RegisterClient;
 import net.arksea.dsf.service.DefaultRateLimitStrategy;
 import net.arksea.dsf.service.IRateLimitConfig;
 import net.arksea.dsf.service.IRateLimitStrategy;
+import net.arksea.zipkin.akka.demo.TracingConfigImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -39,7 +40,7 @@ public final class ServerMain {
             ActorSystem system = ActorSystem.create("DemoSystem",cfg);
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
-            RegisterClient registerClient = new RegisterClient("TestClient",addrs);
+            RegisterClient registerClient = new RegisterClient("TestClient",addrs,new TracingConfigImpl());
             String serviceName = "net.arksea.dsf.DemoService-v2";
             int port = cfg.getInt("akka.remote.netty.tcp.port");
             IRateLimitConfig limitConfig = new IRateLimitConfig() {

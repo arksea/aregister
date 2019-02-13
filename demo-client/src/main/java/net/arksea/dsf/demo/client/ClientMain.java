@@ -6,6 +6,7 @@ import net.arksea.dsf.client.Client;
 import net.arksea.dsf.demo.DemoRequest1;
 import net.arksea.dsf.demo.DemoResponse1;
 import net.arksea.dsf.register.RegisterClient;
+import net.arksea.zipkin.akka.demo.TracingConfigImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.Await;
@@ -34,7 +35,7 @@ public final class ClientMain {
             String serviceName = "net.arksea.dsf.DemoService-v2";
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
-            RegisterClient register = new RegisterClient("TestClient",addrs);
+            RegisterClient register = new RegisterClient("TestClient",addrs,new TracingConfigImpl());
             client = register.subscribe(serviceName);
             for (int i=0; i<500000; ++i) {
                 DemoRequest1 msg = new DemoRequest1("hello"+i,i);
