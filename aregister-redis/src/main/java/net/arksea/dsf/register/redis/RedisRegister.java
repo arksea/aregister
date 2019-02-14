@@ -55,13 +55,14 @@ public class RedisRegister implements IRegisterStore {
     @Override
     public void addServiceInstance(String name, Instance instance) {
         try(Jedis jedis = jedisPool.getResource()) {
+            String json = objectMapper.writeValueAsString(instance);
+            String key = "dsf:"+name+":inst";
+            jedis.hset(key, instance.getAddr(), json);
+            //此处没有做事务，所以将版本ID更新放后面
             String status = jedis.set("dsf:"+name+":ver", UUID.randomUUID().toString());
             if (!"OK".equals(status)) {
                 throw new RegisterStoreException();
             }
-            String json = objectMapper.writeValueAsString(instance);
-            String key = "dsf:"+name+":inst";
-            jedis.hset(key, instance.getAddr(), json);
         } catch (JsonProcessingException e) {
             throw new RegisterStoreException("serialize Instance failed", e);
         }
@@ -70,12 +71,13 @@ public class RedisRegister implements IRegisterStore {
     @Override
     public void delServiceInstance(String name, String addr) {
         try(Jedis jedis = jedisPool.getResource()) {
+            String key = "dsf:"+name+":inst";
+            jedis.hdel(key, addr);
+            //此处没有做事务，所以将版本ID更新放后面
             String status = jedis.set("dsf:"+name+":ver", UUID.randomUUID().toString());
             if (!"OK".equals(status)) {
                 throw new RegisterStoreException();
             }
-            String key = "dsf:"+name+":inst";
-            jedis.hdel(key, addr);
         }
     }
 
@@ -90,12 +92,12 @@ public class RedisRegister implements IRegisterStore {
     @Override
     public void delService(String name) {
         try(Jedis jedis = jedisPool.getResource()) {
+            String key = "dsf:"+name+":inst";
+            jedis.del(key);
             String status = jedis.set("dsf:"+name+":ver", UUID.randomUUID().toString());
             if (!"OK".equals(status)) {
                 throw new RegisterStoreException();
             }
-            String key = "dsf:"+name+":inst";
-            jedis.del(key);
         }
     }
 
