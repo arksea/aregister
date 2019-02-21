@@ -25,7 +25,6 @@ public class RequestRouter extends AbstractActor {
     private final List<Instance> instances = new LinkedList<>();
     private Cancellable saveStatDataTimer; //保存历史统计数据定时器
     private Cancellable checkOfflineTimer;
-    private static final int CHECK_OFFLINE_SECONDS = 5; //测试OFFLINE服务是否存活
     private final DSF.Ping ping;
     private IInstanceSource instanceSource;
     private final IRouteStrategy routeStrategy;
@@ -52,6 +51,7 @@ public class RequestRouter extends AbstractActor {
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
             Duration.create(switchCondition.statPeriod(),TimeUnit.SECONDS),
             self(),new SaveStatData(),context().dispatcher(),self());
+        final long CHECK_OFFLINE_SECONDS = Math.max(10, switchCondition.statPeriod() / 2);
         checkOfflineTimer = context().system().scheduler().schedule(
             Duration.create(CHECK_OFFLINE_SECONDS, TimeUnit.SECONDS),
             Duration.create(CHECK_OFFLINE_SECONDS,TimeUnit.SECONDS),
@@ -117,7 +117,7 @@ public class RequestRouter extends AbstractActor {
     protected ReceiveBuilder createReceiveBuilder() {
         return receiveBuilder()
             .match(SaveStatData.class,       this::handleSaveStatData)
-            .match(CheckServiceAlive.class,this::handleCheckServiceAlive)
+            .match(CheckServiceAlive.class,  this::handleCheckServiceAlive)
             .match(ServiceAlive.class,       this::handleServiceAlive)
             .match(Ready.class,              this::handleReady);
     }
@@ -159,7 +159,7 @@ public class RequestRouter extends AbstractActor {
         this.instances.remove(i);
     }
     protected Optional<Instance> getInstance() {
-        return this.routeStrategy.getInstance(instances);
+        return this.routeStrategy.getInstance(instances, switchCondition.rateLimitMod());
     }
     //------------------------------------------------------------------------------------
     private void updateInstanceStatus() {
@@ -171,17 +171,29 @@ public class RequestRouter extends AbstractActor {
         if (it.getStatus() == InstanceStatus.ONLINE){
             if (switchCondition.onlineToOffline(q)) {
                 it.setStatus(InstanceStatus.OFFLINE);
-                log.error("Service OFFLINE : {}@{}", it.name, it.addr);
+                log.error("Service from ONLINE to OFFLINE : {}@{}", it.name, it.addr);
+                logQuality(q);
+            } else if (switchCondition.onlineToUp(q)) {
+                it.setStatus(InstanceStatus.UP);
+                log.error("Service from ONLINE to UP : {}@{}", it.name, it.addr);
+                logQuality(q);
             }
         } else if (it.getStatus() == InstanceStatus.UP) {
             if (switchCondition.upToOffline(q)) {
                 it.setStatus(InstanceStatus.OFFLINE);
-                log.error("Service OFFLINE : {}@{}", it.name, it.addr);
+                log.error("Service from UP to OFFLINE : {}@{}", it.name, it.addr);
+                logQuality(q);
             } else if (switchCondition.upToOnline(q)) {
                 it.setStatus(InstanceStatus.ONLINE);
-                log.info("Service ONLINE : {}@{}", it.name, it.addr);
+                log.info("Service from UP to ONLINE : {}@{}", it.name, it.addr);
+                logQuality(q);
             }
         }
+    }
+    private void logQuality(InstanceQuality q) {
+        log.info("succeedRate(3)={}, succeedRate(10)={}, meanRespondTime(3)={}, meanRespondTime(10)={}",
+            q.getSucceedRate(3), q.getSucceedRate(10),
+            q.getMeanRespondTime(3), q.getMeanRespondTime(10));
     }
     //------------------------------------------------------------------------------------
     private class CheckServiceAlive {}
@@ -198,7 +210,7 @@ public class RequestRouter extends AbstractActor {
         ActorRef self = self();
         InstanceQuality q = qualityMap.get(instance.addr);
         long start = System.currentTimeMillis();
-        long PING_TIMEOUT = 3000;
+        long PING_TIMEOUT = switchCondition.requestTimeout();
         Patterns.ask(service, ping, PING_TIMEOUT).onComplete(new OnComplete<Object>() {
             @Override
             public void onComplete(Throwable failure, Object success) throws Throwable {
@@ -229,6 +241,7 @@ public class RequestRouter extends AbstractActor {
                     if (switchCondition.offlineToUp(q)) {
                         i.setStatus(msg.status);
                         log.info("Service {} : {}@{}", msg.status, i.name, i.addr);
+                        logQuality(q);
                     }
                 }
                 break;

@@ -28,13 +28,14 @@ public class ServiceActor extends AbstractActor {
     private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发
     private final Map<String,String> attributes = new HashMap<>();
     private Map<String, InstanceInfo> instances = new HashMap<>();
-    private Map<ActorRef, SubscriberInfo> subscriberMap = new HashMap<>();
+    private final Map<ActorRef, SubscriberInfo> subscriberMap = new HashMap<>();
     private final IRegisterStore store;
     private Cancellable loadServiceInfoTimer;  //从Store更新服务实例定时器
     private Cancellable checkAliveTimer;
     private static final int LOAD_SVC_DELAY_SECONDS = 300; //从注册服务器更新实例列表的周期(s)
     private static final int CHECK_ALIVE_SECONDS = 60; //测试服务是否存活
     private final DSF.Ping ping = DSF.Ping.getDefaultInstance();
+    private String lastStoreVersionID = "";
 
     public static Props props(String serviceId, IRegisterStore store) {
         return Props.create(ServiceActor.class, new Creator<ServiceActor>() {
@@ -227,8 +228,14 @@ public class ServiceActor extends AbstractActor {
             list = loadFromLocalFile();
         } else {
             try {
-                list =store.getServiceInstances(serviceName);
-                logger.trace("Load service list from register store succeed: {}", serviceName);
+                String verId = store.getVersionID(serviceName);
+                if (lastStoreVersionID.equals(verId)) {
+                    list = null;
+                } else {
+                    list = store.getServiceInstances(serviceName);
+                    lastStoreVersionID = verId;
+                    logger.trace("Load service list from register store succeed: {}", serviceName);
+                }
             } catch (Exception ex) {
                 list = loadFromLocalFile();
             }

@@ -35,7 +35,8 @@ public class RegisterClientActor extends RequestRouter {
     private long backoff = MIN_RETRY_DELAY;
     private final String clientName;
     private Cancellable updateTimer;
-    private static final int UPDATE_DELAY_SECONDS = 60;
+    //从注册服务器同步服务信息的间隔，冗余保障操作，用于防止没有收到实时的服务注册与注销通知（比如网络通讯中断）
+    private static final int UPDATE_DELAY_SECONDS = 300;
 
     public RegisterClientActor(String clientName, IInstanceSource instanceSource) {
         super("dsfRegister",

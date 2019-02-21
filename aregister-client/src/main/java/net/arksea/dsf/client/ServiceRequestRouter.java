@@ -46,20 +46,15 @@ public class ServiceRequestRouter extends RequestRouter {
         final ActorRef requester = sender();
         if (op.isPresent()) {
             Instance instance = op.get();
-            try {
-                log.trace("service instance: {}", instance.path);
-                ActorSelection service = context().actorSelection(instance.path);
-                service.tell(msg, self());
-                if (!msg.getOneway()) {
-                    RequestState state = new RequestState(requester, startTime, msg, instance);
-                    requests.put(msg.getRequestId(), state);
-                }
-            } catch (Exception ex) {
-                onRequestFailed(instance, System.currentTimeMillis() - startTime);
-                throw ex;
+            log.trace("service instance: {}", instance.path);
+            ActorSelection service = context().actorSelection(instance.path);
+            service.tell(msg, self());
+            if (!msg.getOneway()) {
+                RequestState state = new RequestState(requester, startTime, msg, instance);
+                requests.put(msg.getRequestId(), state);
             }
         } else {
-            requester.tell(new NoUseableService(serviceName), self());
+            requester.tell(new NoUseableServiceException(serviceName), self());
         }
     }
     //------------------------------------------------------------------------------------
@@ -67,7 +62,8 @@ public class ServiceRequestRouter extends RequestRouter {
         log.trace("handleServiceResponse({},{})", msg.getTypeName(), msg.getRequestId());
         RequestState state = requests.remove(msg.getRequestId());
         if (state == null) {
-            log.warn("not fond the request state : {}", msg.getRequestId());
+            //可能在checkTimeoutRequest时已被移除
+            log.debug("not fond the request state : {}", msg.getRequestId());
         } else {
             state.requester.forward(msg, context());
             long time = System.currentTimeMillis() - state.startTime;

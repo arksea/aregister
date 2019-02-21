@@ -4,6 +4,7 @@ import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.register.RegisterClient;
+import net.arksea.dsf.register.RegisterManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,7 @@ public class SystemFactory {
     @Value("${aregister.addr2}")
     String aregisterAddr2;
 
-    RegisterClient registerClient;
+    RegisterManager register;
 
     @PostConstruct
     public void init() {
@@ -35,12 +36,12 @@ public class SystemFactory {
         addrs.add(aregisterAddr1);
         addrs.add(aregisterAddr2);
         logger.debug("register addr1: {}, addr2: {}", aregisterAddr1, aregisterAddr2);
-        registerClient = new RegisterClient("aregister-web", addrs);
+        register = new RegisterManager(new RegisterClient("aregister-web", addrs));
     }
 
-    @Bean(name = "registerClient")
-    public RegisterClient createRegisterClient() {
-        return registerClient;
+    @Bean(name = "registerManager")
+    public RegisterManager createRegisterManager() {
+        return register;
     }
 
     @Bean(name = "restapiSystem")

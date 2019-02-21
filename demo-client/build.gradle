@@ -4,6 +4,13 @@ apply plugin: 'maven'
 
 description = """ASC DEMO"""
 
+configurations.all {
+    resolutionStrategy {
+        cacheDynamicVersionsFor  0, 'seconds'
+        cacheChangingModulesFor  0, 'seconds'
+    }
+}
+
 dependencies {
     compile project(':aregister-client')
 }

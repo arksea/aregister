@@ -3,7 +3,7 @@ apply plugin: 'java'
 
 
 group = 'net.arksea'
-version = '0.4-SNAPSHOT'
+version = '0.5-SNAPSHOT'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 

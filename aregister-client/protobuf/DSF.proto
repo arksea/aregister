@@ -93,6 +93,7 @@ message ServiceRequest {
     bytes payload = 3;
     EnumSerialize serialize = 4;
     string typeName = 5;
+    bytes tracingSpan = 6;
 }
 
 message ServiceResponse {
@@ -101,6 +102,7 @@ message ServiceResponse {
     EnumSerialize serialize = 3;
     string typeName = 4;
     bool succeed = 5;
+    bytes tracingSpan = 6;
 }
 //------------------------------------------------
 //服务实例请求计数历史数据

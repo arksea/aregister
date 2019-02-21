@@ -53,21 +53,31 @@ public class RedisRegister implements IRegisterStore {
     }
 
     @Override
-    public boolean addServiceInstance(String name, Instance instance) throws RegisterStoreException {
+    public void addServiceInstance(String name, Instance instance) {
         try(Jedis jedis = jedisPool.getResource()) {
             String json = objectMapper.writeValueAsString(instance);
             String key = "dsf:"+name+":inst";
-            return jedis.hset(key, instance.getAddr(), json) == 1;
+            jedis.hset(key, instance.getAddr(), json);
+            //此处没有做事务，所以将版本ID更新放后面
+            String status = jedis.set("dsf:"+name+":ver", UUID.randomUUID().toString());
+            if (!"OK".equals(status)) {
+                throw new RegisterStoreException();
+            }
         } catch (JsonProcessingException e) {
             throw new RegisterStoreException("serialize Instance failed", e);
         }
     }
 
     @Override
-    public boolean delServiceInstance(String name, String addr) {
+    public void delServiceInstance(String name, String addr) {
         try(Jedis jedis = jedisPool.getResource()) {
             String key = "dsf:"+name+":inst";
-            return jedis.hdel(key, addr) == 1;
+            jedis.hdel(key, addr);
+            //此处没有做事务，所以将版本ID更新放后面
+            String status = jedis.set("dsf:"+name+":ver", UUID.randomUUID().toString());
+            if (!"OK".equals(status)) {
+                throw new RegisterStoreException();
+            }
         }
     }
 
@@ -80,10 +90,22 @@ public class RedisRegister implements IRegisterStore {
     }
 
     @Override
-    public boolean delService(String name) {
+    public void delService(String name) {
         try(Jedis jedis = jedisPool.getResource()) {
             String key = "dsf:"+name+":inst";
-            return jedis.del(key) > 0;
+            jedis.del(key);
+            String status = jedis.set("dsf:"+name+":ver", UUID.randomUUID().toString());
+            if (!"OK".equals(status)) {
+                throw new RegisterStoreException();
+            }
+        }
+    }
+
+    @Override
+    public String getVersionID(String name) {
+        try(Jedis jedis = jedisPool.getResource()) {
+            String key = "dsf:"+name+":ver";
+            return jedis.get(key);
         }
     }
 }

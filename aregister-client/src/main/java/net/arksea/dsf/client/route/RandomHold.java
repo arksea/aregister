@@ -21,7 +21,7 @@ public class RandomHold implements IRouteStrategy {
     }
 
     @Override
-    public Optional<Instance> getInstance(List<Instance> list) {
+    public Optional<Instance> getInstance(List<Instance> list, int checkMod) {
         if (current != null && current.getStatus() == InstanceStatus.ONLINE) {
             return Optional.of(current);
         } else {

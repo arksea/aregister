@@ -9,47 +9,30 @@ public interface ISwitchCondition {
     default long statPeriod() {
         return 20;
     }
-    //请求响应超过此时间（毫秒）将判为超时错误
+    //请求响应超过此时间(毫秒)将判为超时错误
     default long requestTimeout() {
-        return 10000;
+        return 5000;
     }
 
-    //默认实现：3个周期内正确率高于80%，将服务从offline状态切换为up状态
-    default boolean offlineToUp(InstanceQuality quality) {
-        int step = 3;
-        float succeedRate = quality.getSucceedRate(step);
-        long requestCount = quality.getRequestCount(step);
-        return requestCount > 0 && succeedRate > 0.8f;
+    //平均请求响应超过Max将会被切换到UP限流状态，当低于Min将切换到Online取消限流
+    //Min与Max不能靠的太近，否则容易引起频繁的状态切换
+    default long rateLimitRequestTimeMax() {
+        return 2000;
+    }
+    default long rateLimitRequestTimeMin() {
+        return 1000;
     }
 
-    //默认实现：15个周期内正确率高于90%，将服务从up状态切换为online状态
-    //注意：UP状态时Router将调度部分流量到此实例做灰度测试，实际比例看路由策略实现
-    default boolean upToOnline(InstanceQuality quality) {
-        int step = 15;
-        float succeedRate = quality.getSucceedRate(step);
-        long requestCount = quality.getRequestCount(step);
-        return requestCount>0 && succeedRate > 0.9f;
-    }
+    //UP状态时限制使用1/rateLimitMod的流量进行访问
+    default int rateLimitMod() { return 10; }
 
-    //默认实现：当3个周期内正确率低于70%，将服务切换为offline状态
-    default boolean upToOffline(InstanceQuality quality) {
-        int step = 3;
-        if (quality.getRequestCount(step) < 10) { //请求量太少不做切换
-            return false;
-        } else {
-            float succeedRate = quality.getSucceedRate(step);
-            return succeedRate < 0.7f;
-        }
-    }
-    //默认实现：当3个周期内正确率低于70%，将服务切换为offline状态
-    default boolean onlineToOffline(InstanceQuality quality) {
-        int step = 3;
-        if (quality.getRequestCount(step) < 10) { //请求量太少不做切换
-            return false;
-        } else {
-            float succeedRate = quality.getSucceedRate(step);
-            return succeedRate < 0.7f;
-        }
-    }
+    //根据Ping成功率决定是否切换到UP状态做1/rateLimitMod灰度测试
+    boolean offlineToUp(InstanceQuality quality);
+    //根据灰度测试成功率与响应时间决定是否切换为在线状态
+    boolean upToOnline(InstanceQuality quality);
+    //根据请求成功率做熔断
+    boolean upToOffline(InstanceQuality quality);
+    boolean onlineToOffline(InstanceQuality quality);
+    //根据请求响应时间做限流， 服务在UP状态时将被限流，Router只会调度部分流量进行访问
+    boolean onlineToUp(InstanceQuality quality);
 }
-
