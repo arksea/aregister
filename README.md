@@ -56,3 +56,13 @@ public class DemoActor extends AbstractActor {
 
 完整代码请看子项目demo-service
 
+##序列图
+
+###注册服务
+
+![image](./aregister/src/main/puml/register.png)
+
+
+###订阅服务
+
+![image](./aregister/src/main/puml/subscribe.png)
