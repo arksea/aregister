@@ -8,6 +8,8 @@ import akka.japi.Creator;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.store.IRegisterStore;
 import net.arksea.dsf.store.LocalStore;
+import net.arksea.httpclient.asker.FuturedHttpClient;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.collection.Iterator;
@@ -27,19 +29,27 @@ public class ServiceManagerActor extends AbstractActor {
     private final Map<String, ActorRef> serviceMap = new HashMap<>();
     private final Cluster cluster = Cluster.get(getContext().getSystem());
     private final IRegisterStore register;
+    private final ServiceStateLogger stateLogger;
 
-    public static Props props(IRegisterStore store) {
+    public static Props props(IRegisterStore store, String stateLogUrl) {
         return Props.create(ServiceManagerActor.class, new Creator<ServiceManagerActor>() {
             @Override
             public ServiceManagerActor create() throws Exception {
-                return new ServiceManagerActor(store);
+                return new ServiceManagerActor(store, stateLogUrl);
             }
         });
     }
 
-    public ServiceManagerActor(IRegisterStore register) {
+    public ServiceManagerActor(IRegisterStore register, String stateLogUrl) {
         this.register = register;
+        if (StringUtils.isNotEmpty(stateLogUrl)) {
+            FuturedHttpClient client = new FuturedHttpClient(context().system());
+            this.stateLogger = new ServiceStateLogger(client, stateLogUrl, 5000);
+        } else {
+            this.stateLogger = null;
+        }
     }
+
     @Override
     public void preStart() {
         log.info("ServiceManagerActor preStart");
@@ -95,7 +105,7 @@ public class ServiceManagerActor extends AbstractActor {
                 || msg instanceof DSF.RegService
                 || serviceExists(name)) {
             ActorRef actor = serviceMap.computeIfAbsent(name, k -> {
-                Props props = ServiceActor.props(name, register);
+                Props props = ServiceActor.props(name, register, stateLogger);
                 String actorName = ServiceActor.ACTOR_NAME_PRE + name;
                 return context().actorOf(props, actorName);
             });

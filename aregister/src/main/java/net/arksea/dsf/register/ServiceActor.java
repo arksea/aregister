@@ -1,6 +1,8 @@
 package net.arksea.dsf.register;
 
 import akka.actor.*;
+import akka.cluster.Cluster;
+import akka.cluster.ClusterEvent;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.pattern.Patterns;
@@ -12,8 +14,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static akka.japi.Util.classTag;
 
 /**
  *
@@ -30,26 +35,29 @@ public class ServiceActor extends AbstractActor {
     private Map<String, InstanceInfo> instances = new HashMap<>();
     private final Map<ActorRef, SubscriberInfo> subscriberMap = new HashMap<>();
     private final IRegisterStore store;
+    private final ServiceStateLogger stateLogger;
     private Cancellable loadServiceInfoTimer;  //从Store更新服务实例定时器
     private Cancellable checkAliveTimer;
     private static final int LOAD_SVC_DELAY_SECONDS = 300; //从注册服务器更新实例列表的周期(s)
     private static final int CHECK_ALIVE_SECONDS = 60; //测试服务是否存活
     private final DSF.Ping ping = DSF.Ping.getDefaultInstance();
     private String lastStoreVersionID = "";
+    private final Cluster cluster = Cluster.get(getContext().getSystem());
 
-    public static Props props(String serviceId, IRegisterStore store) {
+    public static Props props(String serviceId, IRegisterStore store, ServiceStateLogger stateLogger) {
         return Props.create(ServiceActor.class, new Creator<ServiceActor>() {
             @Override
             public ServiceActor create() throws Exception {
-                return new ServiceActor(serviceId, store);
+                return new ServiceActor(serviceId, store, stateLogger);
             }
         });
     }
 
-    public ServiceActor(String serviceName, IRegisterStore store) {
+    public ServiceActor(String serviceName, IRegisterStore store, ServiceStateLogger stateLogger) {
         this.serviceName = serviceName;
         this.store = store;
         this.serialId = "";
+        this.stateLogger = stateLogger;
     }
 
     @Override
@@ -144,9 +152,9 @@ public class ServiceActor extends AbstractActor {
         logger.trace("Service.handleGetService({}),instances.size={}", msg.getName(),instances.size());
         DSF.Service.Builder builder = DSF.Service.newBuilder()
             .setName(serviceName);
-        this.instances.forEach((addr,it) -> {
-            builder.addInstances(buildInstance(it));
-        });
+        this.instances.forEach((addr,it) ->
+            builder.addInstances(buildInstance(it))
+        );
         fillSubscriber(builder);
         sender().tell(builder.build(), self());
     }
@@ -173,9 +181,9 @@ public class ServiceActor extends AbstractActor {
             }
             counter.put(info.name, c);
         });
-        counter.forEach((name, count) -> {
-            svc.addSubscribers(DSF.Subscriber.newBuilder().setName(name).setCount(count).build());
-        });
+        counter.forEach((name, count) ->
+            svc.addSubscribers(DSF.Subscriber.newBuilder().setName(name).setCount(count).build())
+        );
     }
     //-------------------------------------------------------------------------------
     private void handleSubService(DSF.SubService msg) {
@@ -301,6 +309,9 @@ public class ServiceActor extends AbstractActor {
         instances.forEach((addr,it) -> {
             checkServiceAlive(it);
         });
+        if (this.stateLogger != null && isLeader()) {
+            logServiceState();
+        }
     }
     private void removeUnregedSvc() {
         List<String> unregedList = new LinkedList<>();
@@ -373,5 +384,63 @@ public class ServiceActor extends AbstractActor {
 
     private String makeSerialId() {
         return UUID.randomUUID().toString();
+    }
+
+    //------------------------------------------------------------------------------------
+    private void logServiceState() {
+        instances.forEach((addr,info) -> {
+            requestState(info);
+        });
+    }
+
+    private void requestState(InstanceInfo info) {
+        DSF.GetRequestCountHistory msg = DSF.GetRequestCountHistory.getDefaultInstance();
+        ActorSelection service = context().actorSelection(info.path);
+        Patterns.ask(service, msg, 3000)
+            .mapTo(classTag(DSF.RequestCountHistory.class))
+            .onComplete(new OnComplete<DSF.RequestCountHistory>() {
+                public void onComplete(Throwable ex, DSF.RequestCountHistory his) {
+                    if (ex == null && his != null) {
+                        DSF.RequestCount c1 = his.getItems(0);
+                        DSF.RequestCount c2 = his.getItems(1);
+                        long request = c1.getRequestCount() - c2.getRequestCount();
+                        long succeed = c1.getSucceedCount() - c2.getSucceedCount();
+                        long responedTime = c1.getRespondTime() - c2.getRespondTime();
+                        float tts = request == 0 ? 0 : responedTime*1.0f / request;
+                        float failedRate = request == 0 ? 0 : (request - succeed)*1.0f / request;
+                        DecimalFormat df = new DecimalFormat();
+                        df.applyPattern("0.###");
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("service,name=").append(info.name)
+                            .append(",addr=").append(info.addr)
+                            .append(" online=").append(info.isOnline()?1:0)
+                            .append(",unreg=").append(info.isUnregistered()?1:0)
+                            .append(",request=").append(request)
+                            .append(",tts=").append(df.format(tts))
+                            .append(",failed=").append(df.format(failedRate));
+                        String line = sb.toString();
+                        logger.debug("log service state: {}", line);
+                        stateLogger.write(line);
+                    } else {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("service,name=").append(info.name)
+                            .append(",addr=").append(info.addr)
+                            .append(" online=").append(info.isOnline()?1:0)
+                            .append(",unreg=").append(info.isUnregistered()?1:0)
+                            .append(",request=0")
+                            .append(",tts=0")
+                            .append(",failed=0");
+                        String line = sb.toString();
+                        logger.debug("log service state: {}", line);
+                        stateLogger.write(line);
+                    }
+                }
+            }, context().dispatcher());
+    }
+
+    private boolean isLeader() {
+        Address selfAddr = cluster.selfAddress();
+        ClusterEvent.CurrentClusterState state = cluster.state();
+        return selfAddr.equals(state.getLeader());
     }
 }

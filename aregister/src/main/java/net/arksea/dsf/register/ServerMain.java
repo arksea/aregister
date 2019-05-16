@@ -27,10 +27,12 @@ public final class ServerMain {
             int redisPort = cfg.getInt("register.store.redis-port");
             String pwdPath = "register.store.redis-password";
             String redisPwd = cfg.hasPath(pwdPath) ? cfg.getString(pwdPath) : null;
+            String urlPath = "register.stateLogUrl";
+            String stateLogUrl = cfg.hasPath(urlPath) ? cfg.getString(urlPath) : null;
             logger.info("redisHost={}, redisPort={}", redisHost, redisPort);
             IRegisterStore store = new RedisRegister(redisHost,redisPort, 5000, redisPwd);
             ActorSystem system = ActorSystem.create("DsfCluster", cfg);
-            system.actorOf(ServiceManagerActor.props(store), ServiceManagerActor.ACTOR_NAME);
+            system.actorOf(ServiceManagerActor.props(store, stateLogUrl), ServiceManagerActor.ACTOR_NAME);
             system.actorOf(RegisterActor.props(store), RegisterActor.ACTOR_NAME);
 
         } catch (Exception ex) {
