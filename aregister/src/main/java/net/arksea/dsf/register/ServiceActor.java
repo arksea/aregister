@@ -29,6 +29,7 @@ public class ServiceActor extends AbstractActor {
     private final Logger logger = LogManager.getLogger(ServiceActor.class);
     private final static long UNREG_TIMEOUT = 24L * 3600_000L;
     private final static long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
+    private long loadServiceInfoFormStoreFailed; //数据存储访问错误计数，用于减少错误日志量
     private final String serviceName;
     private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发
     private final Map<String,String> attributes = new HashMap<>();
@@ -241,10 +242,14 @@ public class ServiceActor extends AbstractActor {
                     list = null;
                 } else {
                     list = store.getServiceInstances(serviceName);
+                    loadServiceInfoFormStoreFailed = loadServiceInfoFormStoreFailed==0 ? 0 : loadServiceInfoFormStoreFailed/10;
                     lastStoreVersionID = verId;
-                    logger.trace("Load service list from register store succeed: {}", serviceName);
+                    logger.info("Load service list from register store succeed: {}", serviceName);
                 }
             } catch (Exception ex) {
+                if (loadServiceInfoFormStoreFailed++ % 10 == 0) {
+                    logger.warn("Load service list from register store failed: {}", serviceName, ex);
+                }
                 list = loadFromLocalFile();
             }
         }
@@ -287,10 +292,10 @@ public class ServiceActor extends AbstractActor {
     private List<Instance> loadFromLocalFile() {
         try {
             List<Instance> list = LocalStore.load(serviceName);
-            logger.info("Load service list form local cache file succeed: {}",serviceName);
+            logger.info("Load service list from local cache file succeed: {}",serviceName);
             return list;
         } catch (Exception ex1) {
-            logger.warn("Load service list form local cache file failed: {}",serviceName,ex1);
+            logger.warn("Load service list from local cache file failed: {}",serviceName,ex1);
             return null;
         }
     }
@@ -401,8 +406,8 @@ public class ServiceActor extends AbstractActor {
             .onComplete(new OnComplete<DSF.RequestCountHistory>() {
                 public void onComplete(Throwable ex, DSF.RequestCountHistory his) {
                     if (ex == null && his != null) {
-                        DSF.RequestCount c1 = his.getItems(0);
-                        DSF.RequestCount c2 = his.getItems(1);
+                        DSF.RequestCount c1 = his.getItems(1);
+                        DSF.RequestCount c2 = his.getItems(2);
                         long request = c1.getRequestCount() - c2.getRequestCount();
                         long succeed = c1.getSucceedCount() - c2.getSucceedCount();
                         long responedTime = c1.getRespondTime() - c2.getRespondTime();
