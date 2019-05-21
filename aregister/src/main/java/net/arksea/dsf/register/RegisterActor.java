@@ -81,7 +81,7 @@ public class RegisterActor extends AbstractActor {
     private void handleUnregService(DSF.UnregService msg) {
         log.trace("RegisterActor.handleUnregService({},{})", msg.getName(), msg.getAddr());
         try {
-            store.delServiceInstance(msg.getName(), msg.getAddr());
+            //删除操作留到服务Actor里判断注销的时长后再做， store.delServiceInstance(msg.getName(), msg.getAddr());
             MSG.SendToAll sendToAll = new MSG.SendToAll(msg);
             forwardToServiceManager(sendToAll);
             sender().tell(true, self());

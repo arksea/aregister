@@ -36,7 +36,7 @@ public class RedisRegister implements IRegisterStore {
 
     @Override
     public List<Instance> getServiceInstances(String name) {
-        try(Jedis jedis = jedisPool.getResource()) {
+        try(Jedis jedis = getJedis()) {
             String key = "dsf:"+name+":inst";
             Map<String,String> map = jedis.hgetAll(key);
             List<Instance> ret = new LinkedList<>();
@@ -54,7 +54,7 @@ public class RedisRegister implements IRegisterStore {
 
     @Override
     public void addServiceInstance(String name, Instance instance) {
-        try(Jedis jedis = jedisPool.getResource()) {
+        try(Jedis jedis = getJedis()) {
             String json = objectMapper.writeValueAsString(instance);
             String key = "dsf:"+name+":inst";
             jedis.hset(key, instance.getAddr(), json);
@@ -70,7 +70,7 @@ public class RedisRegister implements IRegisterStore {
 
     @Override
     public void delServiceInstance(String name, String addr) {
-        try(Jedis jedis = jedisPool.getResource()) {
+        try(Jedis jedis = getJedis()) {
             String key = "dsf:"+name+":inst";
             jedis.hdel(key, addr);
             //此处没有做事务，所以将版本ID更新放后面
@@ -83,7 +83,7 @@ public class RedisRegister implements IRegisterStore {
 
     @Override
     public boolean serviceExists(String name) {
-        try(Jedis jedis = jedisPool.getResource()) {
+        try(Jedis jedis = getJedis()) {
             String key = "dsf:"+name+":inst";
             return jedis.exists(key);
         }
@@ -91,7 +91,7 @@ public class RedisRegister implements IRegisterStore {
 
     @Override
     public void delService(String name) {
-        try(Jedis jedis = jedisPool.getResource()) {
+        try(Jedis jedis = getJedis()) {
             String key = "dsf:"+name+":inst";
             jedis.del(key);
             String status = jedis.set("dsf:"+name+":ver", UUID.randomUUID().toString());
@@ -103,9 +103,14 @@ public class RedisRegister implements IRegisterStore {
 
     @Override
     public String getVersionID(String name) {
-        try(Jedis jedis = jedisPool.getResource()) {
+        try(Jedis jedis = getJedis()) {
             String key = "dsf:"+name+":ver";
             return jedis.get(key);
         }
+    }
+
+    private Jedis getJedis() {
+        Jedis jedis = jedisPool.getResource();
+        return jedis;
     }
 }

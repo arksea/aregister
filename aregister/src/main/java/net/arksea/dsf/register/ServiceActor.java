@@ -39,7 +39,7 @@ public class ServiceActor extends AbstractActor {
     private final ServiceStateLogger stateLogger;
     private Cancellable loadServiceInfoTimer;  //从Store更新服务实例定时器
     private Cancellable checkAliveTimer;
-    private static final int LOAD_SVC_DELAY_SECONDS = 300; //从注册服务器更新实例列表的周期(s)
+    private static final int LOAD_SVC_DELAY_SECONDS = 1800; //从注册服务器更新实例列表的周期(s)
     private static final int CHECK_ALIVE_SECONDS = 60; //测试服务是否存活
     private final DSF.Ping ping = DSF.Ping.getDefaultInstance();
     private String lastStoreVersionID = "";
@@ -233,6 +233,7 @@ public class ServiceActor extends AbstractActor {
      */
     private void loadServiceInfo() {
         List<Instance> list;
+        boolean changed = false;
         if (store == null) {
             list = loadFromLocalFile();
         } else {
@@ -241,6 +242,7 @@ public class ServiceActor extends AbstractActor {
                 if (lastStoreVersionID.equals(verId)) {
                     list = null;
                 } else {
+                    changed = true;
                     list = store.getServiceInstances(serviceName);
                     loadServiceInfoFormStoreFailed = loadServiceInfoFormStoreFailed==0 ? 0 : loadServiceInfoFormStoreFailed/10;
                     lastStoreVersionID = verId;
@@ -255,7 +257,6 @@ public class ServiceActor extends AbstractActor {
         }
 
         if (list != null) {
-            boolean changed = false;
             logger.trace("Load service info, instance size = {}", list.size());
             Map<String, InstanceInfo> newInstances = new HashMap<>();
             for (Instance it : list) {
