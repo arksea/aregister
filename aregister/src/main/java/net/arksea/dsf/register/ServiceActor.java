@@ -233,7 +233,7 @@ public class ServiceActor extends AbstractActor {
      */
     private void loadServiceInfo() {
         List<Instance> list;
-        boolean changed = false;
+        boolean changed = false; //同步到本地文件的标志： 当store的版本ID变化则认为变化、当本地文件与内存状态合并时发现变化
         if (store == null) {
             list = loadFromLocalFile();
         } else {
