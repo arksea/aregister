@@ -7,7 +7,14 @@ description = """Actor Register"""
 
 dependencies {
     compile project(':aregister-redis')
-    compile 'net.arksea:httpclient-asker:1.0.4.1-SNAPSHOT'
+    compile 'net.arksea:httpclient-asker:1.0.4-SNAPSHOT'
+}
+
+configurations.all {
+    resolutionStrategy {
+        cacheDynamicVersionsFor  30, 'seconds'
+        cacheChangingModulesFor  30, 'seconds'
+    }
 }
 
 test.testLogging.showStandardStreams = true

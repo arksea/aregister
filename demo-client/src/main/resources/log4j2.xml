@@ -9,6 +9,10 @@
     </Appenders>
     <Loggers>
         <!--<Logger name="net.arksea.dsf" level="trace"/>-->
+        <!--<Logger name="net.arksea.dsf.client" level="trace"/>-->
+        <!--<Logger name="net.arksea.dsf.register" level="trace"/>-->
+        <!--<Logger name="net.arksea.dsf.service" level="trace"/>-->
+        <!--<Logger name="net.arksea.dsf.store" level="trace"/>-->
         <Root level="info">
             <AppenderRef ref="console"/>
         </Root>
