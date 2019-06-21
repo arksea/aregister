@@ -8,6 +8,8 @@ import akka.japi.Creator;
 import net.arksea.dsf.DSF;
 import net.arksea.dsf.store.IRegisterStore;
 import net.arksea.dsf.store.LocalStore;
+import net.arksea.httpclient.asker.FuturedHttpClient;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.collection.Iterator;
@@ -26,20 +28,28 @@ public class ServiceManagerActor extends AbstractActor {
     private final Logger log = LogManager.getLogger(ServiceManagerActor.class);
     private final Map<String, ActorRef> serviceMap = new HashMap<>();
     private final Cluster cluster = Cluster.get(getContext().getSystem());
-    private final IRegisterStore register;
+    private final IRegisterStore store;
+    private final ServiceStateLogger stateLogger;
 
-    public static Props props(IRegisterStore store) {
+    public static Props props(IRegisterStore store, String stateLogUrl) {
         return Props.create(ServiceManagerActor.class, new Creator<ServiceManagerActor>() {
             @Override
             public ServiceManagerActor create() throws Exception {
-                return new ServiceManagerActor(store);
+                return new ServiceManagerActor(store, stateLogUrl);
             }
         });
     }
 
-    public ServiceManagerActor(IRegisterStore register) {
-        this.register = register;
+    public ServiceManagerActor(IRegisterStore store, String stateLogUrl) {
+        this.store = store;
+        if (StringUtils.isNotEmpty(stateLogUrl)) {
+            FuturedHttpClient client = new FuturedHttpClient(context().system());
+            this.stateLogger = new ServiceStateLogger(client, stateLogUrl, 5000);
+        } else {
+            this.stateLogger = null;
+        }
     }
+
     @Override
     public void preStart() {
         log.info("ServiceManagerActor preStart");
@@ -69,6 +79,7 @@ public class ServiceManagerActor extends AbstractActor {
             .match(ClusterEvent.ClusterDomainEvent.class,this::handleEvent)
             .match(DSF.GetServiceList.class,             this::handleGetServiceList)
             .match(DSF.GetService.class,                 this::handleGetService)
+            .match(MSG.StopServiceActor.class,           this::handleStopServiceActor)
             .build();
     }
 
@@ -95,7 +106,7 @@ public class ServiceManagerActor extends AbstractActor {
                 || msg instanceof DSF.RegService
                 || serviceExists(name)) {
             ActorRef actor = serviceMap.computeIfAbsent(name, k -> {
-                Props props = ServiceActor.props(name, register);
+                Props props = ServiceActor.props(name, store, stateLogger);
                 String actorName = ServiceActor.ACTOR_NAME_PRE + name;
                 return context().actorOf(props, actorName);
             });
@@ -104,7 +115,7 @@ public class ServiceManagerActor extends AbstractActor {
     }
 
     private boolean serviceExists(String name) {
-        if (register == null) {
+        if (store == null) {
             try {
                 return LocalStore.serviceExists(name);
             } catch (IOException ex) {
@@ -112,7 +123,7 @@ public class ServiceManagerActor extends AbstractActor {
                 return false;
             }
         } else {
-            return register.serviceExists(name);
+            return store.serviceExists(name);
         }
     }
 
@@ -166,5 +177,11 @@ public class ServiceManagerActor extends AbstractActor {
         log.trace("ServiceManagerActor.handleGetServiceList()");
         DSF.ServiceList list = DSF.ServiceList.newBuilder().addAllItems(serviceMap.keySet()).build();
         sender().tell(list, self());
+    }
+
+    private void handleStopServiceActor(MSG.StopServiceActor msg) {
+        log.info("ServiceManagerActor.handleStopServiceActor({})", msg.serviceName);
+        serviceMap.remove(msg.serviceName);
+        context().stop(msg.actorRef);
     }
 }
