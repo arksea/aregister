@@ -29,6 +29,8 @@ public class ServiceActor extends AbstractActor {
     private final Logger logger = LogManager.getLogger(ServiceActor.class);
     private final static long UNREG_TIMEOUT = 24L * 3600_000L;
     private final static long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
+    private final static long NO_INSTANCE_EXIT_DELAY = 3 * 3600_000L;
+    private long noInstanceStartTime; //无实例的开始时间，当超过一定时间(NO_INSTANCE_EXIT_DELAY)将退出本ServiceActor
     private long loadServiceInfoFormStoreFailed; //数据存储访问错误计数，用于减少错误日志量
     private final String serviceName;
     private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发
@@ -59,11 +61,12 @@ public class ServiceActor extends AbstractActor {
         this.store = store;
         this.serialId = "";
         this.stateLogger = stateLogger;
+        this.noInstanceStartTime = Long.MAX_VALUE;
     }
 
     @Override
     public void preStart() {
-        logger.trace("ServiceActor preStart : {}", serviceName);
+        logger.info("ServiceActor started : {}", serviceName);
         loadServiceInfo();
         handleCheckServiceAlive(null);
         loadServiceInfoTimer = context().system().scheduler().schedule(
@@ -86,7 +89,7 @@ public class ServiceActor extends AbstractActor {
             checkAliveTimer.cancel();
             checkAliveTimer = null;
         }
-        logger.trace("ServiceActor postStop : {}", serviceName);
+        logger.info("ServiceActor stoped : {}", serviceName);
     }
 
     @Override
@@ -194,7 +197,7 @@ public class ServiceActor extends AbstractActor {
         if (!subscriberMap.containsKey(subscriber)) {
             Address address = subscriber.path().address();
             String addr = address.host().get() + ":" + address.port().get();
-            logger.info("{}@{} subscribe {}",subscriberName, addr, serviceName);
+            logger.debug("{}@{} subscribe {}",subscriberName, addr, serviceName);
             context().unwatch(subscriber);
             context().watchWith(subscriber, new SubscriberTerminated(subscriberName, subscriber));
             subscriberMap.put(subscriber, new SubscriberInfo(subscriberName));
@@ -203,7 +206,7 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     private void handleUnsubService(DSF.UnsubService msg) {
         SubscriberInfo info = subscriberMap.remove(sender());
-        logger.info("{}@{} unsubscribe {}", info.name, sender().path().address(), serviceName);
+        logger.debug("{}@{} unsubscribe {}", info.name, sender().path().address(), serviceName);
     }
     //-------------------------------------------------------------------------------
     class SubscriberTerminated {
@@ -217,7 +220,7 @@ public class ServiceActor extends AbstractActor {
     private void handleSubscriberTerminated(SubscriberTerminated msg) {
         Address address = msg.subRef.path().address();
         String addr = address.host().get() + ":" + address.port().get();
-        logger.info("{}@{} unsubscribe {} because terminated", msg.subName, addr, serviceName);
+        logger.debug("{}@{} unsubscribe {} because terminated", msg.subName, addr, serviceName);
         subscriberMap.remove(msg.subRef);
         context().unwatch(msg.subRef);
     }
@@ -225,8 +228,23 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     class LoadServiceInfo {
     }
+
     private void handleLoadServiceInfo(LoadServiceInfo msg) {
         loadServiceInfo();
+        //超过一定时间没有实例注册则停止本ServiceActor
+        if (this.instances.isEmpty()) {
+            if (this.noInstanceStartTime == Long.MAX_VALUE) {
+                this.noInstanceStartTime = System.currentTimeMillis();
+                logger.info("Service {} no instances", serviceName);
+            }
+            if (this.noInstanceStartTime < System.currentTimeMillis() - NO_INSTANCE_EXIT_DELAY) {
+                logger.info("Service {} no instances long time, will be stopped", serviceName);
+                ActorSelection s = context().actorSelection("/user/"+ServiceManagerActor.ACTOR_NAME);
+                s.tell(new MSG.StopServiceActor(self(), this.serviceName), self());
+            }
+        } else {
+            this.noInstanceStartTime = Long.MAX_VALUE;
+        }
     }
     /**
      * 加载实例信息
@@ -395,7 +413,9 @@ public class ServiceActor extends AbstractActor {
     //------------------------------------------------------------------------------------
     private void logServiceState() {
         instances.forEach((addr,info) -> {
-            requestState(info);
+            if (!info.name.endsWith("QA") && !info.name.endsWith("DEV")) {
+                requestState(info);
+            }
         });
     }
 
