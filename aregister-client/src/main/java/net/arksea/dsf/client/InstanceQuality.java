@@ -3,6 +3,9 @@ package net.arksea.dsf.client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -21,6 +24,7 @@ public class InstanceQuality {
     private long succeedCount;
     private  int lastHistoryIndex;
     private final String serviceName;
+    private final String address;
 
     public class Count {
         public final long requestCount;
@@ -34,8 +38,9 @@ public class InstanceQuality {
         }
     }
 
-    public InstanceQuality(String serviceName) {
+    public InstanceQuality(String serviceName, String address) {
         this.serviceName = serviceName;
+        this.address = address;
         historyStat = new ArrayList<>(MAX_HISTORY_COUNT);
         for (int i = 0; i< MAX_HISTORY_COUNT; ++i) {
             historyStat.add(new Count(0,0,0));
@@ -64,8 +69,40 @@ public class InstanceQuality {
         }
         Count count = new Count(this.requestCount, this.succeedCount, this.respondTime);
         historyStat.set(lastHistoryIndex, count);
-        log.trace("Quality Stat: service={},requestCount1M={},succeedRate1M={},succeedRate5M={}",
-            serviceName, getRequestCount(1), getSucceedRate(1), getSucceedRate(5));
+        if (log.isInfoEnabled()) {
+            saveToFile();
+        }
+    }
+
+    public void saveToFile() {
+        String fileName = "./quality/" + serviceName + "/" + address.replace(":","-") + ".log";
+        try {
+            File file = new File(fileName);
+            File dir = file.getParentFile();
+            if (!dir.exists()) {
+                Files.createDirectories(dir.toPath());
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(serviceName).append(" ").append(address).append("\n");
+            sb.append("C:Count(steps),S:Succeed(steps),T:MeanRespondTime(steps)\n");
+            sb.append("C1\tS1\tT1\tC3\tS3\tT3\tC10\tS10\tT10\tT15\n");
+            sb.append(getRequestCount(1)).append("\t")
+              .append(getSucceedRate (1)).append("\t")
+              .append(getMeanRespondTime(1)).append("\t");
+            sb.append(getRequestCount(3)).append("\t")
+              .append(getSucceedRate (3)).append("\t")
+              .append(getMeanRespondTime(3)).append("\t");
+            sb.append(getRequestCount(10)).append("\t")
+              .append(getSucceedRate (10)).append("\t")
+              .append(getMeanRespondTime(10)).append("\t")
+              .append(getMeanRespondTime(15)).append("\n");
+            Files.write(file.toPath(), sb.toString().getBytes("UTF-8"),
+                StandardOpenOption.WRITE,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.CREATE);
+        } catch (Exception ex) {
+            log.error("save quality to file({}) failed: ", fileName, ex);
+        }
     }
 
     /**

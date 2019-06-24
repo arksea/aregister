@@ -47,11 +47,11 @@ public class ServiceAdaptor extends AbstractActor {
     protected ServiceAdaptor(String serviceName, String host, int port, ActorRef service, ICodes codes, RegisterClient register, IRateLimitStrategy rateLimitStrategy) {
         this.service = service;
         this.codes = codes;
-        this.quality = new InstanceQuality("");
         this.serviceName = serviceName;
         this.register = new RegisterManager(register);
         Address address = Address.apply("akka.tcp",context().system().name(),host, port);
         serviceAddr = host + ":" + port;
+        this.quality = new InstanceQuality(serviceName, serviceAddr);
         servicePath = self().path().toStringWithAddress(address);
         this.rateLimitStrategy = rateLimitStrategy;
         logger.info("Create Service Adaptor: addr={}, path={}", serviceAddr, servicePath);
