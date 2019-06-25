@@ -18,7 +18,7 @@ import java.util.List;
 public class InstanceQuality {
     private final Logger log = LogManager.getLogger(InstanceQuality.class);
     public static int MAX_HISTORY_COUNT = 15;   //保存历史数据的周期数
-    private final ArrayList<Count> historyStat;  //每分钟保存一个历史值
+    private final ArrayList<Count> historyStat; //每周期保存一个历史值
     private long requestCount;
     private long respondTime;
     private long succeedCount;
@@ -107,7 +107,7 @@ public class InstanceQuality {
 
     /**
      * 计算指定时间范围内的平均请求成功率
-     * @param step 指定时间范围，具体时间与每个step调用的周期有关，
+     * @param steps 指定时间范围，具体时间与每个step调用的周期有关，
                    比如每分钟一个step，则step=5表示计算最近5分钟内的平均请求成功率
                    如果10秒钟一个setp，则step=5就表示计算最近50秒内的平均请求成功率
                    具体设置多大的周期，看希望调整实例上下线的灵敏度：
@@ -117,10 +117,10 @@ public class InstanceQuality {
                       而对于QPS低的服务，太短的周期会降低这里统计数据的参考价值、引起误判
      * @return 0~1.0
      */
-    public float getSucceedRate(int step) {
-        int s = Math.min(MAX_HISTORY_COUNT - 2, step);
-        Count c1 = getStepsBefore(s+1);
-        Count c2 = getStepsBefore(s);
+    public float getSucceedRate(int steps) {
+        int s = minmaxSteps(steps);
+        Count c1 = getStepsBefore(s);
+        Count c2 = getStepsBefore(0); //不用getCurrentCount是因为当前值还在变化中
         long n = c2.succeedCount - c1.succeedCount;
         long m = c2.requestCount - c1.requestCount;
         if (m == 0) {
@@ -133,10 +133,10 @@ public class InstanceQuality {
     /**
      * 计算指定时间范围内的平均请求响应时间
      */
-    public long getMeanRespondTime(int step) {
-        int s = Math.min(MAX_HISTORY_COUNT - 2, step);
-        Count c1 = getStepsBefore(s+1);
-        Count c2 = getStepsBefore(s);
+    public long getMeanRespondTime(int steps) {
+        int s = minmaxSteps(steps);
+        Count c1 = getStepsBefore(s);
+        Count c2 = getStepsBefore(0); //不用getCurrentCount是因为当前值还在变化中
         long n = c2.respondTime - c1.respondTime;
         long m = c2.requestCount - c1.requestCount;
         if (m <= 0) {
@@ -146,28 +146,38 @@ public class InstanceQuality {
         }
     }
 
-    public long getRequestCount(int step) {
-        int s = Math.min(MAX_HISTORY_COUNT - 2, step);
-        Count c1 = getStepsBefore(s+1);
-        Count c2 = getStepsBefore(s);
+    public long getRequestCount(int steps) {
+        int s = minmaxSteps(steps);
+        Count c1 = getStepsBefore(s);
+        Count c2 = getStepsBefore(0); //不用getCurrentCount是因为当前值还在变化中
         return c2.requestCount - c1.requestCount;
     }
 
+    private int minmaxSteps(int steps) {
+        if (steps <= 1) {
+            return 1;
+        } else if (steps >= MAX_HISTORY_COUNT) {
+            return  MAX_HISTORY_COUNT - 1;
+        } else {
+            return steps;
+        }
+    }
+
     /**
-     * 取N分钟前的统计数据
-     * @param step
+     * 取N周期前的统计数据
+     * @param steps
      * @return
      */
-    public Count getStepsBefore(int step) {
-        if (step > 0) {
-            int index = lastHistoryIndex - step;
-            if (index < 0) {
-                index += MAX_HISTORY_COUNT;
-            }
-            return historyStat.get(index);
-        } else {
-            return new Count(this.requestCount, this.succeedCount, this.respondTime);
+    public Count getStepsBefore(int steps) {
+        int index = lastHistoryIndex - steps;
+        if (index < 0) {
+            index += MAX_HISTORY_COUNT;
         }
+        return historyStat.get(index);
+    }
+
+    public Count getCurrentCount() {
+        return new Count(this.requestCount, this.succeedCount, this.respondTime);
     }
 
     public int getMaxHistoryCount() {
