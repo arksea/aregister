@@ -1,10 +1,27 @@
 ## 简介
-基于Akka实现的注册服务器，为Actor提供服务发现能力，支持对集群中服务节点的均衡访问，提供管理页面查询服务状态
+基于Akka实现的注册服务，为基于Akka编写的服务提供自动发现能力，支持对集群中服务节点的均衡访问，提供管理页面查询服务状态
 
-## 服务查询页面
+## 服务状态查询页面
 
  ![image](./docs/images/readme-aregister1.png)
  
+## 服务状态上报InfluxDB
+
+![image](./docs/images/service-state-log.png)
+
+在application.conf中配置InfluxDB即可开启
+```groovy
+register {
+    store {
+        type = "redis"
+        redis-host = "127.0.0.1"
+        redis-port = 6379
+        redis-password = "123456"
+    }
+    stateLogUrl = "http://influxdb:8086/write?db=dbname"
+}
+```
+
 ## 客户端Demo
 
 ```
