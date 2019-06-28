@@ -32,12 +32,14 @@ ServiceAdaptor -\\ RegisterClientActor: RegLocalService
 activate RegisterClientActor
 RegisterClientActor ->>x RegisterActor : ask(RegService)
 deactivate RegisterClientActor
-RegisterClientActor -//o RegisterClientActor: failed
-RegisterClientActor o-// RegisterClientActor: RegisterRequestFailed
-note left: 用小圆简化Future回调的表示
-RegisterClientActor o-// RegisterClientActor: RegLocalService
+RegisterClientActor ->o RegisterClientActor: failed
+activate RegisterClientActor
+RegisterClientActor -// RegisterClientActor: RegisterRequestFailed
+RegisterClientActor -> RegisterClientActor: delay(RegLocalService)
+RegisterClientActor -// RegisterClientActor: RegLocalService
 activate RegisterClientActor
 RegisterClientActor ->> RegisterActor : ask(RegService)
+deactivate RegisterClientActor
 deactivate RegisterClientActor
 activate RegisterActor
 

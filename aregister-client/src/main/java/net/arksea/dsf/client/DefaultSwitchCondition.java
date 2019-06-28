@@ -13,7 +13,7 @@ public class DefaultSwitchCondition implements ISwitchCondition {
         int step = 10;
         float succeedRate = quality.getSucceedRate(step);
         long requestCount = quality.getRequestCount(step);
-        return requestCount > 10 && succeedRate > 0.8f;
+        return requestCount > 0 && succeedRate > 0.8f;
     }
 
     //根据灰度测试成功率决定是否切换为在线状态
@@ -24,7 +24,7 @@ public class DefaultSwitchCondition implements ISwitchCondition {
         int step = 10;
         float succeedRate = quality.getSucceedRate(step);
         long requestCount = quality.getRequestCount(step);
-        return requestCount > 10 && succeedRate > 0.9f && getMeanRespondTime(quality) < rateLimitRequestTimeMin();
+        return requestCount > 0 && succeedRate > 0.9f && getMeanRespondTime(quality) < rateLimitRequestTimeMin();
     }
 
     //根据请求成功率做熔断

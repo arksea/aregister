@@ -1,6 +1,8 @@
 package net.arksea.dsf.register;
 
 import akka.actor.*;
+import akka.cluster.Cluster;
+import akka.cluster.ClusterEvent;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.pattern.Patterns;
@@ -12,8 +14,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static akka.japi.Util.classTag;
 
 /**
  *
@@ -24,37 +29,44 @@ public class ServiceActor extends AbstractActor {
     private final Logger logger = LogManager.getLogger(ServiceActor.class);
     private final static long UNREG_TIMEOUT = 24L * 3600_000L;
     private final static long OFFLINE_TIMEOUT = 3L * 24L * 3600_000L;
+    private final static long NO_INSTANCE_EXIT_DELAY = 3 * 3600_000L;
+    private long noInstanceStartTime; //无实例的开始时间，当超过一定时间(NO_INSTANCE_EXIT_DELAY)将退出本ServiceActor
+    private long loadServiceInfoFormStoreFailed; //数据存储访问错误计数，用于减少错误日志量
     private final String serviceName;
     private String serialId; //识别实例集合是否变化的ID，用于减少同步消息的分发
     private final Map<String,String> attributes = new HashMap<>();
     private Map<String, InstanceInfo> instances = new HashMap<>();
     private final Map<ActorRef, SubscriberInfo> subscriberMap = new HashMap<>();
     private final IRegisterStore store;
+    private final ServiceStateLogger stateLogger;
     private Cancellable loadServiceInfoTimer;  //从Store更新服务实例定时器
     private Cancellable checkAliveTimer;
-    private static final int LOAD_SVC_DELAY_SECONDS = 300; //从注册服务器更新实例列表的周期(s)
+    private static final int LOAD_SVC_DELAY_SECONDS = 1800; //从注册服务器更新实例列表的周期(s)
     private static final int CHECK_ALIVE_SECONDS = 60; //测试服务是否存活
     private final DSF.Ping ping = DSF.Ping.getDefaultInstance();
     private String lastStoreVersionID = "";
+    private final Cluster cluster = Cluster.get(getContext().getSystem());
 
-    public static Props props(String serviceId, IRegisterStore store) {
+    public static Props props(String serviceId, IRegisterStore store, ServiceStateLogger stateLogger) {
         return Props.create(ServiceActor.class, new Creator<ServiceActor>() {
             @Override
             public ServiceActor create() throws Exception {
-                return new ServiceActor(serviceId, store);
+                return new ServiceActor(serviceId, store, stateLogger);
             }
         });
     }
 
-    public ServiceActor(String serviceName, IRegisterStore store) {
+    public ServiceActor(String serviceName, IRegisterStore store, ServiceStateLogger stateLogger) {
         this.serviceName = serviceName;
         this.store = store;
         this.serialId = "";
+        this.stateLogger = stateLogger;
+        this.noInstanceStartTime = Long.MAX_VALUE;
     }
 
     @Override
     public void preStart() {
-        logger.trace("ServiceActor preStart : {}", serviceName);
+        logger.info("ServiceActor started : {}", serviceName);
         loadServiceInfo();
         handleCheckServiceAlive(null);
         loadServiceInfoTimer = context().system().scheduler().schedule(
@@ -77,7 +89,7 @@ public class ServiceActor extends AbstractActor {
             checkAliveTimer.cancel();
             checkAliveTimer = null;
         }
-        logger.trace("ServiceActor postStop : {}", serviceName);
+        logger.info("ServiceActor stoped : {}", serviceName);
     }
 
     @Override
@@ -144,9 +156,9 @@ public class ServiceActor extends AbstractActor {
         logger.trace("Service.handleGetService({}),instances.size={}", msg.getName(),instances.size());
         DSF.Service.Builder builder = DSF.Service.newBuilder()
             .setName(serviceName);
-        this.instances.forEach((addr,it) -> {
-            builder.addInstances(buildInstance(it));
-        });
+        this.instances.forEach((addr,it) ->
+            builder.addInstances(buildInstance(it))
+        );
         fillSubscriber(builder);
         sender().tell(builder.build(), self());
     }
@@ -173,9 +185,9 @@ public class ServiceActor extends AbstractActor {
             }
             counter.put(info.name, c);
         });
-        counter.forEach((name, count) -> {
-            svc.addSubscribers(DSF.Subscriber.newBuilder().setName(name).setCount(count).build());
-        });
+        counter.forEach((name, count) ->
+            svc.addSubscribers(DSF.Subscriber.newBuilder().setName(name).setCount(count).build())
+        );
     }
     //-------------------------------------------------------------------------------
     private void handleSubService(DSF.SubService msg) {
@@ -185,7 +197,7 @@ public class ServiceActor extends AbstractActor {
         if (!subscriberMap.containsKey(subscriber)) {
             Address address = subscriber.path().address();
             String addr = address.host().get() + ":" + address.port().get();
-            logger.info("{}@{} subscribe {}",subscriberName, addr, serviceName);
+            logger.debug("{}@{} subscribe {}",subscriberName, addr, serviceName);
             context().unwatch(subscriber);
             context().watchWith(subscriber, new SubscriberTerminated(subscriberName, subscriber));
             subscriberMap.put(subscriber, new SubscriberInfo(subscriberName));
@@ -194,7 +206,7 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     private void handleUnsubService(DSF.UnsubService msg) {
         SubscriberInfo info = subscriberMap.remove(sender());
-        logger.info("{}@{} unsubscribe {}", info.name, sender().path().address(), serviceName);
+        logger.debug("{}@{} unsubscribe {}", info.name, sender().path().address(), serviceName);
     }
     //-------------------------------------------------------------------------------
     class SubscriberTerminated {
@@ -208,7 +220,7 @@ public class ServiceActor extends AbstractActor {
     private void handleSubscriberTerminated(SubscriberTerminated msg) {
         Address address = msg.subRef.path().address();
         String addr = address.host().get() + ":" + address.port().get();
-        logger.info("{}@{} unsubscribe {} because terminated", msg.subName, addr, serviceName);
+        logger.debug("{}@{} unsubscribe {} because terminated", msg.subName, addr, serviceName);
         subscriberMap.remove(msg.subRef);
         context().unwatch(msg.subRef);
     }
@@ -216,14 +228,30 @@ public class ServiceActor extends AbstractActor {
     //-------------------------------------------------------------------------------
     class LoadServiceInfo {
     }
+
     private void handleLoadServiceInfo(LoadServiceInfo msg) {
         loadServiceInfo();
+        //超过一定时间没有实例注册则停止本ServiceActor
+        if (this.instances.isEmpty()) {
+            if (this.noInstanceStartTime == Long.MAX_VALUE) {
+                this.noInstanceStartTime = System.currentTimeMillis();
+                logger.info("Service {} no instances", serviceName);
+            }
+            if (this.noInstanceStartTime < System.currentTimeMillis() - NO_INSTANCE_EXIT_DELAY) {
+                logger.info("Service {} no instances long time, will be stopped", serviceName);
+                ActorSelection s = context().actorSelection("/user/"+ServiceManagerActor.ACTOR_NAME);
+                s.tell(new MSG.StopServiceActor(self(), this.serviceName), self());
+            }
+        } else {
+            this.noInstanceStartTime = Long.MAX_VALUE;
+        }
     }
     /**
      * 加载实例信息
      */
     private void loadServiceInfo() {
         List<Instance> list;
+        boolean changed = false; //同步到本地文件的标志： 当store的版本ID变化则认为变化、当本地文件与内存状态合并时发现变化
         if (store == null) {
             list = loadFromLocalFile();
         } else {
@@ -232,17 +260,21 @@ public class ServiceActor extends AbstractActor {
                 if (lastStoreVersionID.equals(verId)) {
                     list = null;
                 } else {
+                    changed = true;
                     list = store.getServiceInstances(serviceName);
+                    loadServiceInfoFormStoreFailed = loadServiceInfoFormStoreFailed==0 ? 0 : loadServiceInfoFormStoreFailed/10;
                     lastStoreVersionID = verId;
-                    logger.trace("Load service list from register store succeed: {}", serviceName);
+                    logger.info("Load service list from register store succeed: {}", serviceName);
                 }
             } catch (Exception ex) {
+                if (loadServiceInfoFormStoreFailed++ % 10 == 0) {
+                    logger.warn("Load service list from register store failed: {}", serviceName, ex);
+                }
                 list = loadFromLocalFile();
             }
         }
 
         if (list != null) {
-            boolean changed = false;
             logger.trace("Load service info, instance size = {}", list.size());
             Map<String, InstanceInfo> newInstances = new HashMap<>();
             for (Instance it : list) {
@@ -279,10 +311,10 @@ public class ServiceActor extends AbstractActor {
     private List<Instance> loadFromLocalFile() {
         try {
             List<Instance> list = LocalStore.load(serviceName);
-            logger.info("Load service list form local cache file succeed: {}",serviceName);
+            logger.info("Load service list from local cache file succeed: {}",serviceName);
             return list;
         } catch (Exception ex1) {
-            logger.warn("Load service list form local cache file failed: {}",serviceName,ex1);
+            logger.warn("Load service list from local cache file failed: {}",serviceName,ex1);
             return null;
         }
     }
@@ -301,6 +333,9 @@ public class ServiceActor extends AbstractActor {
         instances.forEach((addr,it) -> {
             checkServiceAlive(it);
         });
+        if (this.stateLogger != null && isLeader()) {
+            logServiceState();
+        }
     }
     private void removeUnregedSvc() {
         List<String> unregedList = new LinkedList<>();
@@ -373,5 +408,65 @@ public class ServiceActor extends AbstractActor {
 
     private String makeSerialId() {
         return UUID.randomUUID().toString();
+    }
+
+    //------------------------------------------------------------------------------------
+    private void logServiceState() {
+        instances.forEach((addr,info) -> {
+            if (!info.name.endsWith("QA") && !info.name.endsWith("DEV")) {
+                requestState(info);
+            }
+        });
+    }
+
+    private void requestState(InstanceInfo info) {
+        DSF.GetRequestCountHistory msg = DSF.GetRequestCountHistory.getDefaultInstance();
+        ActorSelection service = context().actorSelection(info.path);
+        Patterns.ask(service, msg, 3000)
+            .mapTo(classTag(DSF.RequestCountHistory.class))
+            .onComplete(new OnComplete<DSF.RequestCountHistory>() {
+                public void onComplete(Throwable ex, DSF.RequestCountHistory his) {
+                    if (ex == null && his != null) {
+                        DSF.RequestCount c1 = his.getItems(1);
+                        DSF.RequestCount c2 = his.getItems(2);
+                        long request = c1.getRequestCount() - c2.getRequestCount();
+                        long succeed = c1.getSucceedCount() - c2.getSucceedCount();
+                        long responedTime = c1.getRespondTime() - c2.getRespondTime();
+                        float tts = request == 0 ? 0 : responedTime*1.0f / request;
+                        float failedRate = request == 0 ? 0 : (request - succeed)*1.0f / request;
+                        DecimalFormat df = new DecimalFormat();
+                        df.applyPattern("0.###");
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("service,name=").append(info.name)
+                            .append(",addr=").append(info.addr)
+                            .append(" online=").append(info.isOnline()?1:0)
+                            .append(",unreg=").append(info.isUnregistered()?1:0)
+                            .append(",request=").append(request)
+                            .append(",tts=").append(df.format(tts))
+                            .append(",failed=").append(df.format(failedRate));
+                        String line = sb.toString();
+                        logger.debug("log service state: {}", line);
+                        stateLogger.write(line);
+                    } else {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("service,name=").append(info.name)
+                            .append(",addr=").append(info.addr)
+                            .append(" online=").append(info.isOnline()?1:0)
+                            .append(",unreg=").append(info.isUnregistered()?1:0)
+                            .append(",request=0")
+                            .append(",tts=0")
+                            .append(",failed=0");
+                        String line = sb.toString();
+                        logger.debug("log service state: {}", line);
+                        stateLogger.write(line);
+                    }
+                }
+            }, context().dispatcher());
+    }
+
+    private boolean isLeader() {
+        Address selfAddr = cluster.selfAddress();
+        ClusterEvent.CurrentClusterState state = cluster.state();
+        return selfAddr.equals(state.getLeader());
     }
 }

@@ -83,7 +83,7 @@ public class RequestRouter extends AbstractActor {
         this.instances.forEach(it -> oldMap.put(it.addr, it));
         this.instances.clear();
         msg.getInstancesList().forEach(it -> {
-            qualityMap.computeIfAbsent(it.getAddr(), k -> new InstanceQuality(it.getAddr()));
+            qualityMap.computeIfAbsent(it.getAddr(), k -> new InstanceQuality(serviceName, it.getAddr()));
             boolean unreg = it.getUnregistered();
             if (!unreg) {
                 Instance old = oldMap.remove(it.getAddr());
@@ -146,7 +146,7 @@ public class RequestRouter extends AbstractActor {
         InstanceQuality q = qualityMap.get(i.addr);
         if (q == null) {
             this.instances.add(i);
-            q = new InstanceQuality(i.addr);
+            q = new InstanceQuality(serviceName, i.addr);
             qualityMap.put(i.addr, q);
             i.setStatus(InstanceStatus.OFFLINE);
         }
@@ -191,10 +191,11 @@ public class RequestRouter extends AbstractActor {
         }
     }
     private void logQuality(InstanceQuality q) {
-        log.info("succeedRate(3)={}, succeedRate(10)={}, meanRespondTime(3)={}, meanRespondTime(10)={}",
-            q.getSucceedRate(3), q.getSucceedRate(10),
-            q.getMeanRespondTime(3), q.getMeanRespondTime(10));
+        log.info("succeedRate(3)={}, meanRespondTime(3)={}, succeedRate(10)={}, meanRespondTime(10)={}",
+            q.getSucceedRate(3), q.getMeanRespondTime(3),
+            q.getSucceedRate(10),q.getMeanRespondTime(10));
     }
+
     //------------------------------------------------------------------------------------
     private class CheckServiceAlive {}
     private void handleCheckServiceAlive(CheckServiceAlive msg) {
