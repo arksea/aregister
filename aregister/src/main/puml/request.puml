@@ -10,6 +10,7 @@ User -> Client: request
 activate Client
 Client ->> RequestRouter: ask(ServiceRequest)
 activate RequestRouter
+Client -->o Client: map(decodeResponse)
 User <-- Client: Future
 deactivate Client
 RequestRouter -> RequestRouter : getInstance
@@ -27,9 +28,9 @@ deactivate ServiceAdaptor
 activate RequestRouter
 RequestRouter -//o Client: DSF.ServiceResponse
 RequestRouter -> RequestRouter: onRequestSucceed
-
-Client o-> Client: map(decodeResponse)
+activate RequestRouter
 deactivate RequestRouter
-Client o--> User: result
+deactivate RequestRouter
+
 
 @enduml
