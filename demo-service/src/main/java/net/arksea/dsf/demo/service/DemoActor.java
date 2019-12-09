@@ -3,8 +3,7 @@ package net.arksea.dsf.demo.service;
 import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.japi.Creator;
-import net.arksea.dsf.demo.DemoRequest1;
-import net.arksea.dsf.demo.DemoResponse1;
+import net.arksea.dsf.demo.DEMO;
 import net.arksea.dsf.service.ServiceRequest;
 import net.arksea.dsf.service.ServiceResponse;
 import net.arksea.zipkin.akka.ActorTracingFactory;
@@ -64,7 +63,7 @@ public class DemoActor extends AbstractActor {
     }
 
     private void onRequest(ServiceRequest msg) {
-        if (msg.message instanceof DemoRequest1) {
+        if (msg.message instanceof DEMO.DemoRequest1) {
             long time = System.currentTimeMillis() - start;
             if (time > 90_000 && time <= 360_000) {
                 try {
@@ -77,16 +76,16 @@ public class DemoActor extends AbstractActor {
                 } catch (InterruptedException e) {
                 }
             }
-            DemoRequest1 request = (DemoRequest1) msg.message;
-//            log.info("onRequest: {}, online: {}, name={}", request.msg, online, self().path().name());
+            DEMO.DemoRequest1 request = (DEMO.DemoRequest1) msg.message;
+            //log.info("onRequest: {}, online: {}, name={}", request.getMsg(), online, self().path().name());
             if (port == 8772) {
                 if (online) {
-                    DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);
+                    DEMO.DemoResponse1 resule = DEMO.DemoResponse1.newBuilder().setStatus(0).setMsg("received: " + request.getMsg()).build();
                     ServiceResponse response = new ServiceResponse(resule, msg);
                     tracing.tell(sender(), response, self());
                 }
             } else {
-                DemoResponse1 resule = new DemoResponse1(0, "received: " + request.msg);
+                DEMO.DemoResponse1 resule = DEMO.DemoResponse1.newBuilder().setStatus(0).setMsg("received: " + request.getMsg()).build();
                 ServiceResponse response = new ServiceResponse(resule, msg);
                 tracing.tell(sender(), response, self());
             }

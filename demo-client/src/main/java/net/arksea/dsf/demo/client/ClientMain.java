@@ -1,10 +1,16 @@
 package net.arksea.dsf.demo.client;
 
+import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
 import akka.japi.pf.FI;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.client.Client;
-import net.arksea.dsf.demo.DemoRequest1;
-import net.arksea.dsf.demo.DemoResponse1;
+import net.arksea.dsf.client.DefaultSwitchCondition;
+import net.arksea.dsf.client.route.RouteStrategy;
+import net.arksea.dsf.codes.ICodes;
+import net.arksea.dsf.codes.ProtocolBufferCodes;
+import net.arksea.dsf.demo.DEMO;
 import net.arksea.dsf.register.RegisterClient;
 import net.arksea.zipkin.akka.demo.TracingConfigImpl;
 import org.apache.logging.log4j.LogManager;
@@ -36,14 +42,15 @@ public final class ClientMain {
             LinkedList<String> addrs = new LinkedList<>();
             addrs.add("127.0.0.1:6501");
             RegisterClient register = new RegisterClient("TestClient",addrs,new TracingConfigImpl());
-            client = register.subscribe(serviceName);
+            ICodes codes = new ProtocolBufferCodes(DEMO.getDescriptor());
+            client = register.subscribe(serviceName, codes);
             for (int i=0; i<500000; ++i) {
-                DemoRequest1 msg = new DemoRequest1("hello"+i,i);
-                Future<DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DemoResponse1.class));
+                DEMO.DemoRequest1 msg = DEMO.DemoRequest1.newBuilder().setMsg("hello"+i).setIndex(i).build();
+                Future<DEMO.DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DEMO.DemoResponse1.class));
                 f.onComplete(
-                    new OnComplete<DemoResponse1>() {
+                    new OnComplete<DEMO.DemoResponse1>() {
                         @Override
-                        public void onComplete(Throwable failure, DemoResponse1 ret) throws Throwable {
+                        public void onComplete(Throwable failure, DEMO.DemoResponse1 ret) throws Throwable {
                             if (failure == null) {
                                 client.trace(ret, ClientMain::complete);
                             } else {
@@ -62,10 +69,10 @@ public final class ClientMain {
     }
 
     static long __lastLogTime;
-    private static void complete(DemoResponse1 ret) {
+    private static void complete(DEMO.DemoResponse1 ret) {
         if (System.currentTimeMillis() - __lastLogTime > 10_000) {
             __lastLogTime = System.currentTimeMillis();
-            logger.info("result message: {}", ret.msg);
+            logger.info("result message: {}", ret.getMsg());
         }
     }
 }

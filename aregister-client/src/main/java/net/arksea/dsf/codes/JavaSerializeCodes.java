@@ -35,7 +35,7 @@ public class JavaSerializeCodes implements ICodes {
         }
     }
 
-    protected DSF.ServiceRequest.Builder encodeRequest(String requestId, ByteString payload, boolean oneway) {
+    private DSF.ServiceRequest.Builder encodeRequest(String requestId, ByteString payload, boolean oneway) {
         DSF.ServiceRequest.Builder builder = DSF.ServiceRequest.newBuilder()
             .setOneway(oneway)
             .setRequestId(requestId)
@@ -68,14 +68,14 @@ public class JavaSerializeCodes implements ICodes {
             out.writeObject(msg);
             byte[] bytes = buff.toByteArray();
             ByteString payload = ByteString.copyFrom(bytes);
-            return encodeResponse(msg, reqid, payload, succeed);
+            return encodeResponse(reqid, payload, succeed);
         } catch (IOException ex) {
             throw new RuntimeException("protocol error", ex);
         }
     }
 
 
-    protected DSF.ServiceResponse.Builder encodeResponse(Object msg, String reqid, ByteString payload, boolean succeed) {
+    private DSF.ServiceResponse.Builder encodeResponse(String reqid, ByteString payload, boolean succeed) {
         DSF.ServiceResponse.Builder builder = DSF.ServiceResponse.newBuilder()
             .setRequestId(reqid)
             .setPayload(payload)
