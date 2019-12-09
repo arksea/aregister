@@ -13,7 +13,6 @@ import java.util.Map;
  * Created by xiaohaixing on 2018/5/7.
  */
 public class ProtocolBufferCodes extends JavaSerializeCodes {
-    private final Descriptors.FileDescriptor descriptor;
     private final Map<String,ParserInfo> parserMap = new HashMap<>();
     class ParserInfo {
         Parser parser;
@@ -27,7 +26,6 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
     }
     public ProtocolBufferCodes(Descriptors.FileDescriptor descriptor) {
         try {
-            this.descriptor = descriptor;
             String pkg = descriptor.getPackage();
             DescriptorProtos.FileOptions ops =descriptor.getOptions();
             String outerClassName = pkg+"."+ops.getJavaOuterClassname();

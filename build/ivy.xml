@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="" module="Actor Register" revision="unspecified" status="integration" publication="20190919143326"/>
-  <configurations>
-    <conf name="archives" visibility="public"/>
-    <conf name="default" visibility="public"/>
-  </configurations>
-  <publications/>
-</ivy-module>
