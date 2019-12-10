@@ -1,13 +1,7 @@
 package net.arksea.dsf.demo.client;
 
-import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
-import akka.japi.pf.FI;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import net.arksea.dsf.client.Client;
-import net.arksea.dsf.client.DefaultSwitchCondition;
-import net.arksea.dsf.client.route.RouteStrategy;
 import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.ProtocolBufferCodes;
 import net.arksea.dsf.demo.DEMO;

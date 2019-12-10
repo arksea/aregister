@@ -71,7 +71,7 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
             } else {
                 ParserInfo info = this.parserMap.get(msg.getTypeName());
                 Object obj = info.parser.parseFrom(msg.getPayload());
-                if (info.tracingSpanField != null) {
+                if (info.tracingSpanField != null && msg.getTracingSpan() != null) {
                     info.tracingSpanField.set(obj, msg.getTracingSpan());
                 }
                 return obj;

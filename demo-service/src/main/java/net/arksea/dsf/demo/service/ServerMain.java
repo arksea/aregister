@@ -5,7 +5,6 @@ import akka.actor.ActorSystem;
 import akka.routing.ConsistentHashingPool;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import net.arksea.dsf.codes.JavaSerializeCodes;
 import net.arksea.dsf.codes.ProtocolBufferCodes;
 import net.arksea.dsf.demo.DEMO;
 import net.arksea.dsf.register.RegisterClient;
