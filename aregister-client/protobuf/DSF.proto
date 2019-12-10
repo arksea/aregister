@@ -85,6 +85,12 @@ enum EnumSerialize {
     BYTES = 0;
     JAVA = 1;
     PROTO = 2;
+    STRING = 3;
+    INT = 4;
+    LONG = 5;
+    FLOAT = 6;
+    DOUBLE = 7;
+    BOOL = 8;
 }
 //------------------------------------------------
 message ServiceRequest {
@@ -129,4 +135,28 @@ message Ping {
 }
 
 message Pong {
+}
+
+//-------------------------------------------------
+//一些基础类型的message包装
+message WrapStr {
+    string value = 1;
+}
+message WrapInt {
+    int32 value = 1;
+}
+message WrapLong {
+    int64 value = 1;
+}
+message WrapFloat {
+    float value = 1;
+}
+message WrapDouble {
+    double value = 1;
+}
+message WrapBool {
+    bool value = 1;
+}
+message WrapBytes {
+    bytes value = 1;
 }

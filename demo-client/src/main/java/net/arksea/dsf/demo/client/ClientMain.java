@@ -38,15 +38,34 @@ public final class ClientMain {
             RegisterClient register = new RegisterClient("TestClient",addrs,new TracingConfigImpl());
             ICodes codes = new ProtocolBufferCodes(DEMO.getDescriptor());
             client = register.subscribe(serviceName, codes);
-            for (int i=0; i<500000; ++i) {
-                DEMO.DemoRequest1 msg = DEMO.DemoRequest1.newBuilder().setMsg("hello"+i).setIndex(i).build();
-                Future<DEMO.DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DEMO.DemoResponse1.class));
+            //for (int i=0; i<500000; ++i) {
+//            for (int i=0; i<1; ++i) {
+//                DEMO.DemoRequest1 msg = DEMO.DemoRequest1.newBuilder().setMsg("hello"+i).setIndex(i).build();
+//                Future<DEMO.DemoResponse1> f = client.request(msg, 10000).mapTo(classTag(DEMO.DemoResponse1.class));
+//                f.onComplete(
+//                    new OnComplete<DEMO.DemoResponse1>() {
+//                        @Override
+//                        public void onComplete(Throwable failure, DEMO.DemoResponse1 ret) throws Throwable {
+//                            if (failure == null) {
+//                                client.trace(ret, ClientMain::complete);
+//                            } else {
+//                                logger.warn("failed", failure);
+//                            }
+//                        }
+//                    }, client.system.dispatcher()
+//                );
+//                Thread.sleep(10);
+//            }
+
+            for (int i=0; i<1; ++i) {
+                String msg = "world"+i;
+                Future<String> f = client.request(msg, 10000).mapTo(classTag(String.class));
                 f.onComplete(
-                    new OnComplete<DEMO.DemoResponse1>() {
+                    new OnComplete<String>() {
                         @Override
-                        public void onComplete(Throwable failure, DEMO.DemoResponse1 ret) throws Throwable {
+                        public void onComplete(Throwable failure, String ret) throws Throwable {
                             if (failure == null) {
-                                client.trace(ret, ClientMain::complete);
+                                logger.info("result message: {}", ret);
                             } else {
                                 logger.warn("failed", failure);
                             }
@@ -64,9 +83,9 @@ public final class ClientMain {
 
     static long __lastLogTime;
     private static void complete(DEMO.DemoResponse1 ret) {
-        if (System.currentTimeMillis() - __lastLogTime > 10_000) {
-            __lastLogTime = System.currentTimeMillis();
+        //if (System.currentTimeMillis() - __lastLogTime > 10_000) {
+        //    __lastLogTime = System.currentTimeMillis();
             logger.info("result message: {}", ret.getMsg());
-        }
+        //}
     }
 }

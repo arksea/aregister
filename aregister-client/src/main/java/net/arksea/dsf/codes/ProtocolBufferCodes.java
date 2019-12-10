@@ -48,33 +48,29 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
             ByteString payload = msg.toByteString();
-            return encodeRequest(msg, requestId, payload, oneway);
+            return DSF.ServiceRequest.newBuilder()
+                .setOneway(oneway)
+                .setRequestId(requestId)
+                .setPayload(payload)
+                .setSerialize(DSF.EnumSerialize.PROTO)
+                .setTypeName(msg.getDescriptorForType().getName());
         } else {
-            return super.encodeRequest(obj, oneway);
+            return super.encodeRequest(requestId, obj, oneway);
         }
-    }
-
-    private DSF.ServiceRequest.Builder encodeRequest(Message msg, String requestId, ByteString payload, boolean oneway) {
-        return DSF.ServiceRequest.newBuilder()
-            .setOneway(oneway)
-            .setRequestId(requestId)
-            .setPayload(payload)
-            .setSerialize(DSF.EnumSerialize.PROTO)
-            .setTypeName(msg.getDescriptorForType().getName());
     }
 
     @Override
     public Object decodeRequest(DSF.ServiceRequest msg) {
         try {
-            if ("_JAVA_".equals(msg.getTypeName())) {
-                return super.decodeRequest(msg);
-            } else {
+            if (msg.getSerialize() == DSF.EnumSerialize.PROTO) {
                 ParserInfo info = this.parserMap.get(msg.getTypeName());
                 Object obj = info.parser.parseFrom(msg.getPayload());
                 if (info.tracingSpanField != null && msg.getTracingSpan() != null) {
                     info.tracingSpanField.set(obj, msg.getTracingSpan());
                 }
                 return obj;
+            } else {
+                return super.decodeRequest(msg);
             }
         } catch (Exception e) {
             throw new RuntimeException("protocol error", e);
@@ -86,33 +82,29 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
             ByteString payload = msg.toByteString();
-            return encodeResponse(msg, reqid, payload, succeed);
+            return DSF.ServiceResponse.newBuilder()
+                .setRequestId(reqid)
+                .setPayload(payload)
+                .setSerialize(DSF.EnumSerialize.PROTO)
+                .setTypeName(msg.getDescriptorForType().getName())
+                .setSucceed(succeed);
         } else {
             return super.encodeResponse(obj, reqid, succeed);
         }
     }
 
-    private DSF.ServiceResponse.Builder encodeResponse(Message msg, String reqid, ByteString payload, boolean succeed) {
-        return DSF.ServiceResponse.newBuilder()
-            .setRequestId(reqid)
-            .setPayload(payload)
-            .setSerialize(DSF.EnumSerialize.PROTO)
-            .setTypeName(msg.getDescriptorForType().getName())
-            .setSucceed(succeed);
-    }
-
     @Override
     public Object decodeResponse(DSF.ServiceResponse response) {
         try {
-            if ("_JAVA_".equals(response.getTypeName())) {
-                return super.decodeResponse(response);
-            } else {
+            if (response.getSerialize() == DSF.EnumSerialize.PROTO) {
                 ParserInfo info = this.parserMap.get(response.getTypeName());
                 Object obj = info.parser.parseFrom(response.getPayload());
                 if (info.tracingSpanField != null && response.getTracingSpan() != null) {
                     info.tracingSpanField.set(obj, response.getTracingSpan());
                 }
                 return obj;
+            } else  {
+                return super.decodeResponse(response);
             }
         } catch (Exception e) {
             throw new RuntimeException("Invalid protocol", e);

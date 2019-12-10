@@ -2,7 +2,7 @@ package net.arksea.dsf.codes;
 
 import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
-import net.arksea.zipkin.akka.TracingUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
 import java.util.UUID;
@@ -18,85 +18,107 @@ public class JavaSerializeCodes implements ICodes {
 
     @Override
     public DSF.ServiceRequest.Builder encodeRequest(Object msg, boolean oneway) {
-        return encodeRequest(makeRequestId(), msg, oneway);
+        return this.encodeRequest(makeRequestId(), msg, oneway);
     }
 
     @Override
     public DSF.ServiceRequest.Builder encodeRequest(String requestId, Object msg, boolean oneway) {
+        Pair<ByteString,DSF.EnumSerialize> p = encodeObj(msg);
+        return DSF.ServiceRequest.newBuilder()
+            .setOneway(oneway)
+            .setRequestId(requestId)
+            .setPayload(p.getLeft())
+            .setSerialize(p.getRight())
+            .setTypeName("");
+    }
+
+    @Override
+    public Object decodeRequest(DSF.ServiceRequest msg) {
+        return decodeObj(msg.getPayload(), msg.getSerialize());
+//            if (msg.getTracingSpan() != null && msg.getTracingSpan().size() > 0) {
+//                obj = TracingUtils.fillTracingSpan(obj, msg.getTracingSpan());
+//            }
+    }
+
+    @Override
+    public DSF.ServiceResponse.Builder encodeResponse(Object msg, String reqid, boolean succeed) {
+        Pair<ByteString,DSF.EnumSerialize> p = encodeObj(msg);
+        return DSF.ServiceResponse.newBuilder()
+            .setRequestId(reqid)
+            .setPayload(p.getLeft())
+            .setSerialize(p.getRight())
+            .setTypeName("")
+            .setSucceed(succeed);
+    }
+
+    @Override
+    public Object decodeResponse(DSF.ServiceResponse response) {
+        return decodeObj(response.getPayload(), response.getSerialize());
+    }
+
+    private Pair<ByteString,DSF.EnumSerialize> encodeObj(Object msg) {
         try {
-            ByteArrayOutputStream buff = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(buff);
-            out.writeObject(msg);
-            byte[] bytes = buff.toByteArray();
-            ByteString payload = ByteString.copyFrom(bytes);
-            return encodeRequest(requestId, payload, oneway);
+            ByteString payload;
+            DSF.EnumSerialize seri;
+            if (msg instanceof String) {
+                payload = DSF.WrapStr.newBuilder().setValue((String) msg).build().toByteString();
+                seri = DSF.EnumSerialize.STRING;
+            } else if (msg instanceof Integer) {
+                payload = DSF.WrapInt.newBuilder().setValue((Integer) msg).build().toByteString();
+                seri = DSF.EnumSerialize.INT;
+            } else if (msg instanceof Long) {
+                payload = DSF.WrapLong.newBuilder().setValue((Long) msg).build().toByteString();
+                seri = DSF.EnumSerialize.LONG;
+            } else if (msg instanceof Boolean) {
+                payload = DSF.WrapBool.newBuilder().setValue((Boolean) msg).build().toByteString();
+                seri = DSF.EnumSerialize.BOOL;
+            } else if (msg instanceof Float) {
+                payload = DSF.WrapFloat.newBuilder().setValue((Float) msg).build().toByteString();
+                seri = DSF.EnumSerialize.FLOAT;
+            } else if (msg instanceof Double) {
+                payload = DSF.WrapDouble.newBuilder().setValue((Double) msg).build().toByteString();
+                seri = DSF.EnumSerialize.DOUBLE;
+            } else if (msg instanceof ByteString) {
+                payload = DSF.WrapBytes.newBuilder().setValue((ByteString) msg).build().toByteString();
+                seri = DSF.EnumSerialize.BYTES;
+            } else {
+                ByteArrayOutputStream buff = new ByteArrayOutputStream();
+                ObjectOutputStream out = new ObjectOutputStream(buff);
+                out.writeObject(msg);
+                byte[] bytes = buff.toByteArray();
+                payload = ByteString.copyFrom(bytes);
+                seri = DSF.EnumSerialize.JAVA;
+            }
+            return Pair.of(payload, seri);
         } catch (IOException ex) {
             throw new RuntimeException("Invalid protocol", ex);
         }
     }
 
-    private DSF.ServiceRequest.Builder encodeRequest(String requestId, ByteString payload, boolean oneway) {
-        DSF.ServiceRequest.Builder builder = DSF.ServiceRequest.newBuilder()
-            .setOneway(oneway)
-            .setRequestId(requestId)
-            .setPayload(payload)
-            .setSerialize(DSF.EnumSerialize.JAVA)
-            .setTypeName("_JAVA_");
-        return builder;
-    }
-
-    @Override
-    public Object decodeRequest(DSF.ServiceRequest msg) {
+    private Object decodeObj(ByteString payload, DSF.EnumSerialize seri) {
         try {
-            ByteArrayInputStream buff = new ByteArrayInputStream(msg.getPayload().toByteArray());
-            ObjectInputStream in = new ObjectInputStream(buff);
-            Object obj = in.readObject();
-            if (msg.getTracingSpan() != null && msg.getTracingSpan().size() > 0) {
-                obj = TracingUtils.fillTracingSpan(obj, msg.getTracingSpan());
+            switch (seri) {
+                case STRING:
+                    return DSF.WrapStr.parseFrom(payload).getValue();
+                case INT:
+                    return DSF.WrapInt.parseFrom(payload).getValue();
+                case LONG:
+                    return DSF.WrapLong.parseFrom(payload).getValue();
+                case BOOL:
+                    return DSF.WrapBool.parseFrom(payload).getValue();
+                case FLOAT:
+                    return DSF.WrapFloat.parseFrom(payload).getValue();
+                case DOUBLE:
+                    return DSF.WrapDouble.parseFrom(payload).getValue();
+                case BYTES:
+                    return DSF.WrapBytes.parseFrom(payload).getValue();
+                default:
+                    ByteArrayInputStream buff = new ByteArrayInputStream(payload.toByteArray());
+                    ObjectInputStream in = new ObjectInputStream(buff);
+                    return in.readObject();
             }
-            return obj;
         } catch (Exception ex) {
-            throw new RuntimeException("protocol error", ex);
-        }
-    }
-
-    @Override
-    public DSF.ServiceResponse.Builder encodeResponse(Object msg, String reqid, boolean succeed) {
-        try {
-            ByteArrayOutputStream buff = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(buff);
-            out.writeObject(msg);
-            byte[] bytes = buff.toByteArray();
-            ByteString payload = ByteString.copyFrom(bytes);
-            return encodeResponse(reqid, payload, succeed);
-        } catch (IOException ex) {
-            throw new RuntimeException("protocol error", ex);
-        }
-    }
-
-
-    private DSF.ServiceResponse.Builder encodeResponse(String reqid, ByteString payload, boolean succeed) {
-        DSF.ServiceResponse.Builder builder = DSF.ServiceResponse.newBuilder()
-            .setRequestId(reqid)
-            .setPayload(payload)
-            .setSerialize(DSF.EnumSerialize.JAVA)
-            .setTypeName("_JAVA_")
-            .setSucceed(succeed);
-        return builder;
-    }
-
-    @Override
-    public Object decodeResponse(DSF.ServiceResponse response) {
-        try {
-            ByteArrayInputStream buff = new ByteArrayInputStream(response.getPayload().toByteArray());
-            ObjectInputStream in = new ObjectInputStream(buff);
-            Object obj = in.readObject();
-            if (response.getTracingSpan() != null && response.getTracingSpan().size() > 0) {
-                obj = TracingUtils.fillTracingSpan(obj, response.getTracingSpan());
-            }
-            return obj;
-        } catch (Exception ex) {
-            throw new RuntimeException("protocol error", ex);
+            throw new RuntimeException("Invalid protocol", ex);
         }
     }
 }

@@ -77,7 +77,7 @@ public class DemoActor extends AbstractActor {
                 }
             }
             DEMO.DemoRequest1 request = (DEMO.DemoRequest1) msg.message;
-            //log.info("onRequest: {}, online: {}, name={}", request.getMsg(), online, self().path().name());
+            log.info("onRequest: {}, online: {}, name={}", request.getMsg(), online, self().path().name());
             if (port == 8772) {
                 if (online) {
                     DEMO.DemoResponse1 resule = DEMO.DemoResponse1.newBuilder().setStatus(0).setMsg("received: " + request.getMsg()).build();
@@ -89,18 +89,21 @@ public class DemoActor extends AbstractActor {
                 ServiceResponse response = new ServiceResponse(resule, msg);
                 tracing.tell(sender(), response, self());
             }
+        } else if (msg.message instanceof String) {
+            log.info("onMessage: {}", msg);
+            ServiceResponse response = new ServiceResponse("received: "+msg.message, msg);
+            tracing.tell(sender(), response, self());
         }
     }
 
     boolean online = true;
     private void onMessage(String msg) {
+        log.info("onMessage: {}", msg);
         switch (msg) {
             case "online":
-                log.info("onMessage: {}", msg);
                 online = true;
                 break;
             case "offline":
-                log.info("onMessage: {}", msg);
                 online = false;
                 break;
             default:
