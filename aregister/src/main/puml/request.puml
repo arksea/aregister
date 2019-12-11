@@ -8,7 +8,7 @@ participant RequestRouter
 
 User -> Client: request
 activate Client
-Client ->> RequestRouter: ask(ServiceRequest)
+Client ->> RequestRouter: ask(DSF.ServiceRequest)
 activate RequestRouter
 Client -->o Client: map(decodeResponse)
 User <-- Client: Future
@@ -17,6 +17,7 @@ RequestRouter -> RequestRouter : getInstance
 RequestRouter -\\ ServiceAdaptor: DSF.ServiceRequest
 deactivate RequestRouter
 activate ServiceAdaptor
+note right: ServiceRequest提供ConsistentHashable能力，\n用于ConsistentHashingPool类型\n的UserServiceActor实例池
 ServiceAdaptor -\\ UserServiceActor: ServiceRequest
 deactivate ServiceAdaptor
 activate UserServiceActor

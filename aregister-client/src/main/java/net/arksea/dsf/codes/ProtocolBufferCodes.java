@@ -25,10 +25,10 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
         }
     }
     public ProtocolBufferCodes(Descriptors.FileDescriptor descriptor) {
+        String pkg = descriptor.getPackage();
+        DescriptorProtos.FileOptions ops =descriptor.getOptions();
+        String outerClassName = pkg+"."+ops.getJavaOuterClassname();
         try {
-            String pkg = descriptor.getPackage();
-            DescriptorProtos.FileOptions ops =descriptor.getOptions();
-            String outerClassName = pkg+"."+ops.getJavaOuterClassname();
             for (Descriptors.Descriptor d : descriptor.getMessageTypes()) {
                 String n = outerClassName+"$"+d.getName();
                 Class clazz = Class.forName(n, true, descriptor.getClass().getClassLoader());
@@ -39,7 +39,7 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
                 parserMap.put(d.getName(), new ParserInfo(parser,clazz,field));
             }
         } catch (Exception ex) {
-            throw new RuntimeException("get parser failed", ex);
+            throw new RuntimeException("get ProtocolBuffer parser failed: "+outerClassName, ex);
         }
     }
 

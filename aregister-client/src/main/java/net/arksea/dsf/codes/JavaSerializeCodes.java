@@ -78,9 +78,12 @@ public class JavaSerializeCodes implements ICodes {
             } else if (msg instanceof Double) {
                 payload = DSF.WrapDouble.newBuilder().setValue((Double) msg).build().toByteString();
                 seri = DSF.EnumSerialize.DOUBLE;
-            } else if (msg instanceof ByteString) {
-                payload = DSF.WrapBytes.newBuilder().setValue((ByteString) msg).build().toByteString();
+            } else if (msg instanceof byte[]) {
+                payload = ByteString.copyFrom((byte[])msg);
                 seri = DSF.EnumSerialize.BYTES;
+            } else if (msg instanceof ByteString) {
+                payload = (ByteString) msg;
+                seri = DSF.EnumSerialize.BYTESTR;
             } else {
                 ByteArrayOutputStream buff = new ByteArrayOutputStream();
                 ObjectOutputStream out = new ObjectOutputStream(buff);
@@ -111,7 +114,9 @@ public class JavaSerializeCodes implements ICodes {
                 case DOUBLE:
                     return DSF.WrapDouble.parseFrom(payload).getValue();
                 case BYTES:
-                    return DSF.WrapBytes.parseFrom(payload).getValue();
+                    return payload;
+                case BYTESTR:
+                    return payload.toByteArray();
                 default:
                     ByteArrayInputStream buff = new ByteArrayInputStream(payload.toByteArray());
                     ObjectInputStream in = new ObjectInputStream(buff);

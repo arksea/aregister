@@ -82,15 +82,16 @@ message UnsubService {
 }
 
 enum EnumSerialize {
-    BYTES = 0;
-    JAVA = 1;
-    PROTO = 2;
-    STRING = 3;
-    INT = 4;
-    LONG = 5;
-    FLOAT = 6;
-    DOUBLE = 7;
-    BOOL = 8;
+    BYTES = 0;  //Java byte[]
+    JAVA = 1;   //Java Object
+    PROTO = 2;  //Protobuf Message
+    STRING = 3; //Java String
+    INT = 4;    //Java Integer
+    LONG = 5;   //Java Long
+    FLOAT = 6;  //Java Float
+    DOUBLE = 7; //Java Double
+    BOOL = 8;   //Java Boolean
+    BYTESTR = 9;//com.google.protobuf.ByteString
 }
 //------------------------------------------------
 message ServiceRequest {
@@ -156,7 +157,4 @@ message WrapDouble {
 }
 message WrapBool {
     bool value = 1;
-}
-message WrapBytes {
-    bytes value = 1;
 }
