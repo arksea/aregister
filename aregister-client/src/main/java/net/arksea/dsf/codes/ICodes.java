@@ -13,4 +13,6 @@ public interface ICodes {
     Object decodeRequest(DSF.ServiceRequest msg);
     Object decodeResponse(DSF.ServiceResponse response);
     String makeRequestId();
+    EncodedPayload encode(Object obj);
+    Object decode(EncodedPayload encodedPayload);
 }

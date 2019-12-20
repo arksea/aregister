@@ -2,7 +2,6 @@ package net.arksea.dsf.codes;
 
 import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
 import java.util.UUID;
@@ -18,23 +17,23 @@ public class JavaSerializeCodes implements ICodes {
 
     @Override
     public DSF.ServiceRequest.Builder encodeRequest(Object msg, boolean oneway) {
-        return this.encodeRequest(makeRequestId(), msg, oneway);
+        return encodeRequest(makeRequestId(), msg, oneway);
     }
 
     @Override
     public DSF.ServiceRequest.Builder encodeRequest(String requestId, Object msg, boolean oneway) {
-        Pair<ByteString,DSF.EnumSerialize> p = encodeObj(msg);
+        EncodedPayload p = encode(msg);
         return DSF.ServiceRequest.newBuilder()
             .setOneway(oneway)
             .setRequestId(requestId)
-            .setPayload(p.getLeft())
-            .setSerialize(p.getRight())
-            .setTypeName("");
+            .setPayload(p.payload)
+            .setSerialize(p.serialize)
+            .setTypeName(p.typeName);
     }
 
     @Override
     public Object decodeRequest(DSF.ServiceRequest msg) {
-        return decodeObj(msg.getPayload(), msg.getSerialize());
+        return decode(new EncodedPayload(msg.getPayload(), msg.getSerialize(), msg.getTypeName()));
 //            if (msg.getTracingSpan() != null && msg.getTracingSpan().size() > 0) {
 //                obj = TracingUtils.fillTracingSpan(obj, msg.getTracingSpan());
 //            }
@@ -42,27 +41,36 @@ public class JavaSerializeCodes implements ICodes {
 
     @Override
     public DSF.ServiceResponse.Builder encodeResponse(Object msg, String reqid, boolean succeed) {
-        Pair<ByteString,DSF.EnumSerialize> p = encodeObj(msg);
+        EncodedPayload p = encode(msg);
         return DSF.ServiceResponse.newBuilder()
             .setRequestId(reqid)
-            .setPayload(p.getLeft())
-            .setSerialize(p.getRight())
-            .setTypeName("")
+            .setPayload(p.payload)
+            .setSerialize(p.serialize)
+            .setTypeName(p.typeName)
             .setSucceed(succeed);
     }
 
     @Override
-    public Object decodeResponse(DSF.ServiceResponse response) {
-        return decodeObj(response.getPayload(), response.getSerialize());
+    public Object decodeResponse(DSF.ServiceResponse r) {
+        return decode(new EncodedPayload(r.getPayload(), r.getSerialize(), r.getTypeName()));
     }
 
-    private Pair<ByteString,DSF.EnumSerialize> encodeObj(Object msg) {
+    @Override
+    public EncodedPayload encode(Object msg) {
         try {
             ByteString payload;
             DSF.EnumSerialize seri;
-            if (msg instanceof String) {
-                payload = DSF.WrapStr.newBuilder().setValue((String) msg).build().toByteString();
-                seri = DSF.EnumSerialize.STRING;
+            if (msg instanceof ByteString) {
+                payload = (ByteString) msg;
+                seri = DSF.EnumSerialize.BYTESTR;
+            } else if (msg instanceof ByteString[]) {
+                ByteString[] arr = (ByteString[]) msg;
+                DSF.WrapBytesArray.Builder b = DSF.WrapBytesArray.newBuilder();
+                for (ByteString bytes : arr) {
+                    b.addValue(bytes);
+                }
+                payload = b.build().toByteString();
+                seri = DSF.EnumSerialize.BYTESTR_ARRAY;
             } else if (msg instanceof Integer) {
                 payload = DSF.WrapInt.newBuilder().setValue((Integer) msg).build().toByteString();
                 seri = DSF.EnumSerialize.INT;
@@ -78,12 +86,6 @@ public class JavaSerializeCodes implements ICodes {
             } else if (msg instanceof Double) {
                 payload = DSF.WrapDouble.newBuilder().setValue((Double) msg).build().toByteString();
                 seri = DSF.EnumSerialize.DOUBLE;
-            } else if (msg instanceof byte[]) {
-                payload = ByteString.copyFrom((byte[])msg);
-                seri = DSF.EnumSerialize.BYTES;
-            } else if (msg instanceof ByteString) {
-                payload = (ByteString) msg;
-                seri = DSF.EnumSerialize.BYTESTR;
             } else {
                 ByteArrayOutputStream buff = new ByteArrayOutputStream();
                 ObjectOutputStream out = new ObjectOutputStream(buff);
@@ -92,17 +94,23 @@ public class JavaSerializeCodes implements ICodes {
                 payload = ByteString.copyFrom(bytes);
                 seri = DSF.EnumSerialize.JAVA;
             }
-            return Pair.of(payload, seri);
+            //System.out.println("encode type=JAVA, size="+payload.size());
+            return new EncodedPayload(payload, seri, "");
         } catch (IOException ex) {
             throw new RuntimeException("Invalid protocol", ex);
         }
     }
 
-    private Object decodeObj(ByteString payload, DSF.EnumSerialize seri) {
+    @Override
+    public Object decode(EncodedPayload encodedPayload) {
         try {
-            switch (seri) {
-                case STRING:
-                    return DSF.WrapStr.parseFrom(payload).getValue();
+            ByteString payload = encodedPayload.payload;
+            //System.out.println("decode type=JAVA, size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
+            switch (encodedPayload.serialize) {
+                case BYTESTR:
+                    return encodedPayload.payload;
+                case BYTESTR_ARRAY:
+                    return DSF.WrapBytesArray.parseFrom(payload).getValueList().toArray(new ByteString[0]);
                 case INT:
                     return DSF.WrapInt.parseFrom(payload).getValue();
                 case LONG:
@@ -113,10 +121,6 @@ public class JavaSerializeCodes implements ICodes {
                     return DSF.WrapFloat.parseFrom(payload).getValue();
                 case DOUBLE:
                     return DSF.WrapDouble.parseFrom(payload).getValue();
-                case BYTES:
-                    return payload;
-                case BYTESTR:
-                    return payload.toByteArray();
                 default:
                     ByteArrayInputStream buff = new ByteArrayInputStream(payload.toByteArray());
                     ObjectInputStream in = new ObjectInputStream(buff);

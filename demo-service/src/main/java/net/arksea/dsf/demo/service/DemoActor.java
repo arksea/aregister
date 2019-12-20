@@ -3,6 +3,7 @@ package net.arksea.dsf.demo.service;
 import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.japi.Creator;
+import com.google.protobuf.ByteString;
 import net.arksea.dsf.demo.DEMO;
 import net.arksea.dsf.service.ServiceRequest;
 import net.arksea.dsf.service.ServiceResponse;
@@ -12,6 +13,9 @@ import net.arksea.zipkin.akka.demo.TracingConfigImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.charset.Charset;
+import java.util.List;
+
 /**
  *
  * Created by xiaohaixing on 2018/4/18.
@@ -19,12 +23,9 @@ import org.apache.logging.log4j.Logger;
 public class DemoActor extends AbstractActor {
 
     private final Logger log = LogManager.getLogger(DemoActor.class);
-    private final int port;
     private IActorTracing tracing;
-    private long start = System.currentTimeMillis();
 
     public DemoActor(int port) {
-        this.port = port;
         tracing = ActorTracingFactory.create(new TracingConfigImpl(), "DemoActor", "localhost", port);
     }
 
@@ -40,7 +41,6 @@ public class DemoActor extends AbstractActor {
     public Receive createReceive() {
         return tracing.receiveBuilder()
             .match(ServiceRequest.class, this::onRequest)
-            .match(String.class, this::onMessage)
             .build();
     }
 
@@ -48,12 +48,6 @@ public class DemoActor extends AbstractActor {
     public void preStart() throws Exception {
         super.preStart();
         log.info("DemoActor preStart()");
-//        if (port == 8772) {
-//            context().system().scheduler().scheduleOnce(Duration.create(80, TimeUnit.SECONDS),
-//                self(), "offline", context().dispatcher(), self());
-//            context().system().scheduler().scheduleOnce(Duration.create(180, TimeUnit.SECONDS),
-//                self(), "online", context().dispatcher(), self());
-//        }
     }
 
     @Override
@@ -63,51 +57,97 @@ public class DemoActor extends AbstractActor {
     }
 
     private void onRequest(ServiceRequest msg) {
+        System.out.println(msg.message.getClass());
         if (msg.message instanceof DEMO.DemoRequest1) {
-            long time = System.currentTimeMillis() - start;
-            if (time > 90_000 && time <= 360_000) {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                }
-            } else if (time > 360_000 && time < 480_000) {
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                }
-            }
             DEMO.DemoRequest1 request = (DEMO.DemoRequest1) msg.message;
-            log.info("onRequest: {}, online: {}, name={}", request.getMsg(), online, self().path().name());
-            if (port == 8772) {
-                if (online) {
-                    DEMO.DemoResponse1 resule = DEMO.DemoResponse1.newBuilder().setStatus(0).setMsg("received: " + request.getMsg()).build();
-                    ServiceResponse response = new ServiceResponse(resule, msg);
-                    tracing.tell(sender(), response, self());
-                }
-            } else {
-                DEMO.DemoResponse1 resule = DEMO.DemoResponse1.newBuilder().setStatus(0).setMsg("received: " + request.getMsg()).build();
-                ServiceResponse response = new ServiceResponse(resule, msg);
-                tracing.tell(sender(), response, self());
+//模拟响应时间变长，测试流控策略是否生效
+//            long time = System.currentTimeMillis() - start;
+//            if (time > 90_000 && time <= 360_000) {
+//                try {
+//                    Thread.sleep(10);
+//                } catch (InterruptedException e) {
+//                }
+//            } else if (time > 360_000 && time < 480_000) {
+//                try {
+//                    Thread.sleep(5);
+//                } catch (InterruptedException e) {
+//                }
+//            }
+            //流控测试时记得注释log，以免产生巨量日志
+            log.info("onRequest: {}, name={}", request.getMsg(), self().path().name());
+            String str = "     {\n" +
+                "     \"Date\": \"2018-06-01T18:00:00+08:00\",\n" +
+                "     \"EpochDate\": 1527847200,\n" +
+                "     \"Index\": 70,\n" +
+                "     \"ParticulateMatter2_5\": 22,\n" +
+                "     \"ParticulateMatter10\": 46,\n" +
+                "     \"Ozone\": 176,\n" +
+                "     \"CarbonMonoxide\": 0,\n" +
+                "     \"NitrogenMonoxide\": null,\n" +
+                "     \"NitrogenDioxide\": 16,\n" +
+                "     \"SulfurDioxide\": 2,\n" +
+                "     \"Lead\": null,\n" +
+                "     \"Source\": \"MEP\"\n" +
+                "     }";
+            //DEMO.DataResult resule = DEMO.nse1.newBuilder().setStatus(0).setMsg("received: " + request.getMsg()).build();
+            DEMO.DataResult resule = DEMO.DataResult.newBuilder()
+                .setKey(request.getMsg())
+                .setExpiredTime(System.currentTimeMillis() + 3600_000)
+                .setErrorCode(0)
+                .setPayload(ByteString.copyFrom(str, Charset.forName("UTF-8")))
+                .setSerialize(5)
+                .setTypeName("JAVASTRING")
+                .build();
+            ServiceResponse response = new ServiceResponse(resule, msg);
+            tracing.tell(sender(), response, self());
+        } else if (msg.message instanceof Integer[]) {
+            String str = toString((Integer[])msg.message);
+            log.info("onMessage: {}, name={}", str, self().path().name());
+            ServiceResponse response = new ServiceResponse("received "+str, msg);
+            tracing.tell(sender(), response, self());
+        }  else if (msg.message instanceof List) {
+            String str = toString((List<String>)msg.message);
+            log.info("onMessage: {}, name={}", str, self().path().name());
+            ServiceResponse response = new ServiceResponse("received "+str, msg);
+            tracing.tell(sender(), response, self());
+        }  else if (msg.message instanceof DEMO.DemoRequest1[]) {
+            DEMO.DemoRequest1[] reqArr = (DEMO.DemoRequest1[])msg.message;
+            String str = toString(reqArr);
+            log.info("onMessage: {}, name={}", str, self().path().name());
+            DEMO.DemoResponse1[] arr = new DEMO.DemoResponse1[reqArr.length];
+            for (int i=0;i<reqArr.length;++i) {
+                arr[i] = DEMO.DemoResponse1.newBuilder().setMsg(reqArr[i].getMsg()).build();
             }
-        } else if (msg.message instanceof String) {
-            log.info("onMessage: {}", msg);
-            ServiceResponse response = new ServiceResponse("received: "+msg.message, msg);
+            ServiceResponse response = new ServiceResponse(arr, msg);
+            tracing.tell(sender(), response, self());
+        } else {
+            log.info("onMessage: {}, name={}", msg.message, self().path().name());
+            ServiceResponse response = new ServiceResponse("received "+msg.message, msg);
             tracing.tell(sender(), response, self());
         }
+
     }
 
-    boolean online = true;
-    private void onMessage(String msg) {
-        log.info("onMessage: {}", msg);
-        switch (msg) {
-            case "online":
-                online = true;
-                break;
-            case "offline":
-                online = false;
-                break;
-            default:
-                break;
+    String toString(Integer[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for (int i: arr) {
+            sb.append(i).append(",");
         }
+        return sb.toString();
+    }
+    String toString(List<String> arr) {
+        StringBuilder sb = new StringBuilder();
+        for (String i: arr) {
+            sb.append(i).append(",");
+        }
+        return sb.toString();
+    }
+
+    String toString(DEMO.DemoRequest1[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for (DEMO.DemoRequest1 i: arr) {
+            sb.append(i.getMsg()).append(",");
+        }
+        return sb.toString();
     }
 }

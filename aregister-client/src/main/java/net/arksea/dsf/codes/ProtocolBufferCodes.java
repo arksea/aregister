@@ -3,9 +3,12 @@ package net.arksea.dsf.codes;
 import com.google.protobuf.*;
 import net.arksea.dsf.DSF;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,12 +16,13 @@ import java.util.Map;
  * Created by xiaohaixing on 2018/5/7.
  */
 public class ProtocolBufferCodes extends JavaSerializeCodes {
+    private static final String EMPTY_ARRAY = "_EMPTY_ARRAY_";
     private final Map<String,ParserInfo> parserMap = new HashMap<>();
     class ParserInfo {
-        Parser parser;
+        Parser<Message> parser;
         Class messageType;
         Field tracingSpanField;
-        ParserInfo(Parser parser, Class messageType, Field tracingSpanField) {
+        ParserInfo(Parser<Message> parser, Class messageType, Field tracingSpanField) {
             this.parser = parser;
             this.messageType = messageType;
             this.tracingSpanField = tracingSpanField;
@@ -44,67 +48,48 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
     }
 
     @Override
-    public DSF.ServiceRequest.Builder encodeRequest(String requestId, Object obj, boolean oneway) {
+    public EncodedPayload encode(Object obj) {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
             ByteString payload = msg.toByteString();
-            return DSF.ServiceRequest.newBuilder()
-                .setOneway(oneway)
-                .setRequestId(requestId)
-                .setPayload(payload)
-                .setSerialize(DSF.EnumSerialize.PROTO)
-                .setTypeName(msg.getDescriptorForType().getName());
-        } else {
-            return super.encodeRequest(requestId, obj, oneway);
-        }
-    }
-
-    @Override
-    public Object decodeRequest(DSF.ServiceRequest msg) {
-        try {
-            if (msg.getSerialize() == DSF.EnumSerialize.PROTO) {
-                ParserInfo info = this.parserMap.get(msg.getTypeName());
-                Object obj = info.parser.parseFrom(msg.getPayload());
-                if (info.tracingSpanField != null && msg.getTracingSpan() != null) {
-                    info.tracingSpanField.set(obj, msg.getTracingSpan());
-                }
-                return obj;
-            } else {
-                return super.decodeRequest(msg);
+            //System.out.println("encode type=PROTO, size="+payload.size());
+            return new EncodedPayload(payload, DSF.EnumSerialize.PROTO, msg.getDescriptorForType().getName());
+        } else if (obj instanceof Message[]) {
+            Message[] arr = (Message[])obj;
+            DSF.WrapBytesArray.Builder b = DSF.WrapBytesArray.newBuilder();
+            final String typeName = arr.length>0 ? arr[0].getDescriptorForType().getName() : EMPTY_ARRAY;
+            for (Message m: arr) {
+                b.addValue(m.toByteString());
             }
-        } catch (Exception e) {
-            throw new RuntimeException("protocol error", e);
-        }
-    }
-
-    @Override
-    public DSF.ServiceResponse.Builder encodeResponse(Object obj, String reqid, boolean succeed) {
-        if (obj instanceof Message) {
-            Message msg = (Message) obj;
-            ByteString payload = msg.toByteString();
-            return DSF.ServiceResponse.newBuilder()
-                .setRequestId(reqid)
-                .setPayload(payload)
-                .setSerialize(DSF.EnumSerialize.PROTO)
-                .setTypeName(msg.getDescriptorForType().getName())
-                .setSucceed(succeed);
+            ByteString payload = b.build().toByteString();
+            //System.out.println("encode type=PROTO[], size="+payload.size());
+            return new EncodedPayload(payload, DSF.EnumSerialize.PROTO_ARRAY, typeName);
         } else {
-            return super.encodeResponse(obj, reqid, succeed);
+            return super.encode(obj);
         }
     }
 
     @Override
-    public Object decodeResponse(DSF.ServiceResponse response) {
+    public Object decode(EncodedPayload encodedPayload) {
         try {
-            if (response.getSerialize() == DSF.EnumSerialize.PROTO) {
-                ParserInfo info = this.parserMap.get(response.getTypeName());
-                Object obj = info.parser.parseFrom(response.getPayload());
-                if (info.tracingSpanField != null && response.getTracingSpan() != null) {
-                    info.tracingSpanField.set(obj, response.getTracingSpan());
+            if (encodedPayload.serialize == DSF.EnumSerialize.PROTO) {
+                ParserInfo info = this.parserMap.get(encodedPayload.typeName);
+                //System.out.println("decode type=PROTO, size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
+                return info.parser.parseFrom(encodedPayload.payload);
+            } else if (encodedPayload.serialize == DSF.EnumSerialize.PROTO_ARRAY) {
+                ParserInfo info = this.parserMap.get(encodedPayload.typeName);
+                //System.out.println("decode type=PROTO[], size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
+                DSF.WrapBytesArray arr = DSF.WrapBytesArray.parseFrom(encodedPayload.payload);
+                List<ByteString> anyList = arr.getValueList();
+                List<Message> msgList = new LinkedList<>();
+                for (ByteString a: anyList) {
+                    Message obj = info.parser.parseFrom(a);
+                    msgList.add(obj);
                 }
-                return obj;
+                Message[] msgArray = (Message[])Array.newInstance(info.messageType, msgList.size());
+                return msgList.toArray(msgArray);
             } else  {
-                return super.decodeResponse(response);
+                return super.decode(encodedPayload);
             }
         } catch (Exception e) {
             throw new RuntimeException("Invalid protocol", e);
