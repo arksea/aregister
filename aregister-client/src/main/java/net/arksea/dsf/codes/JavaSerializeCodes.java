@@ -2,6 +2,7 @@ package net.arksea.dsf.codes;
 
 import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
+import net.arksea.zipkin.akka.TracingUtils;
 
 import java.io.*;
 import java.util.UUID;
@@ -33,10 +34,11 @@ public class JavaSerializeCodes implements ICodes {
 
     @Override
     public Object decodeRequest(DSF.ServiceRequest msg) {
-        return decode(new EncodedPayload(msg.getPayload(), msg.getSerialize(), msg.getTypeName()));
-//            if (msg.getTracingSpan() != null && msg.getTracingSpan().size() > 0) {
-//                obj = TracingUtils.fillTracingSpan(obj, msg.getTracingSpan());
-//            }
+        Object obj = decode(new EncodedPayload(msg.getPayload(), msg.getSerialize(), msg.getTypeName()));
+        if (msg.getTracingSpan() != null && msg.getTracingSpan().size() > 0) {
+            obj = TracingUtils.fillTracingSpan(obj, msg.getTracingSpan());
+        }
+        return obj;
     }
 
     @Override
