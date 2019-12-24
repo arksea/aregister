@@ -99,6 +99,14 @@ public final class DSF {
      * <code>PROTO_ARRAY = 9;</code>
      */
     PROTO_ARRAY(9),
+    /**
+     * <pre>
+     *Protobuf List&lt;Message&gt;
+     * </pre>
+     *
+     * <code>PROTO_LIST = 10;</code>
+     */
+    PROTO_LIST(10),
     UNRECOGNIZED(-1),
     ;
 
@@ -182,6 +190,14 @@ public final class DSF {
      * <code>PROTO_ARRAY = 9;</code>
      */
     public static final int PROTO_ARRAY_VALUE = 9;
+    /**
+     * <pre>
+     *Protobuf List&lt;Message&gt;
+     * </pre>
+     *
+     * <code>PROTO_LIST = 10;</code>
+     */
+    public static final int PROTO_LIST_VALUE = 10;
 
 
     public final int getNumber() {
@@ -212,6 +228,7 @@ public final class DSF {
         case 7: return BOOL;
         case 8: return BYTESTR_ARRAY;
         case 9: return PROTO_ARRAY;
+        case 10: return PROTO_LIST;
         default: return null;
       }
     }
@@ -18057,11 +18074,12 @@ public final class DSF {
       "value\030\001 \001(\001\022\023\n\013tracingSpan\030\002 \001(\014\".\n\010Wrap" +
       "Bool\022\r\n\005value\030\001 \001(\010\022\023\n\013tracingSpan\030\002 \001(\014" +
       "\"4\n\016WrapBytesArray\022\r\n\005value\030\001 \003(\014\022\023\n\013tra" +
-      "cingSpan\030\002 \001(\014*\211\001\n\rEnumSerialize\022\013\n\007BYTE" +
+      "cingSpan\030\002 \001(\014*\231\001\n\rEnumSerialize\022\013\n\007BYTE" +
       "STR\020\000\022\010\n\004JAVA\020\001\022\t\n\005PROTO\020\002\022\007\n\003INT\020\003\022\010\n\004L" +
       "ONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\010\n\004BOOL\020\007\022\021" +
-      "\n\rBYTESTR_ARRAY\020\010\022\017\n\013PROTO_ARRAY\020\tB\025\n\016ne" +
-      "t.arksea.dsfB\003DSFb\006proto3"
+      "\n\rBYTESTR_ARRAY\020\010\022\017\n\013PROTO_ARRAY\020\t\022\016\n\nPR" +
+      "OTO_LIST\020\nB\025\n\016net.arksea.dsfB\003DSFb\006proto" +
+      "3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

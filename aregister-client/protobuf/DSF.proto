@@ -81,16 +81,17 @@ message UnsubService {
 }
 
 enum EnumSerialize {
-    BYTESTR = 0;//com.google.protobuf.ByteString
-    JAVA = 1;   //Java Object
-    PROTO = 2;  //Protobuf Message
-    INT = 3;    //Java Integer
-    LONG = 4;   //Java Long
-    FLOAT = 5;  //Java Float
-    DOUBLE = 6; //Java Double
-    BOOL = 7;   //Java Boolean
-    BYTESTR_ARRAY = 8;//com.google.protobuf.ByteString[]
-    PROTO_ARRAY = 9;//Protobuf Message[]
+    BYTESTR = 0; //com.google.protobuf.ByteString
+    JAVA    = 1; //Java Object
+    PROTO   = 2; //Protobuf Message
+    INT     = 3; //Java Integer
+    LONG    = 4; //Java Long
+    FLOAT   = 5; //Java Float
+    DOUBLE  = 6; //Java Double
+    BOOL    = 7; //Java Boolean
+    BYTESTR_ARRAY = 8; //com.google.protobuf.ByteString[]
+    PROTO_ARRAY   = 9; //Protobuf Message[]
+    PROTO_LIST    = 10;//Protobuf List<Message>
 }
 //------------------------------------------------
 message ServiceRequest {

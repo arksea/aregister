@@ -103,12 +103,16 @@ public class JavaSerializeCodes implements ICodes {
 
     @Override
     public Object decode(EncodedPayload encodedPayload) {
+        return decode(encodedPayload.payload, encodedPayload.serialize, encodedPayload.typeName);
+    }
+
+    @Override
+    public Object decode(ByteString payload, DSF.EnumSerialize serialize,String typeName) {
         try {
-            ByteString payload = encodedPayload.payload;
             //System.out.println("decode type=JAVA, size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
-            switch (encodedPayload.serialize) {
+            switch (serialize) {
                 case BYTESTR:
-                    return encodedPayload.payload;
+                    return payload;
                 case BYTESTR_ARRAY:
                     return DSF.WrapBytesArray.parseFrom(payload).getValueList().toArray(new ByteString[0]);
                 case INT:

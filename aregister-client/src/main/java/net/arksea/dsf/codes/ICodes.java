@@ -1,5 +1,6 @@
 package net.arksea.dsf.codes;
 
+import com.google.protobuf.ByteString;
 import net.arksea.dsf.DSF;
 
 /**
@@ -15,4 +16,5 @@ public interface ICodes {
     String makeRequestId();
     EncodedPayload encode(Object obj);
     Object decode(EncodedPayload encodedPayload);
+    Object decode(ByteString payload, DSF.EnumSerialize serialize,String typeName);
 }

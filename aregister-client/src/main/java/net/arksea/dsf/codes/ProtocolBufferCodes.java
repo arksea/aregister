@@ -17,6 +17,7 @@ import java.util.Map;
  */
 public class ProtocolBufferCodes extends JavaSerializeCodes {
     private static final String EMPTY_ARRAY = "_EMPTY_ARRAY_";
+    private static final String EMPTY_LIST = "_EMPTY_LIST_";
     private final Map<String,ParserInfo> parserMap = new HashMap<>();
     class ParserInfo {
         Parser<Message> parser;
@@ -28,26 +29,48 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
             this.tracingSpanField = tracingSpanField;
         }
     }
-    public ProtocolBufferCodes(Descriptors.FileDescriptor descriptor) {
-        String pkg = descriptor.getPackage();
-        DescriptorProtos.FileOptions ops =descriptor.getOptions();
-        String outerClassName = pkg+"."+ops.getJavaOuterClassname();
-        try {
-            for (Descriptors.Descriptor d : descriptor.getMessageTypes()) {
-                String n = outerClassName+"$"+d.getName();
-                Class clazz = Class.forName(n, true, descriptor.getClass().getClassLoader());
-                Method method = clazz.getMethod("parser");
-                Parser parser = (Parser)method.invoke(null);
-                Field field = clazz.getDeclaredField("tracingSpan_");
-                field.setAccessible(true);
-                parserMap.put(d.getName(), new ParserInfo(parser,clazz,field));
+
+    public ProtocolBufferCodes(Map<String,ParserInfo> map) {
+        this.parserMap.putAll(map);
+    }
+
+    public ProtocolBufferCodes(Descriptors.FileDescriptor ...descriptors) {
+        addDescriptors(this.parserMap, descriptors);
+    }
+    private void addDescriptors(Map<String,ParserInfo> map, Descriptors.FileDescriptor ...descriptors) {
+        for (Descriptors.FileDescriptor descriptor : descriptors) {
+            String pkg = descriptor.getPackage();
+            DescriptorProtos.FileOptions ops = descriptor.getOptions();
+            String outerClassName = pkg + "." + ops.getJavaOuterClassname();
+            try {
+                for (Descriptors.Descriptor d : descriptor.getMessageTypes()) {
+                    String n = outerClassName + "$" + d.getName();
+                    Class clazz = Class.forName(n, true, descriptor.getClass().getClassLoader());
+                    Method method = clazz.getMethod("parser");
+                    Parser parser = (Parser) method.invoke(null);
+                    Field field = null;
+                    Field[] fields = clazz.getDeclaredFields();
+                    for (int i = 0; i < fields.length; i++) {
+                        if ("tracingSpan_".equals(fields[i].getName())) {
+                            field = fields[i];
+                        }
+                    }
+                    map.put(d.getName(), new ParserInfo(parser, clazz, field));
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException("get ProtocolBuffer parser failed: " + outerClassName, ex);
             }
-        } catch (Exception ex) {
-            throw new RuntimeException("get ProtocolBuffer parser failed: "+outerClassName, ex);
         }
     }
 
+    public ProtocolBufferCodes merge(Descriptors.FileDescriptor ...descriptors) {
+        Map<String,ParserInfo> map = new HashMap<>();
+        addDescriptors(map, descriptors);
+        return new ProtocolBufferCodes(map);
+    }
+
     @Override
+    @SuppressWarnings("unchecked")
     public EncodedPayload encode(Object obj) {
         if (obj instanceof Message) {
             Message msg = (Message) obj;
@@ -64,32 +87,73 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
             ByteString payload = b.build().toByteString();
             //System.out.println("encode type=PROTO[], size="+payload.size());
             return new EncodedPayload(payload, DSF.EnumSerialize.PROTO_ARRAY, typeName);
+        } else if (obj instanceof List) {
+            List objList = (List)obj;
+            if (objList.size() > 0 && !(objList.get(0) instanceof Message)) {
+                return super.encode(obj);
+            }
+            List<Message> list = (List<Message>)obj;
+            DSF.WrapBytesArray.Builder b = DSF.WrapBytesArray.newBuilder();
+            final String typeName = list.size()>0 ? list.get(0).getDescriptorForType().getName() : EMPTY_LIST;
+            for (Message m: list) {
+                b.addValue(m.toByteString());
+            }
+            ByteString payload = b.build().toByteString();
+            //System.out.println("encode type=List<PROTO>, size="+payload.size());
+            return new EncodedPayload(payload, DSF.EnumSerialize.PROTO_LIST, typeName);
         } else {
             return super.encode(obj);
         }
     }
 
     @Override
-    public Object decode(EncodedPayload encodedPayload) {
+    public Object decode(ByteString payload, DSF.EnumSerialize serialize,String typeName) {
         try {
-            if (encodedPayload.serialize == DSF.EnumSerialize.PROTO) {
-                ParserInfo info = this.parserMap.get(encodedPayload.typeName);
-                //System.out.println("decode type=PROTO, size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
-                return info.parser.parseFrom(encodedPayload.payload);
-            } else if (encodedPayload.serialize == DSF.EnumSerialize.PROTO_ARRAY) {
-                ParserInfo info = this.parserMap.get(encodedPayload.typeName);
-                //System.out.println("decode type=PROTO[], size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
-                DSF.WrapBytesArray arr = DSF.WrapBytesArray.parseFrom(encodedPayload.payload);
-                List<ByteString> anyList = arr.getValueList();
-                List<Message> msgList = new LinkedList<>();
-                for (ByteString a: anyList) {
-                    Message obj = info.parser.parseFrom(a);
-                    msgList.add(obj);
+            if (serialize == DSF.EnumSerialize.PROTO) {
+                ParserInfo info = this.parserMap.get(typeName);
+                if (info == null) {
+                    return super.decode(payload, serialize, typeName);
+                } else {
+                    //System.out.println("decode type=PROTO, size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
+                    return info.parser.parseFrom(payload);
                 }
-                Message[] msgArray = (Message[])Array.newInstance(info.messageType, msgList.size());
-                return msgList.toArray(msgArray);
+            } else if (typeName.intern() == EMPTY_ARRAY) {
+                return new Message[0];
+            } else if (typeName.intern() == EMPTY_LIST) {
+                return new LinkedList<Message>();
+            } else if (serialize == DSF.EnumSerialize.PROTO_ARRAY) {
+                ParserInfo info = this.parserMap.get(typeName);
+                if (info == null) {
+                    return super.decode(payload, serialize, typeName);
+                } else {
+                    //System.out.println("decode type=PROTO[], size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
+                    DSF.WrapBytesArray arr = DSF.WrapBytesArray.parseFrom(payload);
+                    List<ByteString> anyList = arr.getValueList();
+                    List<Message> msgList = new LinkedList<>();
+                    for (ByteString a : anyList) {
+                        Message obj = info.parser.parseFrom(a);
+                        msgList.add(obj);
+                    }
+                    Message[] msgArray = (Message[]) Array.newInstance(info.messageType, msgList.size());
+                    return msgList.toArray(msgArray);
+                }
+            } else if (serialize == DSF.EnumSerialize.PROTO_LIST) {
+                ParserInfo info = this.parserMap.get(typeName);
+                if (info == null) {
+                    return super.decode(payload, serialize, typeName);
+                } else {
+                    //System.out.println("decode type=List<PROTO>, size="+encodedPayload.payload.size()+", typeName="+encodedPayload.typeName);
+                    DSF.WrapBytesArray arr = DSF.WrapBytesArray.parseFrom(payload);
+                    List<ByteString> anyList = arr.getValueList();
+                    List<Message> msgList = new LinkedList<>();
+                    for (ByteString a : anyList) {
+                        Message obj = info.parser.parseFrom(a);
+                        msgList.add(obj);
+                    }
+                    return msgList;
+                }
             } else  {
-                return super.decode(encodedPayload);
+                return super.decode(payload, serialize, typeName);
             }
         } catch (Exception e) {
             throw new RuntimeException("Invalid protocol", e);
