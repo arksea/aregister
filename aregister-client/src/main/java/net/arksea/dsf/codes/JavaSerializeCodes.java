@@ -65,6 +65,14 @@ public class JavaSerializeCodes implements ICodes {
             if (msg instanceof ByteString) {
                 payload = (ByteString) msg;
                 seri = DSF.EnumSerialize.BYTESTR;
+            } else if (msg instanceof String[]) {
+                String[] arr = (String[]) msg;
+                DSF.WrapStringArray.Builder b = DSF.WrapStringArray.newBuilder();
+                for (String str : arr) {
+                    b.addValue(str);
+                }
+                payload = b.build().toByteString();
+                seri = DSF.EnumSerialize.STRING_ARRAY;
             } else if (msg instanceof ByteString[]) {
                 ByteString[] arr = (ByteString[]) msg;
                 DSF.WrapBytesArray.Builder b = DSF.WrapBytesArray.newBuilder();
@@ -115,6 +123,8 @@ public class JavaSerializeCodes implements ICodes {
             switch (serialize) {
                 case BYTESTR:
                     return payload;
+                case STRING_ARRAY:
+                    return DSF.WrapStringArray.parseFrom(payload).getValueList().toArray(new String[0]);
                 case BYTESTR_ARRAY:
                     return DSF.WrapBytesArray.parseFrom(payload).getValueList().toArray(new ByteString[0]);
                 case INT:

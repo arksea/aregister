@@ -89,9 +89,10 @@ enum EnumSerialize {
     FLOAT   = 5; //Java Float
     DOUBLE  = 6; //Java Double
     BOOL    = 7; //Java Boolean
-    BYTESTR_ARRAY = 8; //com.google.protobuf.ByteString[]
-    PROTO_ARRAY   = 9; //Protobuf Message[]
-    PROTO_LIST    = 10;//Protobuf List<Message>
+    STRING_ARRAY = 8;  //String[]
+    BYTESTR_ARRAY = 9; //com.google.protobuf.ByteString[]
+    PROTO_ARRAY   = 10; //Protobuf Message[]
+    PROTO_LIST    = 11;//Protobuf List<Message>
 }
 //------------------------------------------------
 message ServiceRequest {
@@ -162,5 +163,9 @@ message WrapBool {
 }
 message WrapBytesArray {
     repeated bytes value = 1;
+    bytes tracingSpan = 2;
+}
+message WrapStringArray {
+    repeated string value = 1;
     bytes tracingSpan = 2;
 }
