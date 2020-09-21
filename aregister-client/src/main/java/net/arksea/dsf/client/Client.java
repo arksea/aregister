@@ -124,6 +124,9 @@ public class Client {
             case POSTFIX_LESS_32:
                 reqid = originalReqid.length() < 32 ? originalReqid+"_"+codes.makeRequestId() : originalReqid;
                 break;
+            case REGENERATE_LESS_32:
+                reqid = originalReqid.length() < 32 ? codes.makeRequestId() : originalReqid;
+                break;
             default:
             case REGENERATE:
                 reqid = codes.makeRequestId();

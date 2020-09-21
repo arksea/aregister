@@ -76,6 +76,11 @@ public class RegisterClient {
         return subscribe(serviceName, routeStrategy, requestIdStrategy, condition);
     }
 
+    public Client subscribe(String serviceName, RouteStrategy routeStrategy) {
+        ISwitchCondition condition = new DefaultSwitchCondition();
+        return subscribe(serviceName, routeStrategy, RequestIdStrategy.REGENERATE, condition);
+    }
+
     public Client subscribe(String serviceName) {
         return subscribe(serviceName, RouteStrategy.ROUNDROBIN, RequestIdStrategy.REGENERATE);
     }
