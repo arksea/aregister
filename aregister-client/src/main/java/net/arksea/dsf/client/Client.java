@@ -36,6 +36,7 @@ public class Client {
     public final ActorRef router;
     public final ICodes codes;
     public final String clientName;
+    public final RequestIdStrategy requestIdStrategy;
 
     /**
      * @param serviceName
@@ -43,11 +44,12 @@ public class Client {
      * @param codes
      * @param system
      */
-    public Client(String serviceName, RouteStrategy strategy, ICodes codes,
+    public Client(String serviceName, RouteStrategy strategy, RequestIdStrategy requestIdStrategy, ICodes codes,
                   ISwitchCondition condition, ActorSystem system, IInstanceSource instanceSource,
                   String clientName, ITracingConfig tracingConfig) {
         this.system = system;
         this.codes = codes;
+        this.requestIdStrategy = requestIdStrategy;
         this.clientName = clientName;
         this.tracing = tracingConfig == null ? null : ActorTracingFactory.create(tracingConfig, clientName, "", 0);
         IRouteStrategy routeStrategy = RouteStrategyFactory.create(strategy);
@@ -110,7 +112,23 @@ public class Client {
         return request(req, timeout);
     }
 
-    public Future<Object> request(String reqid, Object msg, long timeout) {
+    public Future<Object> request(String originalReqid, Object msg, long timeout) {
+        String reqid;
+        switch (requestIdStrategy) {
+            case ORIGINAL:
+                reqid = originalReqid;
+                break;
+            case POSTFIX:
+                reqid = originalReqid+"_"+codes.makeRequestId();
+                break;
+            case POSTFIX_LESS_32:
+                reqid = originalReqid.length() < 32 ? originalReqid+"_"+codes.makeRequestId() : originalReqid;
+                break;
+            default:
+            case REGENERATE:
+                reqid = codes.makeRequestId();
+                break;
+        }
         DSF.ServiceRequest req = encodeRequest(reqid, msg, false);
         return request(req, timeout);
     }
