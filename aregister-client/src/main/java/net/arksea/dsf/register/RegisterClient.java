@@ -71,7 +71,7 @@ public class RegisterClient {
 
     public Client subscribe(String serviceName, RouteStrategy routeStrategy, RequestIdStrategy requestIdStrategy, ISwitchCondition condition) {
         Config config = ConfigFactory.parseResources("default-service-client.conf");
-        ActorSystem clientSystem = ActorSystem.create(SVC_CLIENT_SYSTEM_NAME,config.getConfig(SVC_CLIENT_SYSTEM_NAME).withFallback(config));
+        ActorSystem clientSystem = ActorSystem.create(serviceName.replace(".","-"),config.getConfig(SVC_CLIENT_SYSTEM_NAME).withFallback(config));
         ICodes codes = new JavaSerializeCodes();
         return subscribe(serviceName, routeStrategy, requestIdStrategy, condition, codes, clientSystem);
     }
