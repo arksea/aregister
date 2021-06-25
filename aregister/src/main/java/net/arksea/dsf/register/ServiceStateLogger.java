@@ -2,6 +2,8 @@ package net.arksea.dsf.register;
 
 import akka.dispatch.OnComplete;
 import net.arksea.httpclient.asker.FuturedHttpClient;
+import net.arksea.httpclient.asker.HttpAsk;
+import net.arksea.httpclient.asker.HttpAskBuilder;
 import net.arksea.httpclient.asker.HttpResult;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -30,7 +32,8 @@ public class ServiceStateLogger {
     public void write(String lines) {
         HttpPost post = new HttpPost(postUrl);
         post.setEntity(new StringEntity(lines, "UTF-8"));
-        logHttpClient.ask(post, "request", askTimeout, new int[]{200, 204}).onComplete(
+        HttpAsk ask = new HttpAskBuilder(post).addSuccessCodes(200).addSuccessCodes(204).setTag("request").build();
+        logHttpClient.ask(ask, askTimeout).onComplete(
             new OnComplete<HttpResult>() {
                 @Override
                 public void onComplete(Throwable ex, HttpResult ret) throws Throwable {

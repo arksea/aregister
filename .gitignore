@@ -13,3 +13,6 @@ aregister/config/net.arksea.dsf.DemoService-1.0.svc
 aregister-web/src/main/angular/aregister-web/.alm/sessionsV2.json
 /aregister-web/build
 /aregister-web/online
+/aregister-client/out
+/demo-client/out
+/demo-service/out
