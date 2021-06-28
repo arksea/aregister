@@ -7,7 +7,7 @@ description = """Actor Register"""
 
 dependencies {
     compile project(':aregister-redis')
-    compile 'net.arksea:httpclient-asker:1.0.4-SNAPSHOT'
+    compile 'net.arksea:httpclient-asker:1.1.0-SNAPSHOT'
 }
 
 configurations.all {
@@ -77,7 +77,7 @@ pmd {
 
 //拷贝部署文件到指定目录
 task publish {
-    dependsOn build
+    dependsOn(build)
     doLast {
         //拷贝前先删除部署目录
         delete('publish/lib')

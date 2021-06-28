@@ -11,13 +11,13 @@ targetCompatibility = '1.8'
 repositories {
     mavenLocal()
     maven { url "http://172.17.149.8:8081/nexus/content/groups/public/" }
-    maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url "https://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
     compile project(':aregister-client')
 
-    compile 'net.arksea:restapi-base:1.0.0-SNAPSHOT'
+    compile 'net.arksea:restapi-base:1.1.0-SNAPSHOT'
 
     compile 'com.google.protobuf:protobuf-java-util:3.5.1'
     compile 'org.springframework:spring-core:4.3.9.RELEASE'
@@ -46,6 +46,8 @@ task ngBuild(type: Exec) {
         commandLine 'cmd', '/c', 'ng build --env=prod'
     }
 }
+
+
 
 task publishCopy {
     doLast {
@@ -94,7 +96,7 @@ task publish {
 task publishDev {
     dependsOn(build,ngBuild,publish)
     doLast {
-        copy{ //拷贝资源
+        copy { //拷贝资源
             from 'build/resources/test/'
             into './tomcat/webapps/aregister-web/WEB-INF/classes'
         }
@@ -109,3 +111,4 @@ task startTomcat(type: Exec) {
         environment CATALINA_HOME: 'e:\\github\\aregister\\aregister-web\\tomcat'
     }
 }
+

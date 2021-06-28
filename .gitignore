@@ -16,3 +16,6 @@ aregister-web/src/main/angular/aregister-web/.alm/sessionsV2.json
 /aregister-client/out
 /demo-client/out
 /demo-service/out
+/aregister/out
+/aregister-web/out
+/aregister-redis/out
