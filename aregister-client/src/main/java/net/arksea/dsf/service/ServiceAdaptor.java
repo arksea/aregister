@@ -119,7 +119,7 @@ public class ServiceAdaptor extends AbstractActor {
             if (rateLimitQPS > 0 && !rateLimiter.tryAcquire()) {
                 Object result = rateLimitStrategy.getRateLimitResponse();
                 // quality.failed(0); 此处为异常时的快速失败应对，不能再加入请求时间统计，否则会导致系统"自激振荡"
-                DSF.ServiceResponse.Builder builder = codes.encodeResponse(result, msg.getRequestId(), true);
+                DSF.ServiceResponse.Builder builder = codes.encodeResponse(result, msg.getRequestId(), false);
                 Optional<Span> op = TracingUtils.getTracingSpan(msg);
                 if (op != null && op.isPresent()) {
                     byte[] sb = spanEncoder.encode(op.get());

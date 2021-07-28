@@ -83,9 +83,9 @@ public class RequestRouter extends AbstractActor {
         this.instances.forEach(it -> oldMap.put(it.addr, it));
         this.instances.clear();
         msg.getInstancesList().forEach(it -> {
-            qualityMap.computeIfAbsent(it.getAddr(), k -> new InstanceQuality(serviceName, it.getAddr()));
             boolean unreg = it.getUnregistered();
             if (!unreg) {
+                qualityMap.computeIfAbsent(it.getAddr(), k -> new InstanceQuality(serviceName, it.getAddr()));
                 Instance old = oldMap.remove(it.getAddr());
                 if (old == null) {
                     InstanceStatus status = it.getOnline() ? InstanceStatus.ONLINE : InstanceStatus.OFFLINE;
@@ -148,7 +148,13 @@ public class RequestRouter extends AbstractActor {
             this.instances.add(i);
             q = new InstanceQuality(serviceName, i.addr);
             qualityMap.put(i.addr, q);
-            i.setStatus(InstanceStatus.OFFLINE);
+            //暂时设置成UP与OFFLINE是为了流量切换更平滑，防止应用在刚注册，还未做ping测试前就立即将流量切过来
+            //而在size为1时不修改，是因为没有其他实例可用，如果修改了，而当前有访问流量就会引起NoUseableServiceException错误
+            if (this.instances.size() > 2) {
+                i.setStatus(InstanceStatus.OFFLINE);
+            } else if (this.instances.size() > 1) {
+                i.setStatus(InstanceStatus.UP);
+            }
         }
     }
     protected long getReuqestTimeout() {
