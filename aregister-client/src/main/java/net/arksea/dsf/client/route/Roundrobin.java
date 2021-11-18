@@ -12,6 +12,7 @@ public class Roundrobin implements IRouteStrategy {
 
     private int index = 0;
 
+    @SuppressWarnings("PMD.ForLoopCanBeForeach") //todo: 改写成foreach模式
     @Override
     public Optional<Instance> getInstance(List<Instance> list, int checkMod) {
         for (int i = 0; i < list.size(); ++i) {

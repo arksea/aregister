@@ -1,20 +1,12 @@
-apply plugin: 'base'
-apply plugin: 'java'
-apply plugin: 'maven'
-
+plugins {
+    id 'java'
+    id 'application'
+}
 
 description = """Actor Register DEMO Service"""
 
-configurations.all {
-    resolutionStrategy {
-        cacheDynamicVersionsFor  0, 'seconds'
-        cacheChangingModulesFor  0, 'seconds'
-    }
-}
-
 dependencies {
-    compile project(':aregister-client')
-    compile project(':demo-client')
+    implementation project(':aregister-client')
 }
 
 test.testLogging.showStandardStreams = true
@@ -25,28 +17,28 @@ def runMainClass = 'net.arksea.dsf.demo.service.ServerMain'
 //配置在IDE中运行及调试时的参数
 task run1(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     jvmArgs = ['-Dakka.remote.netty.tcp.port=8771']
     standardInput = System.in
 }
 
 task run2(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     jvmArgs = ['-Dakka.remote.netty.tcp.port=8772']
     standardInput = System.in
 }
 
 task run3(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     jvmArgs = ['-Dakka.remote.netty.tcp.port=8773']
     standardInput = System.in
 }
 
 task debug(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     standardInput = System.in
     debug = true
 }
@@ -54,6 +46,6 @@ task debug(type: JavaExec, dependsOn: 'classes') {
 jar {
     manifest {
         attributes 'Main-Class': runMainClass
-        attributes "Class-Path": configurations.runtime.collect { 'lib/'+it.getName() }.join(' ')+" config/"
+        attributes "Class-Path": configurations.runtimeClasspath.collect { 'lib/'+it.getName() }.join(' ')+" config/"
     }
 }

@@ -1,42 +1,43 @@
-apply plugin: 'base'
-apply plugin: 'java'
-
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
 
 group = 'net.arksea'
 version = '0.6-SNAPSHOT'
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 repositories {
     mavenLocal()
-    maven { url "http://172.17.149.8:8081/nexus/content/groups/public/" }
+    maven {
+        allowInsecureProtocol true
+        url "http://172.17.149.8:8081/nexus/content/groups/public/"
+    }
     maven { url "https://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.3.2'
-    compile 'com.google.protobuf:protobuf-java:3.5.1'
-    compile 'com.typesafe.akka:akka-actor_2.12:2.5.11'
-    compile 'com.typesafe.akka:akka-remote_2.12:2.5.11'
-    compile 'com.typesafe.akka:akka-cluster_2.12:2.5.11'
-    compile 'com.typesafe.akka:akka-slf4j_2.12:2.5.11'
-    compile 'org.scala-lang:scala-library:2.12.4'
+    implementation 'org.apache.commons:commons-lang3:3.3.2'
+    implementation 'com.google.protobuf:protobuf-java:3.5.1'
+    implementation 'com.typesafe.akka:akka-actor_2.12:2.5.11'
+    implementation 'com.typesafe.akka:akka-remote_2.12:2.5.11'
+    implementation 'com.typesafe.akka:akka-cluster_2.12:2.5.11'
+    implementation 'com.typesafe.akka:akka-slf4j_2.12:2.5.11'
+    implementation 'org.scala-lang:scala-library:2.12.4'
 
-    compile 'org.apache.logging.log4j:log4j-api:2.5'
-    compile 'org.apache.logging.log4j:log4j-core:2.5'
+    implementation 'org.apache.logging.log4j:log4j-api:2.5'
+    implementation 'org.apache.logging.log4j:log4j-core:2.5'
 
     //Log4j 1.x Bridge to Log4j 2.x
-    compile 'org.apache.logging.log4j:log4j-1.2-api:2.5'
+    implementation 'org.apache.logging.log4j:log4j-1.2-api:2.5'
     //Apache Commons Logging Bridge to Log4j 2.x
-    compile 'org.apache.logging.log4j:log4j-jcl:2.5'
+    implementation 'org.apache.logging.log4j:log4j-jcl:2.5'
     //slf4j Bridge to Log4j 2.x
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.5'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.5'
     //Java Util Logging Bridge to Log4j 2.x
-    compile 'org.apache.logging.log4j:log4j-jul:2.5'
+    implementation 'org.apache.logging.log4j:log4j-jul:2.5'
 
-    testCompile 'junit:junit:4.11'
+    testImplementation 'junit:junit:4.11'
 }

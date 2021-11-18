@@ -1,18 +1,14 @@
-apply plugin: 'base'
-apply plugin: 'java'
-apply plugin: 'maven'
-
-description = """ASC DEMO"""
-
-configurations.all {
-    resolutionStrategy {
-        cacheDynamicVersionsFor  0, 'seconds'
-        cacheChangingModulesFor  0, 'seconds'
-    }
+plugins {
+    id 'java-library'
+    id 'maven-publish'
 }
 
+description = """ARegister demo client"""
+
+
 dependencies {
-    compile project(':aregister-client')
+    implementation project(':aregister-client')
+    implementation 'net.arksea:akka-tracing-zipkin:1.0.1-SNAPSHOT'
 }
 
 
@@ -24,13 +20,13 @@ def runMainClass = 'net.arksea.dsf.demo.client.ClientMain'
 //配置在IDE中运行及调试时的参数
 task run(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     standardInput = System.in
 }
 
 task debug(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     standardInput = System.in
     debug = true
 }
@@ -43,6 +39,6 @@ task compileProtobuf(type: Exec) {
 jar {
     manifest {
         attributes 'Main-Class': runMainClass
-        attributes "Class-Path": configurations.runtime.collect { 'lib/'+it.getName() }.join(' ')+" config/"
+        attributes "Class-Path": configurations.runtimeClasspath.collect { 'lib/'+it.getName() }.join(' ')+" config/"
     }
 }
