@@ -9,7 +9,7 @@ description = """Actor Register"""
 dependencies {
     implementation project(':aregister-client')
     implementation project(':aregister-redis')
-    implementation 'net.arksea:httpclient-asker:1.1.0-SNAPSHOT'
+    implementation 'net.arksea:httpclient-asker:1.1.1-SNAPSHOT'
 }
 
 test.testLogging.showStandardStreams = true
@@ -81,7 +81,7 @@ task publishProduct {
             into 'publish'
         }
         copy { //拷贝依赖库
-            from configurations.runtime
+            from configurations.runtimeClasspath
             into 'publish/lib'
         }
     }
