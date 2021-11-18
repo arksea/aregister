@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package net.arksea.dsf.demo;
+
+option java_package = "net.arksea.dsf.demo";
+option java_outer_classname = "DEMO";
+//-----------------------------
+
+message DemoRequest1 {
+    string msg = 1;
+    int32 consistentHashKey = 2;
+    bytes tracingSpan = 3;
+}
+
+message DemoResponse1 {
+    string msg = 1;
+    int32 status = 2;
+    bytes tracingSpan = 3;
+}
+
+message DataResult {
+    string key = 1;
+    bytes payload = 2;
+    int32 serialize = 3;
+    string typeName = 4;
+    int64 expiredTime = 5;
+    int32 errorCode = 6;
+    bytes tracingSpan_ = 7;
+}

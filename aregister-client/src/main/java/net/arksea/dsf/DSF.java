@@ -20,32 +20,200 @@ public final class DSF {
   public enum EnumSerialize
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
-     * <code>BYTES = 0;</code>
+     * <pre>
+     *com.google.protobuf.ByteString
+     * </pre>
+     *
+     * <code>BYTESTR = 0;</code>
      */
-    BYTES(0),
+    BYTESTR(0),
     /**
+     * <pre>
+     *Java Object
+     * </pre>
+     *
      * <code>JAVA = 1;</code>
      */
     JAVA(1),
     /**
+     * <pre>
+     *Protobuf Message
+     * </pre>
+     *
      * <code>PROTO = 2;</code>
      */
     PROTO(2),
+    /**
+     * <pre>
+     *Java Integer
+     * </pre>
+     *
+     * <code>INT = 3;</code>
+     */
+    INT(3),
+    /**
+     * <pre>
+     *Java Long
+     * </pre>
+     *
+     * <code>LONG = 4;</code>
+     */
+    LONG(4),
+    /**
+     * <pre>
+     *Java Float
+     * </pre>
+     *
+     * <code>FLOAT = 5;</code>
+     */
+    FLOAT(5),
+    /**
+     * <pre>
+     *Java Double
+     * </pre>
+     *
+     * <code>DOUBLE = 6;</code>
+     */
+    DOUBLE(6),
+    /**
+     * <pre>
+     *Java Boolean
+     * </pre>
+     *
+     * <code>BOOL = 7;</code>
+     */
+    BOOL(7),
+    /**
+     * <pre>
+     *String[]
+     * </pre>
+     *
+     * <code>STRING_ARRAY = 8;</code>
+     */
+    STRING_ARRAY(8),
+    /**
+     * <pre>
+     *com.google.protobuf.ByteString[]
+     * </pre>
+     *
+     * <code>BYTESTR_ARRAY = 9;</code>
+     */
+    BYTESTR_ARRAY(9),
+    /**
+     * <pre>
+     *Protobuf Message[]
+     * </pre>
+     *
+     * <code>PROTO_ARRAY = 10;</code>
+     */
+    PROTO_ARRAY(10),
+    /**
+     * <pre>
+     *Protobuf List&lt;Message&gt;
+     * </pre>
+     *
+     * <code>PROTO_LIST = 11;</code>
+     */
+    PROTO_LIST(11),
     UNRECOGNIZED(-1),
     ;
 
     /**
-     * <code>BYTES = 0;</code>
+     * <pre>
+     *com.google.protobuf.ByteString
+     * </pre>
+     *
+     * <code>BYTESTR = 0;</code>
      */
-    public static final int BYTES_VALUE = 0;
+    public static final int BYTESTR_VALUE = 0;
     /**
+     * <pre>
+     *Java Object
+     * </pre>
+     *
      * <code>JAVA = 1;</code>
      */
     public static final int JAVA_VALUE = 1;
     /**
+     * <pre>
+     *Protobuf Message
+     * </pre>
+     *
      * <code>PROTO = 2;</code>
      */
     public static final int PROTO_VALUE = 2;
+    /**
+     * <pre>
+     *Java Integer
+     * </pre>
+     *
+     * <code>INT = 3;</code>
+     */
+    public static final int INT_VALUE = 3;
+    /**
+     * <pre>
+     *Java Long
+     * </pre>
+     *
+     * <code>LONG = 4;</code>
+     */
+    public static final int LONG_VALUE = 4;
+    /**
+     * <pre>
+     *Java Float
+     * </pre>
+     *
+     * <code>FLOAT = 5;</code>
+     */
+    public static final int FLOAT_VALUE = 5;
+    /**
+     * <pre>
+     *Java Double
+     * </pre>
+     *
+     * <code>DOUBLE = 6;</code>
+     */
+    public static final int DOUBLE_VALUE = 6;
+    /**
+     * <pre>
+     *Java Boolean
+     * </pre>
+     *
+     * <code>BOOL = 7;</code>
+     */
+    public static final int BOOL_VALUE = 7;
+    /**
+     * <pre>
+     *String[]
+     * </pre>
+     *
+     * <code>STRING_ARRAY = 8;</code>
+     */
+    public static final int STRING_ARRAY_VALUE = 8;
+    /**
+     * <pre>
+     *com.google.protobuf.ByteString[]
+     * </pre>
+     *
+     * <code>BYTESTR_ARRAY = 9;</code>
+     */
+    public static final int BYTESTR_ARRAY_VALUE = 9;
+    /**
+     * <pre>
+     *Protobuf Message[]
+     * </pre>
+     *
+     * <code>PROTO_ARRAY = 10;</code>
+     */
+    public static final int PROTO_ARRAY_VALUE = 10;
+    /**
+     * <pre>
+     *Protobuf List&lt;Message&gt;
+     * </pre>
+     *
+     * <code>PROTO_LIST = 11;</code>
+     */
+    public static final int PROTO_LIST_VALUE = 11;
 
 
     public final int getNumber() {
@@ -66,9 +234,18 @@ public final class DSF {
 
     public static EnumSerialize forNumber(int value) {
       switch (value) {
-        case 0: return BYTES;
+        case 0: return BYTESTR;
         case 1: return JAVA;
         case 2: return PROTO;
+        case 3: return INT;
+        case 4: return LONG;
+        case 5: return FLOAT;
+        case 6: return DOUBLE;
+        case 7: return BOOL;
+        case 8: return STRING_ARRAY;
+        case 9: return BYTESTR_ARRAY;
+        case 10: return PROTO_ARRAY;
+        case 11: return PROTO_LIST;
         default: return null;
       }
     }
@@ -126,6 +303,11 @@ public final class DSF {
       com.google.protobuf.MessageOrBuilder {
   }
   /**
+   * <pre>
+   *-----------------------------
+   *获取服务列表
+   * </pre>
+   *
    * Protobuf type {@code net.arksea.dsf.GetServiceList}
    */
   public  static final class GetServiceList extends
@@ -335,6 +517,11 @@ public final class DSF {
       return builder;
     }
     /**
+     * <pre>
+     *-----------------------------
+     *获取服务列表
+     * </pre>
+     *
      * Protobuf type {@code net.arksea.dsf.GetServiceList}
      */
     public static final class Builder extends
@@ -9967,7 +10154,7 @@ public final class DSF {
       if (!payload_.isEmpty()) {
         output.writeBytes(3, payload_);
       }
-      if (serialize_ != net.arksea.dsf.DSF.EnumSerialize.BYTES.getNumber()) {
+      if (serialize_ != net.arksea.dsf.DSF.EnumSerialize.BYTESTR.getNumber()) {
         output.writeEnum(4, serialize_);
       }
       if (!getTypeNameBytes().isEmpty()) {
@@ -9995,7 +10182,7 @@ public final class DSF {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, payload_);
       }
-      if (serialize_ != net.arksea.dsf.DSF.EnumSerialize.BYTES.getNumber()) {
+      if (serialize_ != net.arksea.dsf.DSF.EnumSerialize.BYTESTR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(4, serialize_);
       }
@@ -10918,7 +11105,7 @@ public final class DSF {
       if (!payload_.isEmpty()) {
         output.writeBytes(2, payload_);
       }
-      if (serialize_ != net.arksea.dsf.DSF.EnumSerialize.BYTES.getNumber()) {
+      if (serialize_ != net.arksea.dsf.DSF.EnumSerialize.BYTESTR.getNumber()) {
         output.writeEnum(3, serialize_);
       }
       if (!getTypeNameBytes().isEmpty()) {
@@ -10945,7 +11132,7 @@ public final class DSF {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, payload_);
       }
-      if (serialize_ != net.arksea.dsf.DSF.EnumSerialize.BYTES.getNumber()) {
+      if (serialize_ != net.arksea.dsf.DSF.EnumSerialize.BYTESTR.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(3, serialize_);
       }
@@ -14503,6 +14690,3870 @@ public final class DSF {
 
   }
 
+  public interface WrapIntOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.WrapInt)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 value = 1;</code>
+     */
+    int getValue();
+
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
+  }
+  /**
+   * <pre>
+   *-------------------------------------------------
+   *一些基础类型的message包装
+   * </pre>
+   *
+   * Protobuf type {@code net.arksea.dsf.WrapInt}
+   */
+  public  static final class WrapInt extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.WrapInt)
+      WrapIntOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WrapInt.newBuilder() to construct.
+    private WrapInt(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WrapInt() {
+      value_ = 0;
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WrapInt(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+
+              value_ = input.readInt32();
+              break;
+            }
+            case 18: {
+
+              tracingSpan_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapInt_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapInt_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.WrapInt.class, net.arksea.dsf.DSF.WrapInt.Builder.class);
+    }
+
+    public static final int VALUE_FIELD_NUMBER = 1;
+    private int value_;
+    /**
+     * <code>int32 value = 1;</code>
+     */
+    public int getValue() {
+      return value_;
+    }
+
+    public static final int TRACINGSPAN_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (value_ != 0) {
+        output.writeInt32(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(2, tracingSpan_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (value_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, tracingSpan_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.WrapInt)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.WrapInt other = (net.arksea.dsf.DSF.WrapInt) obj;
+
+      boolean result = true;
+      result = result && (getValue()
+          == other.getValue());
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + getValue();
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapInt parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.WrapInt prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     *-------------------------------------------------
+     *一些基础类型的message包装
+     * </pre>
+     *
+     * Protobuf type {@code net.arksea.dsf.WrapInt}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.WrapInt)
+        net.arksea.dsf.DSF.WrapIntOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapInt_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapInt_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.WrapInt.class, net.arksea.dsf.DSF.WrapInt.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.WrapInt.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        value_ = 0;
+
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapInt_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.WrapInt getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.WrapInt.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.WrapInt build() {
+        net.arksea.dsf.DSF.WrapInt result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.WrapInt buildPartial() {
+        net.arksea.dsf.DSF.WrapInt result = new net.arksea.dsf.DSF.WrapInt(this);
+        result.value_ = value_;
+        result.tracingSpan_ = tracingSpan_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.WrapInt) {
+          return mergeFrom((net.arksea.dsf.DSF.WrapInt)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.WrapInt other) {
+        if (other == net.arksea.dsf.DSF.WrapInt.getDefaultInstance()) return this;
+        if (other.getValue() != 0) {
+          setValue(other.getValue());
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.WrapInt parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.WrapInt) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int value_ ;
+      /**
+       * <code>int32 value = 1;</code>
+       */
+      public int getValue() {
+        return value_;
+      }
+      /**
+       * <code>int32 value = 1;</code>
+       */
+      public Builder setValue(int value) {
+        
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 value = 1;</code>
+       */
+      public Builder clearValue() {
+        
+        value_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.WrapInt)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.WrapInt)
+    private static final net.arksea.dsf.DSF.WrapInt DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.WrapInt();
+    }
+
+    public static net.arksea.dsf.DSF.WrapInt getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WrapInt>
+        PARSER = new com.google.protobuf.AbstractParser<WrapInt>() {
+      public WrapInt parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WrapInt(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WrapInt> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WrapInt> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.WrapInt getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WrapLongOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.WrapLong)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int64 value = 1;</code>
+     */
+    long getValue();
+
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
+  }
+  /**
+   * Protobuf type {@code net.arksea.dsf.WrapLong}
+   */
+  public  static final class WrapLong extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.WrapLong)
+      WrapLongOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WrapLong.newBuilder() to construct.
+    private WrapLong(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WrapLong() {
+      value_ = 0L;
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WrapLong(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+
+              value_ = input.readInt64();
+              break;
+            }
+            case 18: {
+
+              tracingSpan_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapLong_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapLong_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.WrapLong.class, net.arksea.dsf.DSF.WrapLong.Builder.class);
+    }
+
+    public static final int VALUE_FIELD_NUMBER = 1;
+    private long value_;
+    /**
+     * <code>int64 value = 1;</code>
+     */
+    public long getValue() {
+      return value_;
+    }
+
+    public static final int TRACINGSPAN_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (value_ != 0L) {
+        output.writeInt64(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(2, tracingSpan_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (value_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, tracingSpan_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.WrapLong)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.WrapLong other = (net.arksea.dsf.DSF.WrapLong) obj;
+
+      boolean result = true;
+      result = result && (getValue()
+          == other.getValue());
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getValue());
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapLong parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.WrapLong prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code net.arksea.dsf.WrapLong}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.WrapLong)
+        net.arksea.dsf.DSF.WrapLongOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapLong_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapLong_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.WrapLong.class, net.arksea.dsf.DSF.WrapLong.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.WrapLong.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        value_ = 0L;
+
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapLong_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.WrapLong getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.WrapLong.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.WrapLong build() {
+        net.arksea.dsf.DSF.WrapLong result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.WrapLong buildPartial() {
+        net.arksea.dsf.DSF.WrapLong result = new net.arksea.dsf.DSF.WrapLong(this);
+        result.value_ = value_;
+        result.tracingSpan_ = tracingSpan_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.WrapLong) {
+          return mergeFrom((net.arksea.dsf.DSF.WrapLong)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.WrapLong other) {
+        if (other == net.arksea.dsf.DSF.WrapLong.getDefaultInstance()) return this;
+        if (other.getValue() != 0L) {
+          setValue(other.getValue());
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.WrapLong parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.WrapLong) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private long value_ ;
+      /**
+       * <code>int64 value = 1;</code>
+       */
+      public long getValue() {
+        return value_;
+      }
+      /**
+       * <code>int64 value = 1;</code>
+       */
+      public Builder setValue(long value) {
+        
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 value = 1;</code>
+       */
+      public Builder clearValue() {
+        
+        value_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.WrapLong)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.WrapLong)
+    private static final net.arksea.dsf.DSF.WrapLong DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.WrapLong();
+    }
+
+    public static net.arksea.dsf.DSF.WrapLong getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WrapLong>
+        PARSER = new com.google.protobuf.AbstractParser<WrapLong>() {
+      public WrapLong parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WrapLong(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WrapLong> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WrapLong> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.WrapLong getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WrapFloatOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.WrapFloat)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>float value = 1;</code>
+     */
+    float getValue();
+
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
+  }
+  /**
+   * Protobuf type {@code net.arksea.dsf.WrapFloat}
+   */
+  public  static final class WrapFloat extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.WrapFloat)
+      WrapFloatOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WrapFloat.newBuilder() to construct.
+    private WrapFloat(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WrapFloat() {
+      value_ = 0F;
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WrapFloat(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 13: {
+
+              value_ = input.readFloat();
+              break;
+            }
+            case 18: {
+
+              tracingSpan_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapFloat_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapFloat_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.WrapFloat.class, net.arksea.dsf.DSF.WrapFloat.Builder.class);
+    }
+
+    public static final int VALUE_FIELD_NUMBER = 1;
+    private float value_;
+    /**
+     * <code>float value = 1;</code>
+     */
+    public float getValue() {
+      return value_;
+    }
+
+    public static final int TRACINGSPAN_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (value_ != 0F) {
+        output.writeFloat(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(2, tracingSpan_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (value_ != 0F) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, tracingSpan_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.WrapFloat)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.WrapFloat other = (net.arksea.dsf.DSF.WrapFloat) obj;
+
+      boolean result = true;
+      result = result && (
+          java.lang.Float.floatToIntBits(getValue())
+          == java.lang.Float.floatToIntBits(
+              other.getValue()));
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getValue());
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapFloat parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.WrapFloat prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code net.arksea.dsf.WrapFloat}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.WrapFloat)
+        net.arksea.dsf.DSF.WrapFloatOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapFloat_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapFloat_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.WrapFloat.class, net.arksea.dsf.DSF.WrapFloat.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.WrapFloat.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        value_ = 0F;
+
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapFloat_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.WrapFloat getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.WrapFloat.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.WrapFloat build() {
+        net.arksea.dsf.DSF.WrapFloat result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.WrapFloat buildPartial() {
+        net.arksea.dsf.DSF.WrapFloat result = new net.arksea.dsf.DSF.WrapFloat(this);
+        result.value_ = value_;
+        result.tracingSpan_ = tracingSpan_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.WrapFloat) {
+          return mergeFrom((net.arksea.dsf.DSF.WrapFloat)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.WrapFloat other) {
+        if (other == net.arksea.dsf.DSF.WrapFloat.getDefaultInstance()) return this;
+        if (other.getValue() != 0F) {
+          setValue(other.getValue());
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.WrapFloat parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.WrapFloat) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private float value_ ;
+      /**
+       * <code>float value = 1;</code>
+       */
+      public float getValue() {
+        return value_;
+      }
+      /**
+       * <code>float value = 1;</code>
+       */
+      public Builder setValue(float value) {
+        
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>float value = 1;</code>
+       */
+      public Builder clearValue() {
+        
+        value_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.WrapFloat)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.WrapFloat)
+    private static final net.arksea.dsf.DSF.WrapFloat DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.WrapFloat();
+    }
+
+    public static net.arksea.dsf.DSF.WrapFloat getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WrapFloat>
+        PARSER = new com.google.protobuf.AbstractParser<WrapFloat>() {
+      public WrapFloat parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WrapFloat(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WrapFloat> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WrapFloat> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.WrapFloat getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WrapDoubleOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.WrapDouble)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>double value = 1;</code>
+     */
+    double getValue();
+
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
+  }
+  /**
+   * Protobuf type {@code net.arksea.dsf.WrapDouble}
+   */
+  public  static final class WrapDouble extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.WrapDouble)
+      WrapDoubleOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WrapDouble.newBuilder() to construct.
+    private WrapDouble(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WrapDouble() {
+      value_ = 0D;
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WrapDouble(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 9: {
+
+              value_ = input.readDouble();
+              break;
+            }
+            case 18: {
+
+              tracingSpan_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapDouble_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapDouble_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.WrapDouble.class, net.arksea.dsf.DSF.WrapDouble.Builder.class);
+    }
+
+    public static final int VALUE_FIELD_NUMBER = 1;
+    private double value_;
+    /**
+     * <code>double value = 1;</code>
+     */
+    public double getValue() {
+      return value_;
+    }
+
+    public static final int TRACINGSPAN_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (value_ != 0D) {
+        output.writeDouble(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(2, tracingSpan_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (value_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, tracingSpan_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.WrapDouble)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.WrapDouble other = (net.arksea.dsf.DSF.WrapDouble) obj;
+
+      boolean result = true;
+      result = result && (
+          java.lang.Double.doubleToLongBits(getValue())
+          == java.lang.Double.doubleToLongBits(
+              other.getValue()));
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getValue()));
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapDouble parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.WrapDouble prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code net.arksea.dsf.WrapDouble}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.WrapDouble)
+        net.arksea.dsf.DSF.WrapDoubleOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapDouble_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapDouble_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.WrapDouble.class, net.arksea.dsf.DSF.WrapDouble.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.WrapDouble.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        value_ = 0D;
+
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapDouble_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.WrapDouble getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.WrapDouble.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.WrapDouble build() {
+        net.arksea.dsf.DSF.WrapDouble result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.WrapDouble buildPartial() {
+        net.arksea.dsf.DSF.WrapDouble result = new net.arksea.dsf.DSF.WrapDouble(this);
+        result.value_ = value_;
+        result.tracingSpan_ = tracingSpan_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.WrapDouble) {
+          return mergeFrom((net.arksea.dsf.DSF.WrapDouble)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.WrapDouble other) {
+        if (other == net.arksea.dsf.DSF.WrapDouble.getDefaultInstance()) return this;
+        if (other.getValue() != 0D) {
+          setValue(other.getValue());
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.WrapDouble parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.WrapDouble) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private double value_ ;
+      /**
+       * <code>double value = 1;</code>
+       */
+      public double getValue() {
+        return value_;
+      }
+      /**
+       * <code>double value = 1;</code>
+       */
+      public Builder setValue(double value) {
+        
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>double value = 1;</code>
+       */
+      public Builder clearValue() {
+        
+        value_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.WrapDouble)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.WrapDouble)
+    private static final net.arksea.dsf.DSF.WrapDouble DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.WrapDouble();
+    }
+
+    public static net.arksea.dsf.DSF.WrapDouble getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WrapDouble>
+        PARSER = new com.google.protobuf.AbstractParser<WrapDouble>() {
+      public WrapDouble parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WrapDouble(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WrapDouble> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WrapDouble> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.WrapDouble getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WrapBoolOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.WrapBool)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bool value = 1;</code>
+     */
+    boolean getValue();
+
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
+  }
+  /**
+   * Protobuf type {@code net.arksea.dsf.WrapBool}
+   */
+  public  static final class WrapBool extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.WrapBool)
+      WrapBoolOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WrapBool.newBuilder() to construct.
+    private WrapBool(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WrapBool() {
+      value_ = false;
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WrapBool(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+
+              value_ = input.readBool();
+              break;
+            }
+            case 18: {
+
+              tracingSpan_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBool_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBool_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.WrapBool.class, net.arksea.dsf.DSF.WrapBool.Builder.class);
+    }
+
+    public static final int VALUE_FIELD_NUMBER = 1;
+    private boolean value_;
+    /**
+     * <code>bool value = 1;</code>
+     */
+    public boolean getValue() {
+      return value_;
+    }
+
+    public static final int TRACINGSPAN_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (value_ != false) {
+        output.writeBool(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(2, tracingSpan_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (value_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, value_);
+      }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, tracingSpan_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.WrapBool)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.WrapBool other = (net.arksea.dsf.DSF.WrapBool) obj;
+
+      boolean result = true;
+      result = result && (getValue()
+          == other.getValue());
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getValue());
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapBool parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.WrapBool prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code net.arksea.dsf.WrapBool}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.WrapBool)
+        net.arksea.dsf.DSF.WrapBoolOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBool_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBool_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.WrapBool.class, net.arksea.dsf.DSF.WrapBool.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.WrapBool.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        value_ = false;
+
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBool_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.WrapBool getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.WrapBool.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.WrapBool build() {
+        net.arksea.dsf.DSF.WrapBool result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.WrapBool buildPartial() {
+        net.arksea.dsf.DSF.WrapBool result = new net.arksea.dsf.DSF.WrapBool(this);
+        result.value_ = value_;
+        result.tracingSpan_ = tracingSpan_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.WrapBool) {
+          return mergeFrom((net.arksea.dsf.DSF.WrapBool)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.WrapBool other) {
+        if (other == net.arksea.dsf.DSF.WrapBool.getDefaultInstance()) return this;
+        if (other.getValue() != false) {
+          setValue(other.getValue());
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.WrapBool parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.WrapBool) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private boolean value_ ;
+      /**
+       * <code>bool value = 1;</code>
+       */
+      public boolean getValue() {
+        return value_;
+      }
+      /**
+       * <code>bool value = 1;</code>
+       */
+      public Builder setValue(boolean value) {
+        
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool value = 1;</code>
+       */
+      public Builder clearValue() {
+        
+        value_ = false;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.WrapBool)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.WrapBool)
+    private static final net.arksea.dsf.DSF.WrapBool DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.WrapBool();
+    }
+
+    public static net.arksea.dsf.DSF.WrapBool getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WrapBool>
+        PARSER = new com.google.protobuf.AbstractParser<WrapBool>() {
+      public WrapBool parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WrapBool(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WrapBool> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WrapBool> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.WrapBool getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WrapBytesArrayOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.WrapBytesArray)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated bytes value = 1;</code>
+     */
+    java.util.List<com.google.protobuf.ByteString> getValueList();
+    /**
+     * <code>repeated bytes value = 1;</code>
+     */
+    int getValueCount();
+    /**
+     * <code>repeated bytes value = 1;</code>
+     */
+    com.google.protobuf.ByteString getValue(int index);
+
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
+  }
+  /**
+   * Protobuf type {@code net.arksea.dsf.WrapBytesArray}
+   */
+  public  static final class WrapBytesArray extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.WrapBytesArray)
+      WrapBytesArrayOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WrapBytesArray.newBuilder() to construct.
+    private WrapBytesArray(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WrapBytesArray() {
+      value_ = java.util.Collections.emptyList();
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WrapBytesArray(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                value_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              value_.add(input.readBytes());
+              break;
+            }
+            case 18: {
+
+              tracingSpan_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          value_ = java.util.Collections.unmodifiableList(value_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBytesArray_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBytesArray_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.WrapBytesArray.class, net.arksea.dsf.DSF.WrapBytesArray.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int VALUE_FIELD_NUMBER = 1;
+    private java.util.List<com.google.protobuf.ByteString> value_;
+    /**
+     * <code>repeated bytes value = 1;</code>
+     */
+    public java.util.List<com.google.protobuf.ByteString>
+        getValueList() {
+      return value_;
+    }
+    /**
+     * <code>repeated bytes value = 1;</code>
+     */
+    public int getValueCount() {
+      return value_.size();
+    }
+    /**
+     * <code>repeated bytes value = 1;</code>
+     */
+    public com.google.protobuf.ByteString getValue(int index) {
+      return value_.get(index);
+    }
+
+    public static final int TRACINGSPAN_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < value_.size(); i++) {
+        output.writeBytes(1, value_.get(i));
+      }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(2, tracingSpan_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < value_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(value_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getValueList().size();
+      }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, tracingSpan_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.WrapBytesArray)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.WrapBytesArray other = (net.arksea.dsf.DSF.WrapBytesArray) obj;
+
+      boolean result = true;
+      result = result && getValueList()
+          .equals(other.getValueList());
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getValueCount() > 0) {
+        hash = (37 * hash) + VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getValueList().hashCode();
+      }
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapBytesArray parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.WrapBytesArray prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code net.arksea.dsf.WrapBytesArray}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.WrapBytesArray)
+        net.arksea.dsf.DSF.WrapBytesArrayOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBytesArray_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBytesArray_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.WrapBytesArray.class, net.arksea.dsf.DSF.WrapBytesArray.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.WrapBytesArray.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        value_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapBytesArray_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.WrapBytesArray getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.WrapBytesArray.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.WrapBytesArray build() {
+        net.arksea.dsf.DSF.WrapBytesArray result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.WrapBytesArray buildPartial() {
+        net.arksea.dsf.DSF.WrapBytesArray result = new net.arksea.dsf.DSF.WrapBytesArray(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          value_ = java.util.Collections.unmodifiableList(value_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.value_ = value_;
+        result.tracingSpan_ = tracingSpan_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.WrapBytesArray) {
+          return mergeFrom((net.arksea.dsf.DSF.WrapBytesArray)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.WrapBytesArray other) {
+        if (other == net.arksea.dsf.DSF.WrapBytesArray.getDefaultInstance()) return this;
+        if (!other.value_.isEmpty()) {
+          if (value_.isEmpty()) {
+            value_ = other.value_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureValueIsMutable();
+            value_.addAll(other.value_);
+          }
+          onChanged();
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.WrapBytesArray parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.WrapBytesArray) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<com.google.protobuf.ByteString> value_ = java.util.Collections.emptyList();
+      private void ensureValueIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          value_ = new java.util.ArrayList<com.google.protobuf.ByteString>(value_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      /**
+       * <code>repeated bytes value = 1;</code>
+       */
+      public java.util.List<com.google.protobuf.ByteString>
+          getValueList() {
+        return java.util.Collections.unmodifiableList(value_);
+      }
+      /**
+       * <code>repeated bytes value = 1;</code>
+       */
+      public int getValueCount() {
+        return value_.size();
+      }
+      /**
+       * <code>repeated bytes value = 1;</code>
+       */
+      public com.google.protobuf.ByteString getValue(int index) {
+        return value_.get(index);
+      }
+      /**
+       * <code>repeated bytes value = 1;</code>
+       */
+      public Builder setValue(
+          int index, com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureValueIsMutable();
+        value_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes value = 1;</code>
+       */
+      public Builder addValue(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureValueIsMutable();
+        value_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes value = 1;</code>
+       */
+      public Builder addAllValue(
+          java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
+        ensureValueIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, value_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes value = 1;</code>
+       */
+      public Builder clearValue() {
+        value_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.WrapBytesArray)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.WrapBytesArray)
+    private static final net.arksea.dsf.DSF.WrapBytesArray DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.WrapBytesArray();
+    }
+
+    public static net.arksea.dsf.DSF.WrapBytesArray getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WrapBytesArray>
+        PARSER = new com.google.protobuf.AbstractParser<WrapBytesArray>() {
+      public WrapBytesArray parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WrapBytesArray(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WrapBytesArray> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WrapBytesArray> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.WrapBytesArray getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WrapStringArrayOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:net.arksea.dsf.WrapStringArray)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated string value = 1;</code>
+     */
+    java.util.List<java.lang.String>
+        getValueList();
+    /**
+     * <code>repeated string value = 1;</code>
+     */
+    int getValueCount();
+    /**
+     * <code>repeated string value = 1;</code>
+     */
+    java.lang.String getValue(int index);
+    /**
+     * <code>repeated string value = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getValueBytes(int index);
+
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    com.google.protobuf.ByteString getTracingSpan();
+  }
+  /**
+   * Protobuf type {@code net.arksea.dsf.WrapStringArray}
+   */
+  public  static final class WrapStringArray extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:net.arksea.dsf.WrapStringArray)
+      WrapStringArrayOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WrapStringArray.newBuilder() to construct.
+    private WrapStringArray(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WrapStringArray() {
+      value_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WrapStringArray(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                value_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              value_.add(s);
+              break;
+            }
+            case 18: {
+
+              tracingSpan_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          value_ = value_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapStringArray_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapStringArray_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              net.arksea.dsf.DSF.WrapStringArray.class, net.arksea.dsf.DSF.WrapStringArray.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int VALUE_FIELD_NUMBER = 1;
+    private com.google.protobuf.LazyStringList value_;
+    /**
+     * <code>repeated string value = 1;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getValueList() {
+      return value_;
+    }
+    /**
+     * <code>repeated string value = 1;</code>
+     */
+    public int getValueCount() {
+      return value_.size();
+    }
+    /**
+     * <code>repeated string value = 1;</code>
+     */
+    public java.lang.String getValue(int index) {
+      return value_.get(index);
+    }
+    /**
+     * <code>repeated string value = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getValueBytes(int index) {
+      return value_.getByteString(index);
+    }
+
+    public static final int TRACINGSPAN_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString tracingSpan_;
+    /**
+     * <code>bytes tracingSpan = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTracingSpan() {
+      return tracingSpan_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < value_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, value_.getRaw(i));
+      }
+      if (!tracingSpan_.isEmpty()) {
+        output.writeBytes(2, tracingSpan_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < value_.size(); i++) {
+          dataSize += computeStringSizeNoTag(value_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getValueList().size();
+      }
+      if (!tracingSpan_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, tracingSpan_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof net.arksea.dsf.DSF.WrapStringArray)) {
+        return super.equals(obj);
+      }
+      net.arksea.dsf.DSF.WrapStringArray other = (net.arksea.dsf.DSF.WrapStringArray) obj;
+
+      boolean result = true;
+      result = result && getValueList()
+          .equals(other.getValueList());
+      result = result && getTracingSpan()
+          .equals(other.getTracingSpan());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getValueCount() > 0) {
+        hash = (37 * hash) + VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getValueList().hashCode();
+      }
+      hash = (37 * hash) + TRACINGSPAN_FIELD_NUMBER;
+      hash = (53 * hash) + getTracingSpan().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static net.arksea.dsf.DSF.WrapStringArray parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(net.arksea.dsf.DSF.WrapStringArray prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code net.arksea.dsf.WrapStringArray}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:net.arksea.dsf.WrapStringArray)
+        net.arksea.dsf.DSF.WrapStringArrayOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapStringArray_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapStringArray_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                net.arksea.dsf.DSF.WrapStringArray.class, net.arksea.dsf.DSF.WrapStringArray.Builder.class);
+      }
+
+      // Construct using net.arksea.dsf.DSF.WrapStringArray.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        value_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return net.arksea.dsf.DSF.internal_static_net_arksea_dsf_WrapStringArray_descriptor;
+      }
+
+      public net.arksea.dsf.DSF.WrapStringArray getDefaultInstanceForType() {
+        return net.arksea.dsf.DSF.WrapStringArray.getDefaultInstance();
+      }
+
+      public net.arksea.dsf.DSF.WrapStringArray build() {
+        net.arksea.dsf.DSF.WrapStringArray result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public net.arksea.dsf.DSF.WrapStringArray buildPartial() {
+        net.arksea.dsf.DSF.WrapStringArray result = new net.arksea.dsf.DSF.WrapStringArray(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          value_ = value_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.value_ = value_;
+        result.tracingSpan_ = tracingSpan_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof net.arksea.dsf.DSF.WrapStringArray) {
+          return mergeFrom((net.arksea.dsf.DSF.WrapStringArray)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(net.arksea.dsf.DSF.WrapStringArray other) {
+        if (other == net.arksea.dsf.DSF.WrapStringArray.getDefaultInstance()) return this;
+        if (!other.value_.isEmpty()) {
+          if (value_.isEmpty()) {
+            value_ = other.value_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureValueIsMutable();
+            value_.addAll(other.value_);
+          }
+          onChanged();
+        }
+        if (other.getTracingSpan() != com.google.protobuf.ByteString.EMPTY) {
+          setTracingSpan(other.getTracingSpan());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        net.arksea.dsf.DSF.WrapStringArray parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (net.arksea.dsf.DSF.WrapStringArray) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private com.google.protobuf.LazyStringList value_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureValueIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          value_ = new com.google.protobuf.LazyStringArrayList(value_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getValueList() {
+        return value_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public int getValueCount() {
+        return value_.size();
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public java.lang.String getValue(int index) {
+        return value_.get(index);
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getValueBytes(int index) {
+        return value_.getByteString(index);
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public Builder setValue(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureValueIsMutable();
+        value_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public Builder addValue(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureValueIsMutable();
+        value_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public Builder addAllValue(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureValueIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, value_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public Builder clearValue() {
+        value_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string value = 1;</code>
+       */
+      public Builder addValueBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureValueIsMutable();
+        value_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString tracingSpan_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTracingSpan() {
+        return tracingSpan_;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder setTracingSpan(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        tracingSpan_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes tracingSpan = 2;</code>
+       */
+      public Builder clearTracingSpan() {
+        
+        tracingSpan_ = getDefaultInstance().getTracingSpan();
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:net.arksea.dsf.WrapStringArray)
+    }
+
+    // @@protoc_insertion_point(class_scope:net.arksea.dsf.WrapStringArray)
+    private static final net.arksea.dsf.DSF.WrapStringArray DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new net.arksea.dsf.DSF.WrapStringArray();
+    }
+
+    public static net.arksea.dsf.DSF.WrapStringArray getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WrapStringArray>
+        PARSER = new com.google.protobuf.AbstractParser<WrapStringArray>() {
+      public WrapStringArray parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WrapStringArray(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WrapStringArray> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WrapStringArray> getParserForType() {
+      return PARSER;
+    }
+
+    public net.arksea.dsf.DSF.WrapStringArray getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_net_arksea_dsf_GetServiceList_descriptor;
   private static final 
@@ -14608,6 +18659,41 @@ public final class DSF {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_net_arksea_dsf_Pong_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_WrapInt_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_WrapInt_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_WrapLong_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_WrapLong_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_WrapFloat_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_WrapFloat_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_WrapDouble_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_WrapDouble_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_WrapBool_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_WrapBool_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_WrapBytesArray_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_WrapBytesArray_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_net_arksea_dsf_WrapStringArray_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_net_arksea_dsf_WrapStringArray_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -14650,9 +18736,21 @@ public final class DSF {
       "\001(\003\022\023\n\013respondTime\030\003 \001(\003\"B\n\023RequestCount" +
       "History\022+\n\005items\030\001 \003(\0132\034.net.arksea.dsf." +
       "RequestCount\"\030\n\026GetRequestCountHistory\"\026" +
-      "\n\024GetRegisterInstances\"\006\n\004Ping\"\006\n\004Pong*/" +
-      "\n\rEnumSerialize\022\t\n\005BYTES\020\000\022\010\n\004JAVA\020\001\022\t\n\005" +
-      "PROTO\020\002B\025\n\016net.arksea.dsfB\003DSFb\006proto3"
+      "\n\024GetRegisterInstances\"\006\n\004Ping\"\006\n\004Pong\"-" +
+      "\n\007WrapInt\022\r\n\005value\030\001 \001(\005\022\023\n\013tracingSpan\030" +
+      "\002 \001(\014\".\n\010WrapLong\022\r\n\005value\030\001 \001(\003\022\023\n\013trac" +
+      "ingSpan\030\002 \001(\014\"/\n\tWrapFloat\022\r\n\005value\030\001 \001(" +
+      "\002\022\023\n\013tracingSpan\030\002 \001(\014\"0\n\nWrapDouble\022\r\n\005" +
+      "value\030\001 \001(\001\022\023\n\013tracingSpan\030\002 \001(\014\".\n\010Wrap" +
+      "Bool\022\r\n\005value\030\001 \001(\010\022\023\n\013tracingSpan\030\002 \001(\014" +
+      "\"4\n\016WrapBytesArray\022\r\n\005value\030\001 \003(\014\022\023\n\013tra" +
+      "cingSpan\030\002 \001(\014\"5\n\017WrapStringArray\022\r\n\005val" +
+      "ue\030\001 \003(\t\022\023\n\013tracingSpan\030\002 \001(\014*\253\001\n\rEnumSe" +
+      "rialize\022\013\n\007BYTESTR\020\000\022\010\n\004JAVA\020\001\022\t\n\005PROTO\020" +
+      "\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBL" +
+      "E\020\006\022\010\n\004BOOL\020\007\022\020\n\014STRING_ARRAY\020\010\022\021\n\rBYTES" +
+      "TR_ARRAY\020\t\022\017\n\013PROTO_ARRAY\020\n\022\016\n\nPROTO_LIS" +
+      "T\020\013B\025\n\016net.arksea.dsfB\003DSFb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -14792,6 +18890,48 @@ public final class DSF {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_net_arksea_dsf_Pong_descriptor,
         new java.lang.String[] { });
+    internal_static_net_arksea_dsf_WrapInt_descriptor =
+      getDescriptor().getMessageTypes().get(21);
+    internal_static_net_arksea_dsf_WrapInt_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_WrapInt_descriptor,
+        new java.lang.String[] { "Value", "TracingSpan", });
+    internal_static_net_arksea_dsf_WrapLong_descriptor =
+      getDescriptor().getMessageTypes().get(22);
+    internal_static_net_arksea_dsf_WrapLong_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_WrapLong_descriptor,
+        new java.lang.String[] { "Value", "TracingSpan", });
+    internal_static_net_arksea_dsf_WrapFloat_descriptor =
+      getDescriptor().getMessageTypes().get(23);
+    internal_static_net_arksea_dsf_WrapFloat_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_WrapFloat_descriptor,
+        new java.lang.String[] { "Value", "TracingSpan", });
+    internal_static_net_arksea_dsf_WrapDouble_descriptor =
+      getDescriptor().getMessageTypes().get(24);
+    internal_static_net_arksea_dsf_WrapDouble_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_WrapDouble_descriptor,
+        new java.lang.String[] { "Value", "TracingSpan", });
+    internal_static_net_arksea_dsf_WrapBool_descriptor =
+      getDescriptor().getMessageTypes().get(25);
+    internal_static_net_arksea_dsf_WrapBool_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_WrapBool_descriptor,
+        new java.lang.String[] { "Value", "TracingSpan", });
+    internal_static_net_arksea_dsf_WrapBytesArray_descriptor =
+      getDescriptor().getMessageTypes().get(26);
+    internal_static_net_arksea_dsf_WrapBytesArray_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_WrapBytesArray_descriptor,
+        new java.lang.String[] { "Value", "TracingSpan", });
+    internal_static_net_arksea_dsf_WrapStringArray_descriptor =
+      getDescriptor().getMessageTypes().get(27);
+    internal_static_net_arksea_dsf_WrapStringArray_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_net_arksea_dsf_WrapStringArray_descriptor,
+        new java.lang.String[] { "Value", "TracingSpan", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

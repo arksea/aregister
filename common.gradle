@@ -2,7 +2,8 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group = 'net.arksea'
-version = '0.5-SNAPSHOT'
+version = '0.6-SNAPSHOT'
+
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 

@@ -25,7 +25,7 @@
             <td>{{(i.quality | async).count}}</td>
             <td>{{(i.quality | async).qpm}}</td>
             <td>{{(i.quality | async).tts}}</td>
-            <td>{{(i.quality | async).succeedRate}}</td>
+            <td>{{formatSucceedRate((i.quality | async).succeedRate)}}</td>
             <td>{{i.unregistered}}</td>
             <td>
                 <a (click)="onRegisterClick(i)">{{registerButtonText(i)}}</a>

@@ -5,8 +5,10 @@ import akka.actor.ActorSystem;
 import akka.routing.ConsistentHashingPool;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import net.arksea.dsf.codes.ICodes;
 import net.arksea.dsf.codes.JavaSerializeCodes;
-import net.arksea.dsf.demo.DemoResponse1;
+import net.arksea.dsf.codes.ProtocolBufferCodes;
+import net.arksea.dsf.demo.DEMO;
 import net.arksea.dsf.register.RegisterClient;
 import net.arksea.dsf.service.DefaultRateLimitStrategy;
 import net.arksea.dsf.service.IRateLimitConfig;
@@ -44,7 +46,8 @@ public final class ServerMain {
             String serviceName = "net.arksea.dsf.DemoService-v2";
             int port = cfg.getInt("akka.remote.netty.tcp.port");
             IRateLimitConfig limitConfig = new IRateLimitConfig() {
-                private final DemoResponse1 response = new DemoResponse1(1, "rate limit");
+                private final DEMO.DemoResponse1 response = DEMO.DemoResponse1.newBuilder()
+                    .setStatus(1).setMsg("rate limit").build();
                 @Override
                 public long getLowThreshold() {
                     return 4;
@@ -63,7 +66,9 @@ public final class ServerMain {
             ActorRef service = system.actorOf(pool.props(DemoActor.props(port)), "DemoServicePool");
             String hostAddrss = InetAddress.getLocalHost().getHostAddress();
             logger.info("hostAddress={}", hostAddrss);
-            registerClient.register(serviceName, hostAddrss, port, service, system, new JavaSerializeCodes(), rs);
+            //ICodes codes = new ProtocolBufferCodes(DEMO.getDescriptor());
+            ICodes codes = new JavaSerializeCodes();
+            registerClient.register(serviceName, hostAddrss, port, service, system, codes, rs);
             Thread.sleep(3000);
 //            if (port == 8772) {
 //                Thread.sleep(400000);

@@ -28,15 +28,17 @@ dependencies {
     compileOnly  'javax.servlet:javax.servlet-api:3.1.0'
 }
 
-//task deleteOnline(type: Exec) {
-//    commandLine 'cmd', '/c', 'del /Q .\\online\\aregister-web\\*.*'
-//}
+task deleteOnline(type: Exec) {
+    commandLine 'cmd', '/c', 'del /Q .\\online\\aregister-web\\*.*'
+}
 
 task ngBuild(type: Exec) {
-    workingDir './src/main/angular/aregister-web'
-    commandLine 'cmd', '/c', 'ng build --env=prod'
+    dependsOn deleteOnline
+    doLast {
+        workingDir './src/main/angular/aregister-web'
+        commandLine 'cmd', '/c', 'ng build --env=prod'
+    }
 }
-ngBuild.dependsOn() //deleteOnline)
 
 
 
@@ -95,9 +97,11 @@ task publishDev {
 }
 
 task startTomcat(type: Exec) {
-    dependsOn(publishDev)
-    workingDir './tomcat'
-    commandLine 'cmd', '/c', '.\\bin\\startup.bat'
-    environment CATALINA_HOME: 'e:\\github\\aregister\\aregister-web\\tomcat'
+    dependsOn publishDev
+    doLast {
+        workingDir './tomcat'
+        commandLine 'cmd', '/c', '.\\bin\\startup.bat'
+        environment CATALINA_HOME: 'e:\\github\\aregister\\aregister-web\\tomcat'
+    }
 }
 
