@@ -17,6 +17,7 @@ public class RandomRound implements IRouteStrategy {
         random = new Random();
     }
 
+    @SuppressWarnings("PMD.ForLoopCanBeForeach") //todo: 改写成foreach模式
     @Override
     public Optional<Instance> getInstance(List<Instance> list, int checkMod) {
         int index = list.size() > 1 ? random.nextInt(list.size()) : 0;

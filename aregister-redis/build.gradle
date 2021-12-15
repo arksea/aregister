@@ -1,40 +1,38 @@
-apply plugin: 'base'
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'pmd'
-
-String mavenVersion = version
-String mavenArtifactId = name
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'pmd'
+}
 
 description = """ASC(Actor Service Cluster)客户端支持库"""
 
 dependencies {
-    compile project(':aregister-client')
-    compile 'redis.clients:jedis:2.8.1'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.0'
+    implementation project(':aregister-client')
+    implementation 'redis.clients:jedis:2.8.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.4.0'
 }
 
-configure(install.repositories.mavenInstaller) {
-    pom.project {
-        groupId = group
-        artifactId = mavenArtifactId
-        version = mavenVersion
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            allowInsecureProtocol = true
+            url = 'http://172.17.149.8:8081/nexus/content/repositories/snapshots'
+            credentials {
+                username= "admin"
+                password= "admin123"
+            }
+        }
     }
 }
-
-uploadArchives {
-    repositories.mavenDeployer {
-        repository(url: "http://172.17.149.8:8081/nexus/content/repositories/releases") {
-            authentication(userName: "admin", password: "admin123")
-        }
-        snapshotRepository(url: "http://172.17.149.8:8081/nexus/content/repositories/snapshots") {
-            authentication(userName: "admin", password: "admin123")
-        }
-    }
-}.dependsOn(assemble)
 
 pmd {
-    toolVersion = '5.1.3'
+    toolVersion = '6.0.0'
     ruleSets = [
         'java-basic',
         'java-braces',

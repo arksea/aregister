@@ -69,21 +69,35 @@ public class RegisterClient {
         return new Client(serviceName, routeStrategy, RequestIdStrategy.REGENERATE, codes, condition, clientSystem, new ServiceInstanceSource(serviceName, this), clientName, tracingConfig);
     }
 
-    public Client subscribe(String serviceName, RouteStrategy routeStrategy, RequestIdStrategy requestIdStrategy, ISwitchCondition condition) {
+    public Client subscribe(String serviceName, RouteStrategy routeStrategy, ISwitchCondition condition, ICodes codes) {
+        Config config = ConfigFactory.parseResources("default-service-client.conf");
+        ActorSystem clientSystem = ActorSystem.create(SVC_CLIENT_SYSTEM_NAME,config.getConfig(SVC_CLIENT_SYSTEM_NAME).withFallback(config));
+        return subscribe(serviceName, routeStrategy, condition, codes, clientSystem);
+    }
+
+    public Client subscribe(String serviceName, ICodes codes) {
+        Config config = ConfigFactory.parseResources("default-service-client.conf");
+        ActorSystem clientSystem = ActorSystem.create(SVC_CLIENT_SYSTEM_NAME,config.getConfig(SVC_CLIENT_SYSTEM_NAME).withFallback(config));
+        ISwitchCondition condition = new DefaultSwitchCondition();
+        return subscribe(serviceName, RouteStrategy.ROUNDROBIN, condition, codes, clientSystem);
+    }
+
+    public Client subscribe(String serviceName, RouteStrategy routeStrategy, RequestIdStrategy requestIdStrategy, ISwitchCondition condition, ICodes codes) {
         Config config = ConfigFactory.parseResources("default-service-client.conf");
         ActorSystem clientSystem = ActorSystem.create(serviceName.replace(".","-"),config.getConfig(SVC_CLIENT_SYSTEM_NAME).withFallback(config));
-        ICodes codes = new JavaSerializeCodes();
         return subscribe(serviceName, routeStrategy, requestIdStrategy, condition, codes, clientSystem);
     }
 
     public Client subscribe(String serviceName, RouteStrategy routeStrategy, RequestIdStrategy requestIdStrategy) {
         ISwitchCondition condition = new DefaultSwitchCondition();
-        return subscribe(serviceName, routeStrategy, requestIdStrategy, condition);
+        ICodes codes = new JavaSerializeCodes();
+        return subscribe(serviceName, routeStrategy, requestIdStrategy, condition, codes);
     }
 
     public Client subscribe(String serviceName, RouteStrategy routeStrategy) {
         ISwitchCondition condition = new DefaultSwitchCondition();
-        return subscribe(serviceName, routeStrategy, RequestIdStrategy.REGENERATE, condition);
+        ICodes codes = new JavaSerializeCodes();
+        return subscribe(serviceName, routeStrategy, RequestIdStrategy.REGENERATE, condition, codes);
     }
 
     public Client subscribe(String serviceName) {

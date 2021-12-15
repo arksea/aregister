@@ -42,6 +42,10 @@ export class ServiceComponent {
          }
     }
 
+    formatSucceedRate(rate: number): string {
+         return rate.toFixed(3);
+    }
+
     onRegisterClick(i: Instance): void {
         if (i.unregistered) {
             this.notify.openWidthConfirm('注册实例', '确认要注册吗？操作将导入请求流量！', i.addr).subscribe(

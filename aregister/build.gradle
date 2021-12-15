@@ -1,20 +1,15 @@
-apply plugin: 'base'
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'pmd'
+plugins {
+    id 'java'
+    id 'application'
+    id 'pmd'
+}
 
 description = """Actor Register"""
 
 dependencies {
-    compile project(':aregister-redis')
-    compile 'net.arksea:httpclient-asker:1.1.0-SNAPSHOT'
-}
-
-configurations.all {
-    resolutionStrategy {
-        cacheDynamicVersionsFor  30, 'seconds'
-        cacheChangingModulesFor  30, 'seconds'
-    }
+    implementation project(':aregister-client')
+    implementation project(':aregister-redis')
+    implementation 'net.arksea:httpclient-asker:1.1.1-SNAPSHOT'
 }
 
 test.testLogging.showStandardStreams = true
@@ -25,28 +20,28 @@ def runMainClass = 'net.arksea.dsf.register.ServerMain'
 //配置在IDE中运行及调试时的参数
 task run1(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     jvmArgs = ['-Dakka.remote.netty.tcp.port=6501']
     standardInput = System.in
 }
 
 task run2(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     jvmArgs = ['-Dakka.remote.netty.tcp.port=6502']
     standardInput = System.in
 }
 
 task run3(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     jvmArgs = ['-Dakka.remote.netty.tcp.port=6503']
     standardInput = System.in
 }
 
 task debug1(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath
-    main = runMainClass
+    mainClass = runMainClass
     jvmArgs = ['-Dakka.remote.netty.tcp.port=6501']
     standardInput = System.in
     debug = true
@@ -55,12 +50,12 @@ task debug1(type: JavaExec, dependsOn: 'classes') {
 jar {
     manifest {
         attributes 'Main-Class': runMainClass
-        attributes "Class-Path": configurations.runtime.collect { 'lib/'+it.getName() }.join(' ')+" config/"
+        attributes "Class-Path": configurations.runtimeClasspath.collect { 'lib/'+it.getName() }.join(' ')+" config/"
     }
 }
 
 pmd {
-    toolVersion = '5.1.3'
+    toolVersion = '6.0.0'
     ruleSets = [
         'java-basic',
         'java-braces',
@@ -76,7 +71,7 @@ pmd {
 
 
 //拷贝部署文件到指定目录
-task publish {
+task publishProduct {
     dependsOn(build)
     doLast {
         //拷贝前先删除部署目录
@@ -86,7 +81,7 @@ task publish {
             into 'publish'
         }
         copy { //拷贝依赖库
-            from configurations.runtime
+            from configurations.runtimeClasspath
             into 'publish/lib'
         }
     }

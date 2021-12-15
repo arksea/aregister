@@ -6,7 +6,6 @@ option java_package = "net.arksea.dsf";
 option java_outer_classname = "DSF";
 //-----------------------------
 //获取服务列表
-
 message GetServiceList {
 }
 
@@ -82,9 +81,18 @@ message UnsubService {
 }
 
 enum EnumSerialize {
-    BYTES = 0;
-    JAVA = 1;
-    PROTO = 2;
+    BYTESTR = 0; //com.google.protobuf.ByteString
+    JAVA    = 1; //Java Object
+    PROTO   = 2; //Protobuf Message
+    INT     = 3; //Java Integer
+    LONG    = 4; //Java Long
+    FLOAT   = 5; //Java Float
+    DOUBLE  = 6; //Java Double
+    BOOL    = 7; //Java Boolean
+    STRING_ARRAY = 8;  //String[]
+    BYTESTR_ARRAY = 9; //com.google.protobuf.ByteString[]
+    PROTO_ARRAY   = 10; //Protobuf Message[]
+    PROTO_LIST    = 11;//Protobuf List<Message>
 }
 //------------------------------------------------
 message ServiceRequest {
@@ -129,4 +137,35 @@ message Ping {
 }
 
 message Pong {
+}
+
+//-------------------------------------------------
+//一些基础类型的message包装
+message WrapInt {
+    int32 value = 1;
+    bytes tracingSpan = 2;
+}
+message WrapLong {
+    int64 value = 1;
+    bytes tracingSpan = 2;
+}
+message WrapFloat {
+    float value = 1;
+    bytes tracingSpan = 2;
+}
+message WrapDouble {
+    double value = 1;
+    bytes tracingSpan = 2;
+}
+message WrapBool {
+    bool value = 1;
+    bytes tracingSpan = 2;
+}
+message WrapBytesArray {
+    repeated bytes value = 1;
+    bytes tracingSpan = 2;
+}
+message WrapStringArray {
+    repeated string value = 1;
+    bytes tracingSpan = 2;
 }
