@@ -50,9 +50,9 @@ public class ProtocolBufferCodes extends JavaSerializeCodes {
                     Parser parser = (Parser) method.invoke(null);
                     Field field = null;
                     Field[] fields = clazz.getDeclaredFields();
-                    for (int i = 0; i < fields.length; i++) {
-                        if ("tracingSpan_".equals(fields[i].getName())) {
-                            field = fields[i];
+                    for (Field value : fields) {
+                        if ("tracingSpan_".equals(value.getName())) {
+                            field = value;
                         }
                     }
                     map.put(d.getName(), new ParserInfo(parser, clazz, field));
