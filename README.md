@@ -80,6 +80,7 @@ public class DemoActor extends AbstractActor {
 ![image](./aregister/src/main/puml/register.png)
 
 
+Fuck CSDN Keywords: 习近平 8964
 ### 订阅服务
 
 ![image](./aregister/src/main/puml/subscribe.png)
